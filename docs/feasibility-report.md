@@ -34,7 +34,7 @@ relative links or artifact names here.
 | iLoader log | Not supplied; successful install proven by app launch and embedded Live Activity rendering |
 | SideStore log | TBD |
 | `diagnostics.json` normal flow | User-supplied JSON, 2026-07-29 05:45 UTC |
-| `diagnostics.json` failure flow | TBD |
+| `diagnostics.json` failure flow | User-supplied duplicate-start JSON, 2026-07-29 05:49 UTC |
 | Connected automation screenshot | TBD |
 | Disconnected automation screenshot | TBD |
 | Locked flow screen recording | TBD |
@@ -58,7 +58,7 @@ test state.
 | F-08 | Dynamic Island layouts | Compact, minimal, and expanded render | TBD | NOT RUN | TBD |
 | F-09 | Real battery snapshot | Matches device value or displays unavailable | App captured 25% Charging at 08:45:08; activity started at 08:45:28 and displayed 25% with the matching update time | PASS | App screenshots, Lock Screen screenshot, diagnostics JSON |
 | F-10 | Disconnected automation, locked | Activity ends without unlocking | TBD | NOT RUN | TBD |
-| F-11 | Duplicate Start | Second call does not create a duplicate | TBD | NOT RUN | TBD |
+| F-11 | Duplicate Start | Second call does not create a duplicate | Second Start was rejected with `CG-ACT-002` while activity `ED29FE58-64D3-43E7-9654-A1C068A7858B` remained active | PASS | Diagnostics event at `2026-07-29T05:49:27Z` |
 | F-12 | Idempotent Stop | Second call reports already stopped | TBD | NOT RUN | TBD |
 | F-13 | Background/suspended process | Automatic flow behavior recorded | TBD | NOT RUN | TBD |
 | F-14 | Removed from app switcher | Automatic flow behavior recorded | TBD | NOT RUN | TBD |
@@ -94,7 +94,9 @@ The supplied local diagnostics recorded:
 
 - app launch at `2026-07-29T05:45:08Z`;
 - Live Activity `ED29FE58-64D3-43E7-9654-A1C068A7858B` started at
-  `2026-07-29T05:45:28Z`.
+  `2026-07-29T05:45:28Z`;
+- a second Start was rejected with `CG-ACT-002` at
+  `2026-07-29T05:49:27Z`, proving duplicate prevention.
 
 ### Battery freshness
 
