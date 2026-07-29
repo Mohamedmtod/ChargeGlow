@@ -96,8 +96,8 @@ workflows:
           APP_COMMIT="$(/usr/libexec/PlistBuddy -c 'Print :ChargeGlowGitCommit' "$APP_PATH/Info.plist")"
           APP_CI_BUILD_ID="$(/usr/libexec/PlistBuddy -c 'Print :ChargeGlowCIBuildID' "$APP_PATH/Info.plist")"
 
-          test "$APP_BUNDLE_ID" = "com.mohamedalaa.chargeglow.spike"
-          test "$WIDGET_BUNDLE_ID" = "com.mohamedalaa.chargeglow.spike.widgets"
+          test "$APP_BUNDLE_ID" = "com.mohamedalaa.chargeglow"
+          test "$WIDGET_BUNDLE_ID" = "com.mohamedalaa.chargeglow.widgets"
           test "$SUPPORTS_LIVE_ACTIVITIES" = "true"
           test "$APP_VERSION" = "1.2.0"
           test "$APP_COMMIT" = "$(git rev-parse --short=8 HEAD)"

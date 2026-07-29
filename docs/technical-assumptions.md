@@ -1,5 +1,10 @@
 # Phase 0 Technical Assumptions
 
+This is a historical record of the feasibility configuration preserved by the
+`phase-1-conditional-go` tag. Phase 2 replaces the temporary bundle IDs with
+`com.mohamedalaa.chargeglow` and `com.mohamedalaa.chargeglow.widgets`; see the
+[Phase 2 Beta MVP plan](phase-2-beta-mvp-plan.md).
+
 ## Fixed decisions
 
 | Area | Decision |

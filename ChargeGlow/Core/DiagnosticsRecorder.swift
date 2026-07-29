@@ -30,7 +30,7 @@ struct DiagnosticEvent: Codable, Identifiable, Sendable {
 actor DiagnosticsRecorder {
     static let shared = DiagnosticsRecorder()
 
-    private let subsystem = "com.mohamedalaa.chargeglow.spike"
+    private let subsystem = "com.mohamedalaa.chargeglow"
     private let maximumEvents = 500
     private var events: [DiagnosticEvent] = []
     private var hasLoadedEvents = false

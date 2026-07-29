@@ -11,7 +11,7 @@ final class ChargeGlowViewModel: ObservableObject {
     )
     @Published private(set) var liveActivitiesEnabled = false
     @Published private(set) var activeActivityCount = 0
-    @Published private(set) var statusMessage = "Run the physical-device spike before continuing."
+    @Published private(set) var statusMessage = "Ready to start a charging Live Activity."
     @Published private(set) var diagnosticCode: String?
     @Published private(set) var diagnosticsURL: URL?
     @Published private(set) var isWorking = false

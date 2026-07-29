@@ -27,7 +27,7 @@ struct ContentView: View {
                 )
                 .ignoresSafeArea()
             )
-            .navigationTitle("ChargeGlow Spike")
+            .navigationTitle("ChargeGlow")
             .onAppear {
                 viewModel.startMonitoring()
             }
@@ -52,7 +52,7 @@ struct ContentView: View {
             Text("Neon Orbit")
                 .font(.title2.bold())
 
-            Text("Physical-device feasibility build")
+            Text("Charging Live Activity")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 

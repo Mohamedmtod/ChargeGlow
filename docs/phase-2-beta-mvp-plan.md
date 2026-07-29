@@ -2,12 +2,20 @@
 
 ## Status
 
-**Proposed.** Phase 0/1 closed with a `CONDITIONAL GO`. Phase 2 turns the
+**Confirmed — M0 decisions recorded.** Phase 0/1 closed with a
+`CONDITIONAL GO`. Phase 2 turns the
 validated spike into a coherent beta product while preserving the proven
 ActivityKit and Shortcuts path.
 
-Phase 2 ends with a signed TestFlight beta candidate. It does not include a
-public App Store launch or monetization.
+M0 completed on 2026-07-29: the Phase 1 tag was published, production bundle
+IDs were applied, languages were confirmed, and the current versus intended
+distribution paths were fixed. M1 is the next implementation milestone.
+
+Phase 2 can proceed through the existing Codemagic + iLoader engineering path
+without Apple Developer Program enrollment. It prepares a separate TestFlight
+workflow, but that workflow is not a required gate until enrollment is
+available. The intended public Beta path is TestFlight. Phase 2 does not include
+a public App Store launch or monetization.
 
 ## Product contract
 
@@ -25,28 +33,30 @@ The product must always communicate that:
   before relying on charger automations;
 - no wattage, charging speed, temperature, health, or time-to-full is inferred.
 
-## Recommended product decisions
+## Confirmed product decisions
 
-These defaults keep the first beta useful without expanding into a full
-commercial product.
+These decisions were confirmed on 2026-07-29.
 
-| Decision | Recommended default | Why it belongs before implementation |
+| Decision | Confirmed value | Implementation consequence |
 | --- | --- | --- |
-| Public name | `ChargeGlow` | Removes all Spike wording before beta |
-| App bundle ID | `com.mohamedalaa.chargeglow` | The current `.spike` identity is temporary |
-| Widget bundle ID | `com.mohamedalaa.chargeglow.widgets` | Must match the final app identity |
+| Public name | `ChargeGlow` | Remove all Spike wording before beta |
+| App bundle ID | `com.mohamedalaa.chargeglow` | Creates a new installed app identity |
+| Widget bundle ID | `com.mohamedalaa.chargeglow.widgets` | Must be signed with the final app |
 | Minimum OS | iOS 17.0 | Preserves the validated compatibility target |
-| Languages | English and Arabic, including RTL | Matches the intended initial audience |
+| Languages | English source plus Arabic, with full RTL | Use String Catalogs and eliminate hard-coded user-facing strings |
 | Beta themes | 3 free local themes | Enough to validate the product without a store |
 | Theme set | Neon Orbit, Aurora Pulse, Ember Circuit | Distinct visual choices using shapes and gradients |
-| Distribution | TestFlight through a paid Apple Developer membership | Required for a realistic signed beta and later App Store path |
+| Current distribution | Codemagic unsigned IPA + iLoader | Must not block implementation on enrollment |
+| Intended public Beta | TestFlight after paid enrollment | Prepare but do not require its workflow yet |
 | Monetization | Deferred to Phase 3 | First validate setup completion and repeated use |
 | Backend | None | Theme selection and entitlements do not need a server in this phase |
 | Analytics | No third-party SDK | Keeps the privacy surface small during beta |
 
-Changing bundle IDs creates a new installed app identity. Existing Shortcuts
-automations that reference the Spike build must be recreated once after the
-change. Final IDs must therefore be chosen before beta implementation begins.
+The Phase 1 source state is preserved by the annotated
+`phase-1-conditional-go` Git tag at commit `a926467`. Changing bundle IDs creates
+a new installed app identity, so existing Shortcuts automations that reference
+the Spike build must be recreated once after installing the first production-ID
+build.
 
 ## In scope
 
@@ -59,10 +69,13 @@ change. Final IDs must therefore be chosen before beta implementation begins.
 - consistent Lock Screen and Dynamic Island rendering for every theme;
 - honest approximate/unavailable/outdated battery presentation;
 - first-run Shortcuts setup walkthrough and test actions;
-- English and Arabic localization and RTL verification;
+- String Catalog localization with English as the development language;
+- Arabic localization and full RTL verification, with no hard-coded
+  user-facing strings;
 - accessibility labels, Dynamic Type, Reduce Motion, contrast, and VoiceOver;
 - local bounded diagnostics with an explicit clear action;
-- unsigned development artifacts plus a separate signed TestFlight workflow;
+- preserved unsigned development artifacts plus a separate, optional signed
+  TestFlight workflow with no signing credentials in Git;
 - unit, UI, simulator-layout, and physical-device regression testing.
 
 ## Explicitly out of scope
@@ -242,7 +255,10 @@ Deliver:
 - manual Start/Stop verification actions;
 - troubleshooting for missing intents, disabled Live Activities, stale
   automations after reinstall, and post-reboot behavior;
-- English and Arabic copy with RTL layout.
+- String Catalogs for every user-facing string in the app, widget, and intents;
+- English source copy and Arabic translations;
+- full RTL verification for Home, Themes, Setup, Settings, Lock Screen, and all
+  Dynamic Island presentations.
 
 Exit gate:
 
@@ -271,24 +287,28 @@ Exit gate:
 - post-reboot behavior is characterized as first-unlock or first-launch and the
   matching fallback is shown.
 
-### M5 — Signed beta and regression
+### M5 — Engineering beta and TestFlight readiness
 
 Deliver:
 
+- a verified unsigned Codemagic + iLoader engineering build;
 - a separate Codemagic signed archive/TestFlight workflow using environment
-  groups and no credentials in Git;
-- App Store Connect record, privacy URL, support URL, beta description, and
-  review notes explaining Shortcuts setup;
-- TestFlight installation on at least one Dynamic Island device and one
-  non-Dynamic Island device;
+  groups and no credentials in Git; it remains optional until enrollment;
+- a draft App Store metadata package, privacy URL, support URL, beta
+  description, and review notes explaining Shortcuts setup; creating the actual
+  App Store Connect record waits for enrollment;
+- iLoader installation on at least one Dynamic Island device and one
+  non-Dynamic Island device where available;
 - preserved unsigned iLoader workflow for engineering diagnostics.
 
 Exit gate:
 
-- TestFlight installs both app and widget;
+- iLoader installs both app and widget using the production bundle IDs;
 - intents appear after a clean install;
 - selected theme starts/stops automatically while locked;
-- all critical matrix rows below pass or have an accepted documented fallback.
+- all critical matrix rows below pass or have an accepted documented fallback;
+- when paid enrollment becomes available, the TestFlight workflow must install
+  both app and widget before the public Beta.
 
 ## Test matrix
 
@@ -324,7 +344,8 @@ Exit gate:
 
 The beta candidate is ready only when:
 
-1. TestFlight signs and installs both the app and widget extension.
+1. The unsigned Codemagic artifact is re-signed by iLoader and installs both the
+   app and widget extension with the production bundle IDs.
 2. A clean-install user can complete setup and see both intents.
 3. Connected and Disconnected automations operate exactly one Live Activity
    while locked.
@@ -336,6 +357,8 @@ The beta candidate is ready only when:
    correct fallback.
 9. English, Arabic/RTL, VoiceOver, and Dynamic Type checks pass.
 10. No credentials or personal diagnostic evidence exists in Git.
+11. The separate TestFlight workflow is present and documented; passing it is
+    deferred until paid Apple Developer enrollment.
 
 ## Phase 3, only after beta evidence
 
@@ -363,4 +386,3 @@ Possible later work:
 - [Configuring App Groups](https://developer.apple.com/documentation/xcode/configuring-app-groups)
 - [StoreKit 2](https://developer.apple.com/storekit/)
 - [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)
-
