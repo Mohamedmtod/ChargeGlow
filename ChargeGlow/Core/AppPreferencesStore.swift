@@ -22,14 +22,11 @@ enum AppLanguage: String, Codable, CaseIterable, Identifiable, Sendable {
     }
 
     var locale: Locale {
-        switch resolved {
-        case .system:
-            return Locale(identifier: "en")
-        case .english:
-            return Locale(identifier: "en")
-        case .arabic:
-            return Locale(identifier: "ar")
-        }
+        Locale(identifier: languageIdentifier)
+    }
+
+    var languageIdentifier: String {
+        resolved == .arabic ? "ar" : "en"
     }
 
     static func resolveSystemLanguage(

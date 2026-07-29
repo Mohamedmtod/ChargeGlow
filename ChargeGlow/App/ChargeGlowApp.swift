@@ -69,6 +69,11 @@ private final class AppLanguageController: ObservableObject {
         persistenceTask = Task {
             await previousTask?.value
             await AppPreferencesStore.shared.setAppLanguage(language)
+            let snapshot = await BatteryReader.capture()
+            try? await ChargingActivityManager.shared.update(
+                snapshot: snapshot,
+                correlationID: nil
+            )
         }
     }
 }

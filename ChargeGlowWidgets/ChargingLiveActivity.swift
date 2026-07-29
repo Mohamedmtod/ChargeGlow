@@ -11,51 +11,103 @@ struct ChargingLiveActivity: Widget {
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
+                    localizedView(
+                        languageIdentifier:
+                            context.state.languageIdentifier
+                    ) {
+                        NeonOrbitThemeView(
+                            percentage: context.state.batteryPercentage,
+                            state: context.state.chargingState,
+                            compact: true
+                        )
+                        .frame(width: 42, height: 42)
+                    }
+                }
+
+                DynamicIslandExpandedRegion(.trailing) {
+                    localizedView(
+                        languageIdentifier:
+                            context.state.languageIdentifier
+                    ) {
+                        percentageText(context.state.batteryPercentage)
+                            .font(.title3.bold())
+                    }
+                }
+
+                DynamicIslandExpandedRegion(.center) {
+                    localizedView(
+                        languageIdentifier:
+                            context.state.languageIdentifier
+                    ) {
+                        Text("Neon Orbit")
+                            .font(.headline)
+                            .foregroundStyle(.white)
+                    }
+                }
+
+                DynamicIslandExpandedRegion(.bottom) {
+                    localizedView(
+                        languageIdentifier:
+                            context.state.languageIdentifier
+                    ) {
+                        HStack {
+                            Label {
+                                chargingStateText(
+                                    context.state.chargingState
+                                )
+                            } icon: {
+                                Image(
+                                    systemName:
+                                        context.state.chargingState.symbolName
+                                )
+                            }
+                            Spacer()
+                            freshnessText(context: context)
+                        }
+                        .font(.caption)
+                        .padding(.top, 4)
+                    }
+                }
+            } compactLeading: {
+                localizedView(
+                    languageIdentifier:
+                        context.state.languageIdentifier
+                ) {
+                    Image(
+                        systemName:
+                            context.state.chargingState.symbolName
+                    )
+                    .foregroundStyle(
+                        context.state.chargingState == .full
+                            ? .green
+                            : .cyan
+                    )
+                    .accessibilityLabel(
+                        chargingStateText(
+                            context.state.chargingState
+                        )
+                    )
+                }
+            } compactTrailing: {
+                localizedView(
+                    languageIdentifier:
+                        context.state.languageIdentifier
+                ) {
+                    percentageText(context.state.batteryPercentage)
+                        .font(.caption.bold())
+                }
+            } minimal: {
+                localizedView(
+                    languageIdentifier:
+                        context.state.languageIdentifier
+                ) {
                     NeonOrbitThemeView(
                         percentage: context.state.batteryPercentage,
                         state: context.state.chargingState,
                         compact: true
                     )
-                    .frame(width: 42, height: 42)
+                    .padding(2)
                 }
-
-                DynamicIslandExpandedRegion(.trailing) {
-                    percentageText(context.state.batteryPercentage)
-                        .font(.title3.bold())
-                }
-
-                DynamicIslandExpandedRegion(.center) {
-                    Text("Neon Orbit")
-                        .font(.headline)
-                        .foregroundStyle(.white)
-                }
-
-                DynamicIslandExpandedRegion(.bottom) {
-                    HStack {
-                        Label(
-                            context.state.chargingState.displayName,
-                            systemImage: context.state.chargingState.symbolName
-                        )
-                        Spacer()
-                        freshnessText(context: context)
-                    }
-                    .font(.caption)
-                    .padding(.top, 4)
-                }
-            } compactLeading: {
-                Image(systemName: context.state.chargingState.symbolName)
-                    .foregroundStyle(context.state.chargingState == .full ? .green : .cyan)
-                    .accessibilityLabel(context.state.chargingState.displayName)
-            } compactTrailing: {
-                percentageText(context.state.batteryPercentage)
-                    .font(.caption.bold())
-            } minimal: {
-                NeonOrbitThemeView(
-                    percentage: context.state.batteryPercentage,
-                    state: context.state.chargingState,
-                    compact: true
-                )
-                .padding(2)
             }
             .keylineTint(.purple)
         }
@@ -81,10 +133,14 @@ struct ChargingLiveActivity: Widget {
                 percentageText(context.state.batteryPercentage)
                     .font(.title.bold())
 
-                Label(
-                    context.state.displayMessage,
-                    systemImage: context.state.chargingState.symbolName
-                )
+                Label {
+                    chargingStateText(context.state.chargingState)
+                } icon: {
+                    Image(
+                        systemName:
+                            context.state.chargingState.symbolName
+                    )
+                }
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -94,12 +150,7 @@ struct ChargingLiveActivity: Widget {
                     } else {
                         Text("Updated")
                     }
-                    Text(
-                        context.state.lastUpdatedAt.formatted(
-                            date: .omitted,
-                            time: .shortened
-                        )
-                    )
+                    Text(context.state.lastUpdatedAt, style: .time)
                 }
                     .font(.caption2)
                     .foregroundStyle(context.isStale ? Color.orange : Color.secondary)
@@ -109,6 +160,18 @@ struct ChargingLiveActivity: Widget {
         }
         .padding()
         .accessibilityElement(children: .combine)
+        .environment(
+            \.locale,
+            activityLocale(
+                languageIdentifier: context.state.languageIdentifier
+            )
+        )
+        .environment(
+            \.layoutDirection,
+            activityLayoutDirection(
+                languageIdentifier: context.state.languageIdentifier
+            )
+        )
     }
 
     @ViewBuilder
@@ -134,5 +197,57 @@ struct ChargingLiveActivity: Widget {
             Text("Updated \(context.state.lastUpdatedAt, style: .time)")
                 .foregroundStyle(.secondary)
         }
+    }
+
+    private func chargingStateText(_ state: ChargingState) -> Text {
+        switch state {
+        case .unknown:
+            return Text("Unknown")
+        case .disconnected:
+            return Text("Disconnected")
+        case .charging:
+            return Text("Charging")
+        case .full:
+            return Text("Fully Charged")
+        }
+    }
+
+    private func localizedView<Content: View>(
+        languageIdentifier: String?,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        content()
+            .environment(
+                \.locale,
+                activityLocale(
+                    languageIdentifier: languageIdentifier
+                )
+            )
+            .environment(
+                \.layoutDirection,
+                activityLayoutDirection(
+                    languageIdentifier: languageIdentifier
+                )
+            )
+    }
+
+    private func activityLocale(
+        languageIdentifier: String?
+    ) -> Locale {
+        guard let languageIdentifier else {
+            return .autoupdatingCurrent
+        }
+        return Locale(identifier: languageIdentifier)
+    }
+
+    private func activityLayoutDirection(
+        languageIdentifier: String?
+    ) -> LayoutDirection {
+        let locale = activityLocale(
+            languageIdentifier: languageIdentifier
+        )
+        return locale.language.characterDirection == .rightToLeft
+            ? .rightToLeft
+            : .leftToRight
     }
 }

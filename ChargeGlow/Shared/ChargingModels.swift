@@ -55,6 +55,7 @@ struct ChargingActivityAttributes: ActivityAttributes {
         let chargingState: ChargingState
         let lastUpdatedAt: Date
         let displayMessage: String
+        let languageIdentifier: String?
     }
 
     let sessionID: String
@@ -63,10 +64,15 @@ struct ChargingActivityAttributes: ActivityAttributes {
 }
 
 extension ChargingActivityAttributes.ContentState {
-    init(snapshot: BatterySnapshot, message: String? = nil) {
+    init(
+        snapshot: BatterySnapshot,
+        message: String? = nil,
+        languageIdentifier: String? = nil
+    ) {
         batteryPercentage = snapshot.percentage
         chargingState = snapshot.state
         lastUpdatedAt = snapshot.observedAt
         displayMessage = message ?? snapshot.state.displayName
+        self.languageIdentifier = languageIdentifier
     }
 }

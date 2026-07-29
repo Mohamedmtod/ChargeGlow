@@ -11,12 +11,16 @@ final class ChargingModelsTests: XCTestCase {
             observedAt: observedAt
         )
 
-        let state = ChargingActivityAttributes.ContentState(snapshot: snapshot)
+        let state = ChargingActivityAttributes.ContentState(
+            snapshot: snapshot,
+            languageIdentifier: "ar"
+        )
 
         XCTAssertEqual(state.batteryPercentage, 64)
         XCTAssertEqual(state.chargingState, .charging)
         XCTAssertEqual(state.lastUpdatedAt, observedAt)
         XCTAssertEqual(state.displayMessage, snapshot.state.displayName)
+        XCTAssertEqual(state.languageIdentifier, "ar")
     }
 
     func testUnavailablePercentageIsNotFabricated() {

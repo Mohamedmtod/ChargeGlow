@@ -55,7 +55,9 @@ actor ChargingActivityManager: ChargingActivityManaging {
                 lastUpdatedAt: Date(),
                 displayMessage: String(
                     localized: "Duplicate activity ended during recovery"
-                )
+                ),
+                languageIdentifier:
+                    activity.content.state.languageIdentifier
             )
             await activity.end(
                 ActivityContent(state: finalState, staleDate: nil),
@@ -108,13 +110,18 @@ actor ChargingActivityManager: ChargingActivityManaging {
             throw ChargingActivityError.activityStartFailed
         }
 
+        let languageIdentifier =
+            await selectedLanguageIdentifier()
         let attributes = ChargingActivityAttributes(
             sessionID: UUID().uuidString,
             themeID: "neon-orbit",
             startDate: Date()
         )
         let content = ActivityContent(
-            state: ChargingActivityAttributes.ContentState(snapshot: snapshot),
+            state: ChargingActivityAttributes.ContentState(
+                snapshot: snapshot,
+                languageIdentifier: languageIdentifier
+            ),
             staleDate: snapshot.liveActivityStaleDate
         )
 
@@ -155,8 +162,11 @@ actor ChargingActivityManager: ChargingActivityManaging {
         }
 
         let current = activity.content.state
+        let languageIdentifier =
+            await selectedLanguageIdentifier()
         guard
-            ActivityLifecyclePlanner.shouldUpdateActivity(
+            current.languageIdentifier != languageIdentifier
+                || ActivityLifecyclePlanner.shouldUpdateActivity(
                 currentPercentage: current.batteryPercentage,
                 currentState: current.chargingState,
                 lastUpdatedAt: current.lastUpdatedAt,
@@ -175,7 +185,10 @@ actor ChargingActivityManager: ChargingActivityManaging {
         }
 
         let content = ActivityContent(
-            state: ChargingActivityAttributes.ContentState(snapshot: snapshot),
+            state: ChargingActivityAttributes.ContentState(
+                snapshot: snapshot,
+                languageIdentifier: languageIdentifier
+            ),
             staleDate: snapshot.liveActivityStaleDate
         )
         await activity.update(content)
@@ -216,7 +229,9 @@ actor ChargingActivityManager: ChargingActivityManaging {
                 batteryPercentage: snapshot?.percentage ?? activity.content.state.batteryPercentage,
                 chargingState: .disconnected,
                 lastUpdatedAt: snapshot?.observedAt ?? Date(),
-                displayMessage: String(localized: "Charger disconnected")
+                displayMessage: String(localized: "Charger disconnected"),
+                languageIdentifier:
+                    activity.content.state.languageIdentifier
             )
             await activity.end(
                 ActivityContent(state: finalState, staleDate: nil),
@@ -236,6 +251,12 @@ actor ChargingActivityManager: ChargingActivityManaging {
 
     func activeActivityCount() async -> Int {
         ChargingActivity.activities.count
+    }
+
+    private func selectedLanguageIdentifier() async -> String {
+        let appLanguage =
+            await AppPreferencesStore.shared.appLanguage()
+        return appLanguage.languageIdentifier
     }
 
     private func record(
