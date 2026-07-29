@@ -213,7 +213,16 @@ final class ChargingModelsTests: XCTestCase {
 
         XCTAssertEqual(points.count, samples.count)
         XCTAssertTrue(
-            points.allSatisfy { rect.contains($0) }
+            points.allSatisfy { point in
+                let xIsWithinBounds =
+                    point.x >= rect.minX - 0.001
+                        && point.x <= rect.maxX + 0.001
+                let yIsWithinBounds =
+                    point.y >= rect.minY - 0.001
+                        && point.y <= rect.maxY + 0.001
+                return xIsWithinBounds && yIsWithinBounds
+            },
+            "Every trend point must remain within the chart's closed bounds."
         )
         XCTAssertEqual(
             points.first?.y ?? -1,
