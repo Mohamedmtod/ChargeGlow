@@ -7,6 +7,9 @@ enum ThemeID: String, Codable, CaseIterable, Hashable, Sendable {
     case aquaFlux = "aqua-flux"
     case plasmaCore = "plasma-core"
     case lumenBloom = "lumen-bloom"
+    case frostCrystal = "frost-crystal"
+    case retroWave = "retro-wave"
+    case candyPop = "candy-pop"
 }
 
 struct ThemeDescriptor: Identifiable, Equatable, Sendable {
@@ -21,7 +24,10 @@ enum ThemeCatalog {
         ThemeDescriptor(id: .emberCircuit, sortOrder: 2),
         ThemeDescriptor(id: .aquaFlux, sortOrder: 3),
         ThemeDescriptor(id: .plasmaCore, sortOrder: 4),
-        ThemeDescriptor(id: .lumenBloom, sortOrder: 5)
+        ThemeDescriptor(id: .lumenBloom, sortOrder: 5),
+        ThemeDescriptor(id: .frostCrystal, sortOrder: 6),
+        ThemeDescriptor(id: .retroWave, sortOrder: 7),
+        ThemeDescriptor(id: .candyPop, sortOrder: 8)
     ]
 
     static func resolve(_ rawValue: String) -> ThemeID {
@@ -75,6 +81,27 @@ struct ChargingThemeView: View {
             )
         case .lumenBloom:
             LumenBloomThemeView(
+                percentage: percentage,
+                state: state,
+                compact: compact,
+                animated: animated
+            )
+        case .frostCrystal:
+            FrostCrystalThemeView(
+                percentage: percentage,
+                state: state,
+                compact: compact,
+                animated: animated
+            )
+        case .retroWave:
+            RetroWaveThemeView(
+                percentage: percentage,
+                state: state,
+                compact: compact,
+                animated: animated
+            )
+        case .candyPop:
+            CandyPopThemeView(
                 percentage: percentage,
                 state: state,
                 compact: compact,
@@ -149,6 +176,36 @@ struct ChargingThemeMark: View {
                         style: StrokeStyle(
                             lineWidth: 2.5,
                             dash: [2, 2]
+                        )
+                    )
+            case .frostCrystal:
+                Circle()
+                    .stroke(
+                        AngularGradient(
+                            colors: [.white, .cyan, .blue, .white],
+                            center: .center
+                        ),
+                        style: StrokeStyle(
+                            lineWidth: 2.5,
+                            dash: [1, 3]
+                        )
+                    )
+            case .retroWave:
+                RoundedRectangle(cornerRadius: 5)
+                    .stroke(
+                        LinearGradient(
+                            colors: [.pink, .orange, .purple],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        ),
+                        lineWidth: 2.5
+                    )
+            case .candyPop:
+                Circle()
+                    .fill(
+                        AngularGradient(
+                            colors: [.pink, .orange, .yellow, .purple, .pink],
+                            center: .center
                         )
                     )
             }
@@ -1294,6 +1351,498 @@ private struct LumenBloomThemeView: View {
             ) {
                 bloomRotation = 360
             }
+        }
+    }
+}
+
+private struct FrostCrystalThemeView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.locale) private var locale
+    @State private var crystalRotation = 0.0
+    @State private var crystalPulse = false
+
+    let percentage: Int?
+    let state: ChargingState
+    let compact: Bool
+    let animated: Bool
+
+    private var progress: Double {
+        min(max(Double(percentage ?? 0) / 100, 0), 1)
+    }
+
+    private var motionEnabled: Bool {
+        animated && !compact && !reduceMotion
+    }
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            Color.white.opacity(0.16),
+                            Color.cyan.opacity(0.18),
+                            Color(red: 0.01, green: 0.05, blue: 0.14)
+                        ],
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: compact ? 28 : 88
+                    )
+                )
+
+            ZStack {
+                ForEach(0..<6, id: \.self) { index in
+                    ZStack {
+                        Capsule()
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        .white,
+                                        .cyan.opacity(0.5)
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            .frame(
+                                width: compact ? 1.5 : 3,
+                                height: compact ? 13 : 42
+                            )
+                            .offset(y: compact ? -8 : -27)
+
+                        RoundedRectangle(cornerRadius: 1)
+                            .fill(Color.white.opacity(0.82))
+                            .frame(
+                                width: compact ? 4 : 10,
+                                height: compact ? 4 : 10
+                            )
+                            .rotationEffect(.degrees(45))
+                            .offset(y: compact ? -15 : -50)
+                    }
+                    .rotationEffect(.degrees(Double(index) * 60))
+                }
+            }
+            .rotationEffect(.degrees(crystalRotation))
+            .scaleEffect(
+                motionEnabled
+                    ? (crystalPulse ? 1.04 : 0.9)
+                    : 0.96
+            )
+            .shadow(
+                color: Color.cyan.opacity(
+                    motionEnabled
+                        ? (crystalPulse ? 0.72 : 0.22)
+                        : 0.34
+                ),
+                radius: compact ? 2 : 8
+            )
+
+            Circle()
+                .stroke(
+                    Color.white.opacity(0.13),
+                    lineWidth: compact ? 2 : 5
+                )
+
+            Circle()
+                .trim(from: 0, to: progress)
+                .stroke(
+                    AngularGradient(
+                        colors: [.white, .cyan, .blue, .white],
+                        center: .center
+                    ),
+                    style: StrokeStyle(
+                        lineWidth: compact ? 3 : 7,
+                        lineCap: .round,
+                        dash: compact ? [] : [3, 2]
+                    )
+                )
+                .rotationEffect(.degrees(-90))
+                .shadow(
+                    color: Color.cyan.opacity(0.82),
+                    radius: compact ? 2 : 8
+                )
+
+            ThemeBatteryReadout(
+                percentage: percentage,
+                state: state,
+                compact: compact,
+                accent: state == .charging ? .cyan : state.themeAccent,
+                animated: motionEnabled
+            )
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            themeAccessibilityDescription(
+                percentage: percentage,
+                state: state,
+                locale: locale
+            )
+        )
+        .task(id: motionEnabled) { @MainActor in
+            crystalRotation = 0
+            crystalPulse = false
+            guard motionEnabled else {
+                return
+            }
+            await Task.yield()
+            withAnimation(
+                .linear(duration: 24)
+                    .repeatForever(autoreverses: false)
+            ) {
+                crystalRotation = 360
+            }
+            withAnimation(
+                .easeInOut(duration: 2.4)
+                    .repeatForever(autoreverses: true)
+            ) {
+                crystalPulse = true
+            }
+        }
+    }
+}
+
+private struct RetroWaveThemeView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.locale) private var locale
+    @State private var scanlineShift = false
+    @State private var sunsetPulse = false
+
+    let percentage: Int?
+    let state: ChargingState
+    let compact: Bool
+    let animated: Bool
+
+    private var progress: Double {
+        min(max(Double(percentage ?? 0) / 100, 0), 1)
+    }
+
+    private var cornerRadius: CGFloat {
+        compact ? 8 : 24
+    }
+
+    private var motionEnabled: Bool {
+        animated && !compact && !reduceMotion
+    }
+
+    var body: some View {
+        ZStack {
+            ZStack {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color(red: 0.12, green: 0.01, blue: 0.2),
+                                Color(red: 0.02, green: 0.01, blue: 0.1)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [.yellow, .orange, .pink],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .frame(
+                        width: compact ? 22 : 72,
+                        height: compact ? 22 : 72
+                    )
+                    .offset(y: compact ? -5 : -17)
+                    .scaleEffect(
+                        motionEnabled
+                            ? (sunsetPulse ? 1.06 : 0.9)
+                            : 0.96
+                    )
+                    .shadow(
+                        color: Color.pink.opacity(0.75),
+                        radius: compact ? 2 : 10
+                    )
+
+                ForEach(0..<7, id: \.self) { index in
+                    Rectangle()
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color.pink.opacity(0.12),
+                                    Color.orange.opacity(0.58),
+                                    Color.purple.opacity(0.12)
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(height: compact ? 0.5 : 1)
+                        .offset(
+                            y: CGFloat(index - 2)
+                                * (compact ? 4 : 12)
+                                + (
+                                    scanlineShift
+                                        ? (compact ? 1 : 4)
+                                        : (compact ? -1 : -4)
+                                )
+                        )
+                }
+
+                ForEach(0..<5, id: \.self) { index in
+                    Rectangle()
+                        .fill(Color.pink.opacity(0.22))
+                        .frame(
+                            width: compact ? 0.5 : 1,
+                            height: compact ? 36 : 118
+                        )
+                        .rotationEffect(
+                            .degrees(Double(index - 2) * 12)
+                        )
+                        .offset(y: compact ? 10 : 34)
+                }
+            }
+            .clipShape(
+                RoundedRectangle(cornerRadius: cornerRadius)
+            )
+
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .stroke(
+                    Color.white.opacity(0.12),
+                    lineWidth: compact ? 2 : 5
+                )
+
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .trim(from: 0, to: progress)
+                .stroke(
+                    LinearGradient(
+                        colors: [.pink, .orange, .yellow],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    style: StrokeStyle(
+                        lineWidth: compact ? 3 : 7,
+                        lineCap: .round
+                    )
+                )
+                .rotationEffect(.degrees(-90))
+                .shadow(
+                    color: Color.pink.opacity(0.82),
+                    radius: compact ? 2 : 8
+                )
+
+            ThemeBatteryReadout(
+                percentage: percentage,
+                state: state,
+                compact: compact,
+                accent: state == .charging ? .orange : state.themeAccent,
+                animated: motionEnabled
+            )
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            themeAccessibilityDescription(
+                percentage: percentage,
+                state: state,
+                locale: locale
+            )
+        )
+        .task(id: motionEnabled) { @MainActor in
+            scanlineShift = false
+            sunsetPulse = false
+            guard motionEnabled else {
+                return
+            }
+            await Task.yield()
+            withAnimation(
+                .easeInOut(duration: 1.6)
+                    .repeatForever(autoreverses: true)
+            ) {
+                scanlineShift = true
+            }
+            withAnimation(
+                .easeInOut(duration: 2.1)
+                    .repeatForever(autoreverses: true)
+            ) {
+                sunsetPulse = true
+            }
+        }
+    }
+}
+
+private struct CandyPopThemeView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.locale) private var locale
+    @State private var bubbleFloat = false
+    @State private var bubbleRotation = 0.0
+
+    let percentage: Int?
+    let state: ChargingState
+    let compact: Bool
+    let animated: Bool
+
+    private var progress: Double {
+        min(max(Double(percentage ?? 0) / 100, 0), 1)
+    }
+
+    private var motionEnabled: Bool {
+        animated && !compact && !reduceMotion
+    }
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(
+                    AngularGradient(
+                        colors: [
+                            Color.pink.opacity(0.72),
+                            Color.orange.opacity(0.72),
+                            Color.purple.opacity(0.76),
+                            Color.pink.opacity(0.72)
+                        ],
+                        center: .center
+                    )
+                )
+                .overlay {
+                    Circle()
+                        .fill(Color.black.opacity(0.28))
+                }
+
+            GeometryReader { proxy in
+                let diameter = min(
+                    proxy.size.width,
+                    proxy.size.height
+                )
+
+                ZStack {
+                    ForEach(0..<7, id: \.self) { index in
+                        let angle =
+                            CGFloat(index) / 7 * .pi * 2
+                                + CGFloat(bubbleRotation) * .pi / 180
+                        let bubbleSize: CGFloat =
+                            (compact ? 5.0 : 14.0)
+                                + CGFloat(index % 3)
+                                    * (compact ? 1.5 : 4)
+                        let floatDistance: CGFloat =
+                            compact ? 2 : 5
+
+                        Circle()
+                            .fill(
+                                bubbleColor(index)
+                                    .opacity(0.72)
+                            )
+                            .overlay {
+                                Circle()
+                                    .stroke(
+                                        Color.white.opacity(0.52),
+                                        lineWidth: compact ? 0.5 : 1.2
+                                    )
+                            }
+                            .frame(
+                                width: bubbleSize,
+                                height: bubbleSize
+                            )
+                            .offset(
+                                x: cos(angle) * diameter * 0.34,
+                                y: sin(angle) * diameter * 0.34
+                                    + (
+                                        bubbleFloat
+                                            ? (
+                                                index.isMultiple(of: 2)
+                                                    ? -floatDistance
+                                                    : floatDistance
+                                            )
+                                            : (
+                                                index.isMultiple(of: 2)
+                                                    ? floatDistance * 0.8
+                                                    : -floatDistance * 0.8
+                                            )
+                                    )
+                            )
+                            .shadow(
+                                color: bubbleColor(index).opacity(0.7),
+                                radius: compact ? 1 : 5
+                            )
+                    }
+                }
+                .frame(
+                    width: proxy.size.width,
+                    height: proxy.size.height
+                )
+            }
+            .clipShape(Circle())
+            .allowsHitTesting(false)
+
+            Circle()
+                .stroke(
+                    Color.white.opacity(0.16),
+                    lineWidth: compact ? 2 : 5
+                )
+
+            Circle()
+                .trim(from: 0, to: progress)
+                .stroke(
+                    AngularGradient(
+                        colors: [.yellow, .orange, .pink, .white, .yellow],
+                        center: .center
+                    ),
+                    style: StrokeStyle(
+                        lineWidth: compact ? 3 : 7,
+                        lineCap: .round
+                    )
+                )
+                .rotationEffect(.degrees(-90))
+                .shadow(
+                    color: Color.orange.opacity(0.85),
+                    radius: compact ? 2 : 8
+                )
+
+            ThemeBatteryReadout(
+                percentage: percentage,
+                state: state,
+                compact: compact,
+                accent: state == .charging ? .yellow : state.themeAccent,
+                animated: motionEnabled
+            )
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            themeAccessibilityDescription(
+                percentage: percentage,
+                state: state,
+                locale: locale
+            )
+        )
+        .task(id: motionEnabled) { @MainActor in
+            bubbleFloat = false
+            bubbleRotation = 0
+            guard motionEnabled else {
+                return
+            }
+            await Task.yield()
+            withAnimation(
+                .easeInOut(duration: 1.8)
+                    .repeatForever(autoreverses: true)
+            ) {
+                bubbleFloat = true
+            }
+            withAnimation(
+                .linear(duration: 18)
+                    .repeatForever(autoreverses: false)
+            ) {
+                bubbleRotation = 360
+            }
+        }
+    }
+
+    private func bubbleColor(_ index: Int) -> Color {
+        switch index % 4 {
+        case 0:
+            return .yellow
+        case 1:
+            return .pink
+        case 2:
+            return .cyan
+        default:
+            return .orange
         }
     }
 }

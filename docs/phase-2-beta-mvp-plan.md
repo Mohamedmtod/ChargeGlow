@@ -15,7 +15,7 @@ M1 completed on 2026-07-29. Codemagic, the production-ID iLoader build,
 System/English/Arabic switching, RTL/LTR, and synchronized app/Live Activity
 language behavior passed on the physical test device.
 
-M2 implementation is in progress. The current candidate adds the six-theme
+M2 implementation is in progress. The current candidate adds the nine-theme
 catalog, persistent selection, unknown-theme fallback, Home gallery previews,
 distinct app-only ambient motion with Reduce Motion support, and selected-theme
 propagation into the next Live Activity without changing an already-running
@@ -57,8 +57,8 @@ These decisions were confirmed on 2026-07-29.
 | Widget bundle ID | `com.mohamedalaa.chargeglow.widgets` | Must be signed with the final app |
 | Minimum OS | iOS 17.0 | Preserves the validated compatibility target |
 | Languages | English source plus Arabic, with full RTL | Use String Catalogs and eliminate hard-coded user-facing strings |
-| Beta themes | 6 free local themes | Enough variety to validate selection and repeated use without a store |
-| Theme set | Neon Orbit, Aurora Pulse, Ember Circuit, Aqua Flux, Plasma Core, Lumen Bloom | Distinct visual choices using shapes and gradients |
+| Beta themes | 9 free local themes | Enough variety to validate selection and repeated use without a store |
+| Theme set | Neon Orbit, Aurora Pulse, Ember Circuit, Aqua Flux, Plasma Core, Lumen Bloom, Frost Crystal, Retro Wave, Candy Pop | Distinct visual choices using shapes and gradients |
 | Current distribution | Codemagic unsigned IPA + iLoader | Must not block implementation on enrollment |
 | Intended public Beta | TestFlight after paid enrollment | Prepare but do not require its workflow yet |
 | Monetization | Deferred to Phase 3 | First validate setup completion and repeated use |
@@ -75,7 +75,7 @@ build.
 
 - production app identity and removal of feasibility-only copy;
 - Home, Themes, Setup, and Settings/Diagnostics experiences;
-- a compiled local catalog with six themes;
+- a compiled local catalog with nine themes;
 - persistent selected-theme preference;
 - Start intent using the selected theme without adding a required Shortcuts
   parameter;
@@ -173,7 +173,7 @@ or testability becomes a real problem.
 
 - **Home:** selected-theme preview, Live Activities authorization, current
   activity state, approximate snapshot, Start, Stop, and Refresh.
-- **Themes:** six previews, selection, and full Lock Screen/Dynamic Island
+- **Themes:** nine previews, selection, and full Lock Screen/Dynamic Island
   presentation examples.
 - **Setup:** honest step-by-step Connected and Disconnected automation
   instructions, test Start/Stop, troubleshooting, and reboot warning.
@@ -248,7 +248,7 @@ Deliver:
 
 - implement `ThemeID`, catalog, preference store, and renderer;
 - implement Neon Orbit, Aurora Pulse, Ember Circuit, Aqua Flux, Plasma Core,
-  and Lumen Bloom;
+  Lumen Bloom, Frost Crystal, Retro Wave, and Candy Pop;
 - add gallery previews and selection;
 - propagate the selected theme through the Start intent into ActivityKit;
 - add safe fallback for unknown or removed theme IDs.
@@ -363,7 +363,7 @@ The beta candidate is ready only when:
 2. A clean-install user can complete setup and see both intents.
 3. Connected and Disconnected automations operate exactly one Live Activity
    while locked.
-4. All six themes render legibly in every required presentation.
+4. All nine themes render legibly in every required presentation.
 5. Approximate and stale readings are always labeled honestly.
 6. Duplicate Start and repeated Stop remain safe.
 7. Force-quit behavior passes.

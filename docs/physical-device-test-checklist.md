@@ -118,6 +118,9 @@ reading and becomes visibly outdated.
 - [ ] Aqua Flux can be selected and persists after force quit.
 - [ ] Plasma Core can be selected and persists after force quit.
 - [ ] Lumen Bloom can be selected and persists after force quit.
+- [ ] Frost Crystal can be selected and persists after force quit.
+- [ ] Retro Wave can be selected and persists after force quit.
+- [ ] Candy Pop can be selected and persists after force quit.
 - [ ] Changing the selection does not restyle an already-running activity.
 - [ ] After Stop, the next Start uses the newly selected theme.
 - [ ] Every theme fits the Lock Screen presentation without clipping.

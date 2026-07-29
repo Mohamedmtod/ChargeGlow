@@ -165,6 +165,24 @@ struct ContentView: View {
                 Color(red: 0.01, green: 0.12, blue: 0.07),
                 Color(red: 0.08, green: 0.18, blue: 0.025)
             ]
+        case .frostCrystal:
+            return [
+                .black,
+                Color(red: 0.015, green: 0.11, blue: 0.2),
+                Color(red: 0.08, green: 0.2, blue: 0.3)
+            ]
+        case .retroWave:
+            return [
+                .black,
+                Color(red: 0.15, green: 0.015, blue: 0.2),
+                Color(red: 0.28, green: 0.035, blue: 0.14)
+            ]
+        case .candyPop:
+            return [
+                .black,
+                Color(red: 0.18, green: 0.025, blue: 0.13),
+                Color(red: 0.3, green: 0.08, blue: 0.05)
+            ]
         }
     }
 
@@ -182,6 +200,12 @@ struct ContentView: View {
             return .pink
         case .lumenBloom:
             return .mint
+        case .frostCrystal:
+            return .cyan
+        case .retroWave:
+            return .pink
+        case .candyPop:
+            return .orange
         }
     }
 
@@ -199,6 +223,12 @@ struct ContentView: View {
             return .purple
         case .lumenBloom:
             return .yellow
+        case .frostCrystal:
+            return .blue
+        case .retroWave:
+            return .orange
+        case .candyPop:
+            return .pink
         }
     }
 
@@ -378,6 +408,12 @@ struct ContentView: View {
             return Text("Plasma Core")
         case .lumenBloom:
             return Text("Lumen Bloom")
+        case .frostCrystal:
+            return Text("Frost Crystal")
+        case .retroWave:
+            return Text("Retro Wave")
+        case .candyPop:
+            return Text("Candy Pop")
         }
     }
 

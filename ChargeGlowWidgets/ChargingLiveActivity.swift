@@ -245,6 +245,12 @@ struct ChargingLiveActivity: Widget {
             return Text("Plasma Core")
         case .lumenBloom:
             return Text("Lumen Bloom")
+        case .frostCrystal:
+            return Text("Frost Crystal")
+        case .retroWave:
+            return Text("Retro Wave")
+        case .candyPop:
+            return Text("Candy Pop")
         }
     }
 

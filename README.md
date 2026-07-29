@@ -7,9 +7,9 @@ charging interface.
 
 The current engineering beta contains:
 
-- six local themes: Neon Orbit, Aurora Pulse, Ember Circuit, Aqua Flux,
-  Plasma Core, and Lumen Bloom;
-- six distinct app-only motion signatures plus an ambient background, all with
+- nine local themes: Neon Orbit, Aurora Pulse, Ember Circuit, Aqua Flux,
+  Plasma Core, Lumen Bloom, Frost Crystal, Retro Wave, and Candy Pop;
+- nine distinct app-only motion signatures plus an ambient background, all with
   Reduce Motion and inactive-scene suspension;
 - native interactive Liquid Glass surfaces on iOS 26 with a material fallback
   on iOS 17 through iOS 25;

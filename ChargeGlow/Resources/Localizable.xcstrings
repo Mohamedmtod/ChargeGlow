@@ -101,6 +101,16 @@
         }
       }
     },
+    "Candy Pop" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فقاعات مرحة"
+          }
+        }
+      }
+    },
     "Charger disconnected" : {
       "localizations" : {
         "ar" : {
@@ -371,6 +381,16 @@
         }
       }
     },
+    "Frost Crystal" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بلورة جليدية"
+          }
+        }
+      }
+    },
     "Fully Charged" : {
       "localizations" : {
         "ar" : {
@@ -579,6 +599,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "شغّل إجراء بدء ثيم الشحن أولًا."
+          }
+        }
+      }
+    },
+    "Retro Wave" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "موجة ريترو"
           }
         }
       }
