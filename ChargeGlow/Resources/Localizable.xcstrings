@@ -1,6 +1,56 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Charging trend based on %lld real samples." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اتجاه الشحن مبني على %lld عينة حقيقية."
+          }
+        }
+      }
+    },
+    "ChargeGlow samples every 30 seconds while foregrounded. After suspension, the Live Activity marks its last public API reading as outdated." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يأخذ ChargeGlow عينة كل 30 ثانية أثناء وجوده في الواجهة. بعد التعليق، يوضح النشاط الحي أن آخر قراءة من واجهة iOS العامة أصبحت قديمة."
+          }
+        }
+      }
+    },
+    "Lines connect real samples; no intermediate battery readings are invented." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تصل الخطوط بين العينات الحقيقية؛ ولا يتم اختلاق قراءات بطارية وسيطة."
+          }
+        }
+      }
+    },
+    "Live sample graph" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رسم العينات الحي"
+          }
+        }
+      }
+    },
+    "Waiting for more samples" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "في انتظار المزيد من العينات"
+          }
+        }
+      }
+    },
     "Approximately %.1f percent, %@" : {
       "localizations" : {
         "ar" : {

@@ -680,6 +680,14 @@ struct ContentView: View {
     private func chargingTestMetrics(
         _ test: ChargingSessionTest
     ) -> some View {
+        ChargingTrendChart(
+            samples: test.samples,
+            accent: themeAccent,
+            animated:
+                ambientMotionEnabled
+                    && test.phase == .running
+        )
+
         statusRow(
             title: "Elapsed",
             symbol: "timer",
@@ -952,7 +960,7 @@ struct ContentView: View {
 
     private var limitationNotice: some View {
         Label(
-            "ChargeGlow refreshes once per minute while foregrounded. After suspension, the Live Activity marks its last public API reading as outdated.",
+            "ChargeGlow samples every 30 seconds while foregrounded. After suspension, the Live Activity marks its last public API reading as outdated.",
             systemImage: "info.circle"
         )
         .font(.footnote)
@@ -1070,6 +1078,312 @@ struct ContentView: View {
                 .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .combine)
+    }
+}
+
+private struct ChargingTrendChart: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var reveal: CGFloat = 1
+    @State private var latestPointPulse = false
+
+    let samples: [ChargingSessionSample]
+    let accent: Color
+    let animated: Bool
+
+    private var motionEnabled: Bool {
+        animated && !reduceMotion
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 7) {
+            HStack {
+                Label(
+                    "Live sample graph",
+                    systemImage: "chart.xyaxis.line"
+                )
+                .font(.caption.bold())
+                .foregroundStyle(accent)
+
+                Spacer()
+
+                if samples.count < 2 {
+                    Text("Waiting for more samples")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            GeometryReader { proxy in
+                let insetRect = proxy.frame(in: .local).insetBy(
+                    dx: 12,
+                    dy: 14
+                )
+                let points = ChargingTrendGeometry.points(
+                    for: samples,
+                    in: insetRect
+                )
+
+                ZStack {
+                    RoundedRectangle(cornerRadius: 18)
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    accent.opacity(0.15),
+                                    Color.black.opacity(0.32)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+
+                    ChargingTrendGrid()
+                        .stroke(
+                            Color.white.opacity(0.08),
+                            style: StrokeStyle(
+                                lineWidth: 0.7,
+                                dash: [3, 5]
+                            )
+                        )
+                        .padding(12)
+
+                    if samples.count >= 2 {
+                        ChargingTrendAreaShape(samples: samples)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        accent.opacity(0.34),
+                                        accent.opacity(0.02)
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 14)
+
+                        ChargingTrendLineShape(
+                            samples: samples,
+                            reveal: reveal
+                        )
+                        .stroke(
+                            LinearGradient(
+                                colors: [.cyan, accent, .white],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            ),
+                            style: StrokeStyle(
+                                lineWidth: 3,
+                                lineCap: .round,
+                                lineJoin: .round
+                            )
+                        )
+                        .shadow(color: accent.opacity(0.7), radius: 5)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 14)
+                    }
+
+                    ForEach(
+                        Array(points.enumerated()),
+                        id: \.offset
+                    ) { index, point in
+                        let isLatest = index == points.count - 1
+
+                        Circle()
+                            .fill(
+                                isLatest
+                                    ? Color.white
+                                    : accent
+                            )
+                            .overlay {
+                                Circle()
+                                    .stroke(
+                                        accent.opacity(0.75),
+                                        lineWidth: 1
+                                    )
+                            }
+                            .frame(
+                                width: isLatest
+                                    ? 8
+                                    : 5,
+                                height: isLatest
+                                    ? 8
+                                    : 5
+                            )
+                            .shadow(
+                                color: accent,
+                                radius: isLatest
+                                    ? 6
+                                    : 2
+                            )
+                            .scaleEffect(
+                                isLatest
+                                    && motionEnabled
+                                    && latestPointPulse
+                                        ? 1.35
+                                        : 1
+                            )
+                            .position(point)
+                    }
+                }
+            }
+            .frame(height: 138)
+
+            Text(
+                "Lines connect real samples; no intermediate battery readings are invented."
+            )
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            Text(
+                "Charging trend based on \(samples.count) real samples."
+            )
+        )
+        .onAppear {
+            animateReveal()
+        }
+        .onChange(of: samples.count) { _, _ in
+            animateReveal()
+        }
+        .task(id: motionEnabled) { @MainActor in
+            latestPointPulse = false
+            guard motionEnabled else {
+                return
+            }
+            await Task.yield()
+            withAnimation(
+                .easeInOut(duration: 0.9)
+                    .repeatForever(autoreverses: true)
+            ) {
+                latestPointPulse = true
+            }
+        }
+    }
+
+    @MainActor
+    private func animateReveal() {
+        guard motionEnabled, samples.count >= 2 else {
+            reveal = 1
+            return
+        }
+        reveal = 0
+        withAnimation(.easeOut(duration: 0.75)) {
+            reveal = 1
+        }
+    }
+}
+
+private enum ChargingTrendGeometry {
+    static func points(
+        for samples: [ChargingSessionSample],
+        in rect: CGRect
+    ) -> [CGPoint] {
+        guard
+            let first = samples.first,
+            let last = samples.last
+        else {
+            return []
+        }
+
+        let percentages = samples.map(\.percentage)
+        let minimum = percentages.min() ?? first.percentage
+        let maximum = percentages.max() ?? first.percentage
+        let range = max(maximum - minimum, 1)
+        let lowerBound = max(minimum - range * 0.18, 0)
+        let upperBound = min(maximum + range * 0.18, 100)
+        let verticalRange = max(upperBound - lowerBound, 1)
+        let duration = max(
+            last.observedAt.timeIntervalSince(first.observedAt),
+            1
+        )
+
+        return samples.map { sample in
+            let xProgress = sample.observedAt
+                .timeIntervalSince(first.observedAt) / duration
+            let yProgress =
+                (sample.percentage - lowerBound) / verticalRange
+            return CGPoint(
+                x: rect.minX + rect.width * xProgress,
+                y: rect.maxY - rect.height * yProgress
+            )
+        }
+    }
+}
+
+private struct ChargingTrendLineShape: Shape {
+    let samples: [ChargingSessionSample]
+    var reveal: CGFloat
+
+    var animatableData: CGFloat {
+        get { reveal }
+        set { reveal = newValue }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        let points = ChargingTrendGeometry.points(
+            for: samples,
+            in: rect
+        )
+        guard let first = points.first else {
+            return Path()
+        }
+
+        var path = Path()
+        path.move(to: first)
+        for point in points.dropFirst() {
+            path.addLine(to: point)
+        }
+        return path.trimmedPath(
+            from: 0,
+            to: min(max(reveal, 0), 1)
+        )
+    }
+}
+
+private struct ChargingTrendAreaShape: Shape {
+    let samples: [ChargingSessionSample]
+
+    func path(in rect: CGRect) -> Path {
+        let points = ChargingTrendGeometry.points(
+            for: samples,
+            in: rect
+        )
+        guard
+            let first = points.first,
+            let last = points.last
+        else {
+            return Path()
+        }
+
+        var path = Path()
+        path.move(to: CGPoint(x: first.x, y: rect.maxY))
+        path.addLine(to: first)
+        for point in points.dropFirst() {
+            path.addLine(to: point)
+        }
+        path.addLine(to: CGPoint(x: last.x, y: rect.maxY))
+        path.closeSubpath()
+        return path
+    }
+}
+
+private struct ChargingTrendGrid: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        for index in 1..<4 {
+            let y = rect.minY
+                + rect.height * CGFloat(index) / 4
+            path.move(to: CGPoint(x: rect.minX, y: y))
+            path.addLine(to: CGPoint(x: rect.maxX, y: y))
+        }
+        for index in 1..<4 {
+            let x = rect.minX
+                + rect.width * CGFloat(index) / 4
+            path.move(to: CGPoint(x: x, y: rect.minY))
+            path.addLine(to: CGPoint(x: x, y: rect.maxY))
+        }
+        return path
     }
 }
 

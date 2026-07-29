@@ -23,6 +23,8 @@ The current engineering beta contains:
   measurement confidence;
 - one-decimal presentation of the raw public battery API value in the app and
   the Plasma Core Live Activity theme, without interpolating between readings;
+- an animated charging-session graph drawn from accepted real samples, plus
+  Plasma Core energy particles and numeric transitions that honor Reduce Motion;
 - duplicate recovery, diagnostics, and unit tests.
 
 Onboarding, purchases, backend, analytics, and production distribution remain

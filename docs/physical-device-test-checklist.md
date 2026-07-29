@@ -163,6 +163,12 @@ reading and becomes visibly outdated.
 - [ ] Rapid unchanged observations do not inflate the accepted sample count.
 - [ ] The observed rate is fitted across all accepted samples and remains
       unavailable until at least five minutes and a positive net gain.
+- [ ] The charging graph adds one visible point per accepted sample and redraws
+      smoothly without changing the underlying recorded values.
+- [ ] Plasma Core particles, orbit, progress arc, and decimal transition remain
+      inside their card and Dynamic Island bounds without clipping text.
+- [ ] Enable Reduce Motion and verify the chart and Plasma Core stop continuous
+      motion while all values and graphics remain readable.
 - [ ] Manual Stop freezes elapsed time and retains the result.
 - [ ] Disconnect automatically completes the test with the disconnected reason.
 - [ ] Reaching Full automatically completes the test with the full reason.

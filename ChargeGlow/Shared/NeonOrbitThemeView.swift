@@ -1005,6 +1005,7 @@ private struct PlasmaCoreThemeView: View {
     @Environment(\.locale) private var locale
     @State private var corePulse = false
     @State private var plasmaRotation = 0.0
+    @State private var particleFlow = false
 
     let percentage: Int?
     let apiPercentage: Double?
@@ -1025,6 +1026,15 @@ private struct PlasmaCoreThemeView: View {
 
     private var motionEnabled: Bool {
         animated && !compact && !reduceMotion
+    }
+
+    private var valueAnimation: Animation? {
+        reduceMotion
+            ? nil
+            : .spring(
+                response: 0.75,
+                dampingFraction: 0.8
+            )
     }
 
     var body: some View {
@@ -1078,6 +1088,48 @@ private struct PlasmaCoreThemeView: View {
                     )
                     .opacity(0.72 - Double(index) * 0.12)
             }
+
+            ForEach(0..<8, id: \.self) { index in
+                Circle()
+                    .fill(
+                        index.isMultiple(of: 2)
+                            ? Color.white
+                            : Color.pink
+                    )
+                    .frame(
+                        width: compact ? 1.5 : 3,
+                        height: compact ? 1.5 : 3
+                    )
+                    .shadow(
+                        color: index.isMultiple(of: 2)
+                            ? Color.purple
+                            : Color.pink,
+                        radius: compact ? 1 : 4
+                    )
+                    .offset(
+                        y: -(
+                            particleFlow && motionEnabled
+                                ? CGFloat(52 + index % 3 * 8)
+                                : CGFloat(20 + index % 2 * 5)
+                        )
+                    )
+                    .rotationEffect(
+                        .degrees(
+                            Double(index) * 45
+                                + (
+                                    particleFlow && motionEnabled
+                                        ? 145
+                                        : 0
+                                )
+                        )
+                    )
+                    .opacity(
+                        motionEnabled
+                            ? (particleFlow ? 0.04 : 0.82)
+                            : 0.38
+                    )
+            }
+            .allowsHitTesting(false)
 
             Circle()
                 .fill(
@@ -1139,6 +1191,10 @@ private struct PlasmaCoreThemeView: View {
                     )
                 )
                 .rotationEffect(.degrees(-90))
+                .animation(
+                    valueAnimation,
+                    value: progress
+                )
                 .shadow(
                     color: Color.pink.opacity(0.8),
                     radius: compact ? 2 : 8
@@ -1165,6 +1221,7 @@ private struct PlasmaCoreThemeView: View {
         .task(id: motionEnabled) { @MainActor in
             corePulse = false
             plasmaRotation = 0
+            particleFlow = false
             guard motionEnabled else {
                 return
             }
@@ -1180,6 +1237,12 @@ private struct PlasmaCoreThemeView: View {
                     .repeatForever(autoreverses: false)
             ) {
                 plasmaRotation = 360
+            }
+            withAnimation(
+                .easeOut(duration: 2.1)
+                    .repeatForever(autoreverses: false)
+            ) {
+                particleFlow = true
             }
         }
     }
@@ -1901,6 +1964,7 @@ private struct LiquidWaveShape: Shape {
 
 private struct ThemeBatteryReadout: View {
     @Environment(\.locale) private var locale
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var energyPulse = false
 
     let percentage: Int?
@@ -2028,8 +2092,14 @@ private struct ThemeBatteryReadout: View {
                     .monospacedDigit()
                     .foregroundStyle(.white)
                     .contentTransition(.numericText())
-                    .animation(.snappy, value: apiPercentage)
-                    .animation(.snappy, value: percentage)
+                    .animation(
+                        reduceMotion ? nil : .snappy,
+                        value: apiPercentage
+                    )
+                    .animation(
+                        reduceMotion ? nil : .snappy,
+                        value: percentage
+                    )
 
                 if !compact {
                     Text("%")
