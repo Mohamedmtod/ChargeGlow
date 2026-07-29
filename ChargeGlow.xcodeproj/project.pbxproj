@@ -1,0 +1,597 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C00000000000000000000001 /* ChargeGlowApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000001 /* ChargeGlowApp.swift */; };
+		C00000000000000000000002 /* ChargeGlowViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000002 /* ChargeGlowViewModel.swift */; };
+		C00000000000000000000003 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000003 /* ContentView.swift */; };
+		C00000000000000000000004 /* ChargingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000004 /* ChargingModels.swift */; };
+		C00000000000000000000005 /* NeonOrbitThemeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000005 /* NeonOrbitThemeView.swift */; };
+		C00000000000000000000006 /* ChargingActivityError.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000006 /* ChargingActivityError.swift */; };
+		C00000000000000000000007 /* ActivityLifecyclePlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000007 /* ActivityLifecyclePlanner.swift */; };
+		C00000000000000000000008 /* BatteryMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000008 /* BatteryMonitor.swift */; };
+		C00000000000000000000009 /* DiagnosticsRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000009 /* DiagnosticsRecorder.swift */; };
+		C0000000000000000000000A /* ChargingActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0000000000000000000000A /* ChargingActivityManager.swift */; };
+		C0000000000000000000000B /* ChargingIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0000000000000000000000B /* ChargingIntents.swift */; };
+		C0000000000000000000000C /* ChargeGlowWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0000000000000000000000D /* ChargeGlowWidgetBundle.swift */; };
+		C0000000000000000000000D /* ChargingLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0000000000000000000000E /* ChargingLiveActivity.swift */; };
+		C0000000000000000000000E /* ChargingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000004 /* ChargingModels.swift */; };
+		C0000000000000000000000F /* NeonOrbitThemeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000005 /* NeonOrbitThemeView.swift */; };
+		C00000000000000000000010 /* BatteryReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000010 /* BatteryReaderTests.swift */; };
+		C00000000000000000000011 /* ActivityLifecyclePlannerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000011 /* ActivityLifecyclePlannerTests.swift */; };
+		C00000000000000000000012 /* ChargingModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000012 /* ChargingModelsTests.swift */; };
+		C00000000000000000000013 /* ChargeGlowWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = K00000000000000000000002 /* ChargeGlowWidgets.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		I00000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A00000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F00000000000000000000002;
+			remoteInfo = ChargeGlowWidgets;
+		};
+		I00000000000000000000002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A00000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F00000000000000000000001;
+			remoteInfo = ChargeGlow;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		E00000000000000000000004 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C00000000000000000000013 /* ChargeGlowWidgets.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		B00000000000000000000001 /* ChargeGlowApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeGlowApp.swift; sourceTree = "<group>"; };
+		B00000000000000000000002 /* ChargeGlowViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeGlowViewModel.swift; sourceTree = "<group>"; };
+		B00000000000000000000003 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B00000000000000000000004 /* ChargingModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargingModels.swift; sourceTree = "<group>"; };
+		B00000000000000000000005 /* NeonOrbitThemeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeonOrbitThemeView.swift; sourceTree = "<group>"; };
+		B00000000000000000000006 /* ChargingActivityError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargingActivityError.swift; sourceTree = "<group>"; };
+		B00000000000000000000007 /* ActivityLifecyclePlanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityLifecyclePlanner.swift; sourceTree = "<group>"; };
+		B00000000000000000000008 /* BatteryMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryMonitor.swift; sourceTree = "<group>"; };
+		B00000000000000000000009 /* DiagnosticsRecorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticsRecorder.swift; sourceTree = "<group>"; };
+		B0000000000000000000000A /* ChargingActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargingActivityManager.swift; sourceTree = "<group>"; };
+		B0000000000000000000000B /* ChargingIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargingIntents.swift; sourceTree = "<group>"; };
+		B0000000000000000000000C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B0000000000000000000000D /* ChargeGlowWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargeGlowWidgetBundle.swift; sourceTree = "<group>"; };
+		B0000000000000000000000E /* ChargingLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargingLiveActivity.swift; sourceTree = "<group>"; };
+		B0000000000000000000000F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B00000000000000000000010 /* BatteryReaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryReaderTests.swift; sourceTree = "<group>"; };
+		B00000000000000000000011 /* ActivityLifecyclePlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityLifecyclePlannerTests.swift; sourceTree = "<group>"; };
+		B00000000000000000000012 /* ChargingModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargingModelsTests.swift; sourceTree = "<group>"; };
+		K00000000000000000000001 /* ChargeGlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChargeGlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		K00000000000000000000002 /* ChargeGlowWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ChargeGlowWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		K00000000000000000000003 /* ChargeGlowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChargeGlowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E00000000000000000000002 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		E00000000000000000000006 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		E00000000000000000000009 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D00000000000000000000001 = {
+			isa = PBXGroup;
+			children = (
+				D00000000000000000000003 /* ChargeGlow */,
+				D00000000000000000000009 /* ChargeGlowWidgets */,
+				D0000000000000000000000A /* ChargeGlowTests */,
+				D00000000000000000000002 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D00000000000000000000002 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				K00000000000000000000001 /* ChargeGlow.app */,
+				K00000000000000000000002 /* ChargeGlowWidgets.appex */,
+				K00000000000000000000003 /* ChargeGlowTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D00000000000000000000003 /* ChargeGlow */ = {
+			isa = PBXGroup;
+			children = (
+				D00000000000000000000004 /* App */,
+				D00000000000000000000005 /* Core */,
+				D00000000000000000000006 /* Shared */,
+				D00000000000000000000007 /* AppIntents */,
+				D00000000000000000000008 /* Resources */,
+			);
+			path = ChargeGlow;
+			sourceTree = "<group>";
+		};
+		D00000000000000000000004 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				B00000000000000000000001 /* ChargeGlowApp.swift */,
+				B00000000000000000000002 /* ChargeGlowViewModel.swift */,
+				B00000000000000000000003 /* ContentView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		D00000000000000000000005 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				B00000000000000000000006 /* ChargingActivityError.swift */,
+				B00000000000000000000007 /* ActivityLifecyclePlanner.swift */,
+				B00000000000000000000008 /* BatteryMonitor.swift */,
+				B00000000000000000000009 /* DiagnosticsRecorder.swift */,
+				B0000000000000000000000A /* ChargingActivityManager.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		D00000000000000000000006 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				B00000000000000000000004 /* ChargingModels.swift */,
+				B00000000000000000000005 /* NeonOrbitThemeView.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		D00000000000000000000007 /* AppIntents */ = {
+			isa = PBXGroup;
+			children = (
+				B0000000000000000000000B /* ChargingIntents.swift */,
+			);
+			path = AppIntents;
+			sourceTree = "<group>";
+		};
+		D00000000000000000000008 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B0000000000000000000000C /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		D00000000000000000000009 /* ChargeGlowWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				B0000000000000000000000D /* ChargeGlowWidgetBundle.swift */,
+				B0000000000000000000000E /* ChargingLiveActivity.swift */,
+				B0000000000000000000000F /* Info.plist */,
+			);
+			path = ChargeGlowWidgets;
+			sourceTree = "<group>";
+		};
+		D0000000000000000000000A /* ChargeGlowTests */ = {
+			isa = PBXGroup;
+			children = (
+				B00000000000000000000010 /* BatteryReaderTests.swift */,
+				B00000000000000000000011 /* ActivityLifecyclePlannerTests.swift */,
+				B00000000000000000000012 /* ChargingModelsTests.swift */,
+			);
+			path = ChargeGlowTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F00000000000000000000001 /* ChargeGlow */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = H00000000000000000000002 /* Build configuration list for PBXNativeTarget "ChargeGlow" */;
+			buildPhases = (
+				E00000000000000000000001 /* Sources */,
+				E00000000000000000000002 /* Frameworks */,
+				E00000000000000000000003 /* Resources */,
+				E00000000000000000000004 /* Embed App Extensions */,
+			);
+			buildRules = ();
+			dependencies = (
+				J00000000000000000000001 /* PBXTargetDependency */,
+			);
+			name = ChargeGlow;
+			productName = ChargeGlow;
+			productReference = K00000000000000000000001 /* ChargeGlow.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F00000000000000000000002 /* ChargeGlowWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = H00000000000000000000003 /* Build configuration list for PBXNativeTarget "ChargeGlowWidgets" */;
+			buildPhases = (
+				E00000000000000000000005 /* Sources */,
+				E00000000000000000000006 /* Frameworks */,
+				E00000000000000000000007 /* Resources */,
+			);
+			buildRules = ();
+			dependencies = ();
+			name = ChargeGlowWidgets;
+			productName = ChargeGlowWidgets;
+			productReference = K00000000000000000000002 /* ChargeGlowWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		F00000000000000000000003 /* ChargeGlowTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = H00000000000000000000004 /* Build configuration list for PBXNativeTarget "ChargeGlowTests" */;
+			buildPhases = (
+				E00000000000000000000008 /* Sources */,
+				E00000000000000000000009 /* Frameworks */,
+				E0000000000000000000000A /* Resources */,
+			);
+			buildRules = ();
+			dependencies = (
+				J00000000000000000000002 /* PBXTargetDependency */,
+			);
+			name = ChargeGlowTests;
+			productName = ChargeGlowTests;
+			productReference = K00000000000000000000003 /* ChargeGlowTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A00000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2640;
+				LastUpgradeCheck = 2640;
+				TargetAttributes = {
+					F00000000000000000000001 = {CreatedOnToolsVersion = 26.4; };
+					F00000000000000000000002 = {CreatedOnToolsVersion = 26.4; };
+					F00000000000000000000003 = {CreatedOnToolsVersion = 26.4; TestTargetID = F00000000000000000000001; };
+				};
+			};
+			buildConfigurationList = H00000000000000000000001 /* Build configuration list for PBXProject "ChargeGlow" */;
+			compatibilityVersion = "Xcode 16.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (en, Base, );
+			mainGroup = D00000000000000000000001;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D00000000000000000000002 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F00000000000000000000001 /* ChargeGlow */,
+				F00000000000000000000002 /* ChargeGlowWidgets */,
+				F00000000000000000000003 /* ChargeGlowTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E00000000000000000000003 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		E00000000000000000000007 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		E0000000000000000000000A /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E00000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C00000000000000000000001 /* ChargeGlowApp.swift in Sources */,
+				C00000000000000000000002 /* ChargeGlowViewModel.swift in Sources */,
+				C00000000000000000000003 /* ContentView.swift in Sources */,
+				C00000000000000000000004 /* ChargingModels.swift in Sources */,
+				C00000000000000000000005 /* NeonOrbitThemeView.swift in Sources */,
+				C00000000000000000000006 /* ChargingActivityError.swift in Sources */,
+				C00000000000000000000007 /* ActivityLifecyclePlanner.swift in Sources */,
+				C00000000000000000000008 /* BatteryMonitor.swift in Sources */,
+				C00000000000000000000009 /* DiagnosticsRecorder.swift in Sources */,
+				C0000000000000000000000A /* ChargingActivityManager.swift in Sources */,
+				C0000000000000000000000B /* ChargingIntents.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E00000000000000000000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0000000000000000000000C /* ChargeGlowWidgetBundle.swift in Sources */,
+				C0000000000000000000000D /* ChargingLiveActivity.swift in Sources */,
+				C0000000000000000000000E /* ChargingModels.swift in Sources */,
+				C0000000000000000000000F /* NeonOrbitThemeView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E00000000000000000000008 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C00000000000000000000010 /* BatteryReaderTests.swift in Sources */,
+				C00000000000000000000011 /* ActivityLifecyclePlannerTests.swift in Sources */,
+				C00000000000000000000012 /* ChargingModelsTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		J00000000000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F00000000000000000000002 /* ChargeGlowWidgets */;
+			targetProxy = I00000000000000000000001 /* PBXContainerItemProxy */;
+		};
+		J00000000000000000000002 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F00000000000000000000001 /* ChargeGlow */;
+			targetProxy = I00000000000000000000002 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		G00000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("DEBUG=1", "$(inherited)", );
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		G00000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		G00000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ChargeGlow/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", );
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedalaa.chargeglow.spike;
+				PRODUCT_MODULE_NAME = ChargeGlow;
+				PRODUCT_NAME = ChargeGlow;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		G00000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ChargeGlow/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", );
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedalaa.chargeglow.spike;
+				PRODUCT_MODULE_NAME = ChargeGlow;
+				PRODUCT_NAME = ChargeGlow;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		G00000000000000000000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ChargeGlowWidgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks", );
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedalaa.chargeglow.spike.widgets;
+				PRODUCT_NAME = ChargeGlowWidgets;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		G00000000000000000000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ChargeGlowWidgets/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks", );
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedalaa.chargeglow.spike.widgets;
+				PRODUCT_NAME = ChargeGlowWidgets;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		G00000000000000000000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedalaa.chargeglow.spike.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ChargeGlow.app/ChargeGlow";
+			};
+			name = Debug;
+		};
+		G00000000000000000000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedalaa.chargeglow.spike.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ChargeGlow.app/ChargeGlow";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		H00000000000000000000001 /* Build configuration list for PBXProject "ChargeGlow" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G00000000000000000000001 /* Debug */,
+				G00000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		H00000000000000000000002 /* Build configuration list for PBXNativeTarget "ChargeGlow" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G00000000000000000000003 /* Debug */,
+				G00000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		H00000000000000000000003 /* Build configuration list for PBXNativeTarget "ChargeGlowWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G00000000000000000000005 /* Debug */,
+				G00000000000000000000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		H00000000000000000000004 /* Build configuration list for PBXNativeTarget "ChargeGlowTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				G00000000000000000000007 /* Debug */,
+				G00000000000000000000008 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A00000000000000000000001 /* Project object */;
+}

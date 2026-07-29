@@ -1,0 +1,105 @@
+workflows:
+  chargeglow-feasibility:
+    name: ChargeGlow Phase 1 Feasibility
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+
+    environment:
+      # Codemagic maps 26.4 to Xcode 26.4.1. The first script verifies the
+      # exact patch release so the workflow fails instead of silently drifting.
+      xcode: 26.4
+      vars:
+        XCODE_PROJECT: ChargeGlow.xcodeproj
+        XCODE_SCHEME: ChargeGlow
+
+    scripts:
+      - name: Verify pinned Xcode and project
+        script: |
+          set -euo pipefail
+          XCODE_VERSION="$(xcodebuild -version | head -n 1)"
+          if [ "$XCODE_VERSION" != "Xcode 26.4.1" ]; then
+            echo "Expected Xcode 26.4.1, found: $XCODE_VERSION"
+            exit 1
+          fi
+          xcodebuild -list \
+            -project "$CM_BUILD_DIR/$XCODE_PROJECT"
+
+      - name: Run unit tests without signing
+        script: |
+          set -euo pipefail
+          mkdir -p "$CM_BUILD_DIR/test-results"
+          xcodebuild test \
+            -project "$CM_BUILD_DIR/$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,name=iPhone 17 Pro,OS=26.4" \
+            -resultBundlePath "$CM_BUILD_DIR/test-results/ChargeGlowTests.xcresult" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            | tee "$CM_BUILD_DIR/test-results/xcodebuild-test.log" \
+            | xcbeautify
+
+      - name: Build unsigned device application
+        script: |
+          set -euo pipefail
+          mkdir -p "$CM_BUILD_DIR/build"
+          xcodebuild clean build \
+            -project "$CM_BUILD_DIR/$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination "generic/platform=iOS" \
+            -derivedDataPath "$CM_BUILD_DIR/build/device" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            DEVELOPMENT_TEAM="" \
+            | tee "$CM_BUILD_DIR/test-results/xcodebuild-device.log" \
+            | xcbeautify
+
+      - name: Verify Live Activity payload
+        script: |
+          set -euo pipefail
+          APP_PATH="$CM_BUILD_DIR/build/device/Build/Products/Release-iphoneos/ChargeGlow.app"
+          WIDGET_PATH="$APP_PATH/PlugIns/ChargeGlowWidgets.appex"
+
+          test -d "$APP_PATH"
+          test -d "$WIDGET_PATH"
+          test -f "$WIDGET_PATH/Info.plist"
+
+          APP_BUNDLE_ID="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP_PATH/Info.plist")"
+          WIDGET_BUNDLE_ID="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$WIDGET_PATH/Info.plist")"
+          SUPPORTS_LIVE_ACTIVITIES="$(/usr/libexec/PlistBuddy -c 'Print :NSSupportsLiveActivities' "$APP_PATH/Info.plist")"
+
+          test "$APP_BUNDLE_ID" = "com.mohamedalaa.chargeglow.spike"
+          test "$WIDGET_BUNDLE_ID" = "com.mohamedalaa.chargeglow.spike.widgets"
+          test "$SUPPORTS_LIVE_ACTIVITIES" = "true"
+
+          echo "Verified app bundle: $APP_BUNDLE_ID"
+          echo "Verified widget bundle: $WIDGET_BUNDLE_ID"
+          echo "App Intents metadata discovered at:"
+          find "$APP_PATH" -iname '*appintents*' -print || true
+
+      - name: Package unsigned IPA for iLoader
+        script: |
+          set -euo pipefail
+          APP_PATH="$CM_BUILD_DIR/build/device/Build/Products/Release-iphoneos/ChargeGlow.app"
+          PACKAGE_ROOT="$CM_BUILD_DIR/build/unsigned-package"
+          ARTIFACTS_DIR="$CM_BUILD_DIR/artifacts"
+
+          rm -rf "$PACKAGE_ROOT"
+          mkdir -p "$PACKAGE_ROOT/Payload" "$ARTIFACTS_DIR"
+          ditto "$APP_PATH" "$PACKAGE_ROOT/Payload/ChargeGlow.app"
+
+          cd "$PACKAGE_ROOT"
+          zip -qry "$ARTIFACTS_DIR/ChargeGlow-Spike-unsigned.ipa" Payload
+          shasum -a 256 "$ARTIFACTS_DIR/ChargeGlow-Spike-unsigned.ipa" \
+            > "$ARTIFACTS_DIR/ChargeGlow-Spike-unsigned.ipa.sha256"
+
+    artifacts:
+      - artifacts/ChargeGlow-Spike-unsigned.ipa
+      - artifacts/ChargeGlow-Spike-unsigned.ipa.sha256
+      - test-results/*.log
+      - test-results/*.xcresult
+      - build/device/Build/Products/Release-iphoneos/ChargeGlow.app
