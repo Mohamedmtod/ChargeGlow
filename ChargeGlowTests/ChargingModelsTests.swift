@@ -88,6 +88,80 @@ final class ChargingModelsTests: XCTestCase {
         )
     }
 
+    func testExternalElectricalMeasurementCalculatesPowerFromMeterValues() {
+        let measurement = ExternalElectricalMeasurement(
+            voltage: 9.12,
+            currentMilliamps: 1_850
+        )
+
+        XCTAssertEqual(
+            measurement.currentAmps ?? -1,
+            1.85,
+            accuracy: 0.000_001
+        )
+        XCTAssertEqual(
+            measurement.powerWatts ?? -1,
+            16.872,
+            accuracy: 0.000_001
+        )
+        XCTAssertTrue(measurement.isComplete)
+    }
+
+    func testExternalElectricalMeasurementRejectsIncompleteOrInvalidValues() {
+        let cases = [
+            ExternalElectricalMeasurement(
+                voltage: nil,
+                currentMilliamps: 1_000
+            ),
+            ExternalElectricalMeasurement(
+                voltage: 5,
+                currentMilliamps: nil
+            ),
+            ExternalElectricalMeasurement(
+                voltage: 0,
+                currentMilliamps: 1_000
+            ),
+            ExternalElectricalMeasurement(
+                voltage: 5,
+                currentMilliamps: -1
+            ),
+            ExternalElectricalMeasurement(
+                voltage: .infinity,
+                currentMilliamps: 1_000
+            )
+        ]
+
+        for measurement in cases {
+            XCTAssertNil(measurement.powerWatts)
+            XCTAssertFalse(measurement.isComplete)
+        }
+    }
+
+    func testExternalElectricalMeasurementParsesLocalizedNumerals() {
+        XCTAssertEqual(
+            ExternalElectricalMeasurement.parse(
+                "9.12",
+                locale: Locale(identifier: "en_US")
+            ) ?? -1,
+            9.12,
+            accuracy: 0.000_001
+        )
+        XCTAssertEqual(
+            ExternalElectricalMeasurement.parse(
+                "٩٫١٢",
+                locale: Locale(identifier: "ar_EG")
+            ) ?? -1,
+            9.12,
+            accuracy: 0.000_001
+        )
+        XCTAssertNil(
+            ExternalElectricalMeasurement.parse(
+                "",
+                locale: Locale(identifier: "en_US")
+            )
+        )
+    }
+
     func testTypedErrorsHaveStableDiagnosticCodes() {
         XCTAssertEqual(
             ChargingActivityError.liveActivitiesNotAuthorized.diagnosticCode,

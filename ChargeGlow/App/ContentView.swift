@@ -2,9 +2,12 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.locale) private var locale
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = ChargeGlowViewModel()
     @State private var ambientDrift = false
+    @State private var externalVoltageText = ""
+    @State private var externalCurrentText = ""
     @Binding var appLanguage: AppLanguage
 
     private let cardColor = Color.white.opacity(0.07)
@@ -21,6 +24,7 @@ struct ContentView: View {
                     themeGallery
                     readinessCard
                     batteryCard
+                    electricalDetailsCard
                     chargingSessionTestCard
                     diagnosticsCard
                     limitationNotice
@@ -28,6 +32,7 @@ struct ContentView: View {
                 .padding()
                 .padding(.bottom, 10)
             }
+            .scrollDismissesKeyboard(.interactively)
             .background {
                 ZStack {
                     LinearGradient(
@@ -823,6 +828,233 @@ struct ContentView: View {
             color: cardColor,
             accent: themeAccent
         )
+    }
+
+    private var electricalDetailsCard: some View {
+        let measurement = ExternalElectricalMeasurement(
+            voltage: ExternalElectricalMeasurement.parse(
+                externalVoltageText,
+                locale: locale
+            ),
+            currentMilliamps: ExternalElectricalMeasurement.parse(
+                externalCurrentText,
+                locale: locale
+            )
+        )
+
+        return VStack(alignment: .leading, spacing: 12) {
+            Label(
+                "Electrical charging details",
+                systemImage: "bolt.horizontal.circle.fill"
+            )
+            .font(.headline)
+            .foregroundStyle(themeAccent)
+
+            Text(
+                "The public iOS battery API does not provide live electrical sensor readings to third-party apps."
+            )
+            .font(.caption)
+            .foregroundStyle(.secondary)
+
+            VStack(spacing: 9) {
+                electricalUnavailableRow(
+                    title: "Input voltage",
+                    unit: "V"
+                )
+                electricalUnavailableRow(
+                    title: "Charging current",
+                    unit: "mA"
+                )
+                electricalUnavailableRow(
+                    title: "Input power",
+                    unit: "W"
+                )
+                electricalUnavailableRow(
+                    title: "Battery temperature",
+                    unit: "°C"
+                )
+            }
+
+            Divider()
+
+            Label(
+                "External USB power meter",
+                systemImage: "cable.connector.horizontal"
+            )
+            .font(.subheadline.bold())
+            .foregroundStyle(themeAccent)
+
+            Text(
+                "Enter the values shown by a USB power meter for a real electrical measurement."
+            )
+            .font(.caption)
+            .foregroundStyle(.secondary)
+
+            electricalInputRow(
+                title: "Measured voltage",
+                unit: "V",
+                text: $externalVoltageText
+            )
+
+            electricalInputRow(
+                title: "Measured current",
+                unit: "mA",
+                text: $externalCurrentText
+            )
+
+            if let power = measurement.powerWatts,
+               let amps = measurement.currentAmps,
+               let voltage = measurement.voltage,
+               let currentMilliamps = measurement.currentMilliamps {
+                VStack(alignment: .leading, spacing: 8) {
+                    Label(
+                        "Calculated input power",
+                        systemImage: "gauge.with.dots.needle.100percent"
+                    )
+                    .font(.caption.bold())
+                    .foregroundStyle(.secondary)
+
+                    HStack(alignment: .firstTextBaseline, spacing: 5) {
+                        Text(
+                            power,
+                            format: .number.precision(
+                                .fractionLength(3)
+                            )
+                        )
+                        .font(
+                            .system(
+                                size: 34,
+                                weight: .bold,
+                                design: .rounded
+                            )
+                        )
+                        .monospacedDigit()
+
+                        Text(verbatim: "W")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+
+                        Spacer()
+                    }
+
+                    Text(verbatim:
+                        "\(voltage.formatted(.number.precision(.fractionLength(0...3)))) V • \(currentMilliamps.formatted(.number.precision(.fractionLength(0...3)))) mA • \(amps.formatted(.number.precision(.fractionLength(3)))) A"
+                    )
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+
+                    Label(
+                        "Source: manual external meter reading",
+                        systemImage: "checkmark.seal.fill"
+                    )
+                    .font(.caption)
+                    .foregroundStyle(.green)
+                }
+                .padding(14)
+                .chargeGlowMeasurementResult(accent: themeAccent)
+            } else {
+                Label(
+                    "Enter positive voltage and current values to calculate watts.",
+                    systemImage: "number.circle"
+                )
+                .font(.caption)
+                .foregroundStyle(.orange)
+            }
+
+            if !externalVoltageText.isEmpty || !externalCurrentText.isEmpty {
+                Button {
+                    externalVoltageText = ""
+                    externalCurrentText = ""
+                } label: {
+                    Label(
+                        "Clear meter values",
+                        systemImage: "xmark.circle"
+                    )
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(
+                    ChargeGlowSecondaryButtonStyle(
+                        accent: themeAccent,
+                        reduceMotion: reduceMotion
+                    )
+                )
+            }
+
+            Divider()
+
+            Label(
+                "ChargeGlow never estimates volts, milliamps, watts, temperature, or charger quality from battery percentage.",
+                systemImage: "shield.checkered"
+            )
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+
+            Text(
+                "Accuracy depends on the external meter, cable, and measurement point. The calculated power is voltage multiplied by current."
+            )
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .chargeGlowCard(
+            color: cardColor,
+            accent: themeAccent
+        )
+    }
+
+    private func electricalUnavailableRow(
+        title: LocalizedStringKey,
+        unit: String
+    ) -> some View {
+        HStack(spacing: 10) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.subheadline)
+                Text(verbatim: unit)
+                    .font(.caption2.monospaced())
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 12)
+
+            Text("Not available from iOS")
+                .font(.caption.bold())
+                .foregroundStyle(.orange)
+                .multilineTextAlignment(.trailing)
+        }
+        .padding(.vertical, 3)
+        .accessibilityElement(children: .combine)
+    }
+
+    private func electricalInputRow(
+        title: LocalizedStringKey,
+        unit: String,
+        text: Binding<String>
+    ) -> some View {
+        HStack(spacing: 12) {
+            Text(title)
+                .font(.subheadline)
+
+            Spacer(minLength: 8)
+
+            TextField(
+                "Not entered",
+                text: text
+            )
+            .keyboardType(.decimalPad)
+            .multilineTextAlignment(.trailing)
+            .monospacedDigit()
+            .frame(minWidth: 72, idealWidth: 100, maxWidth: 120)
+            .accessibilityLabel(title)
+
+            Text(verbatim: unit)
+                .font(.subheadline.monospaced())
+                .foregroundStyle(.secondary)
+                .frame(minWidth: 28, alignment: .leading)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 11)
+        .chargeGlowMeasurementField(accent: themeAccent)
     }
 
     @ViewBuilder
@@ -1652,6 +1884,90 @@ private struct ChargeGlowGlassContainer<Content: View>: View {
 }
 
 private extension View {
+    @ViewBuilder
+    func chargeGlowMeasurementField(
+        accent: Color
+    ) -> some View {
+        if #available(iOS 26.0, *) {
+            glassEffect(
+                .clear.tint(accent.opacity(0.08)),
+                in: RoundedRectangle(
+                    cornerRadius: 14,
+                    style: .continuous
+                )
+            )
+            .overlay {
+                RoundedRectangle(
+                    cornerRadius: 14,
+                    style: .continuous
+                )
+                .stroke(accent.opacity(0.22))
+            }
+        } else {
+            background(
+                .ultraThinMaterial,
+                in: RoundedRectangle(
+                    cornerRadius: 14,
+                    style: .continuous
+                )
+            )
+            .overlay {
+                RoundedRectangle(
+                    cornerRadius: 14,
+                    style: .continuous
+                )
+                .stroke(accent.opacity(0.2))
+            }
+        }
+    }
+
+    @ViewBuilder
+    func chargeGlowMeasurementResult(
+        accent: Color
+    ) -> some View {
+        if #available(iOS 26.0, *) {
+            glassEffect(
+                .regular.tint(accent.opacity(0.16)),
+                in: RoundedRectangle(
+                    cornerRadius: 18,
+                    style: .continuous
+                )
+            )
+            .overlay {
+                RoundedRectangle(
+                    cornerRadius: 18,
+                    style: .continuous
+                )
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.24),
+                            accent.opacity(0.42),
+                            Color.clear
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+            }
+        } else {
+            background(
+                accent.opacity(0.1),
+                in: RoundedRectangle(
+                    cornerRadius: 18,
+                    style: .continuous
+                )
+            )
+            .overlay {
+                RoundedRectangle(
+                    cornerRadius: 18,
+                    style: .continuous
+                )
+                .stroke(accent.opacity(0.3))
+            }
+        }
+    }
+
     @ViewBuilder
     func chargeGlowGlassCircle() -> some View {
         if #available(iOS 26.0, *) {

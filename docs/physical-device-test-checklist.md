@@ -191,6 +191,28 @@ reading and becomes visibly outdated.
 - [ ] Compare two chargers only under similar starting percentage, cable,
       screen use, temperature, Low Power Mode, and background workload.
 
+## External electrical meter
+
+- [ ] Without manual input, voltage, current, watts, and battery temperature
+      remain visibly marked `Not available from iOS`.
+- [ ] ChargeGlow never fills electrical fields from the battery percentage or
+      the foreground charging-session trend.
+- [ ] Connect a known USB power meter between the charger and cable.
+- [ ] Enter the meter voltage and current in milliamps; verify the displayed
+      current in amps and power against `volts × milliamps / 1000`.
+- [ ] Verify decimal input works with both English and Arabic app languages,
+      including the locale decimal separator.
+- [ ] Verify zero, negative, incomplete, and nonnumeric input never produces a
+      wattage result.
+- [ ] Verify the result is labeled `manual external meter reading`.
+- [ ] Verify Clear removes both entered values and the calculated result.
+- [ ] Confirm the card does not overlap, truncate its critical source label, or
+      reverse unit/value order in RTL.
+- [ ] Compare the displayed result to the meter itself; record meter make,
+      model, stated accuracy, cable, charger port, and measurement position.
+- [ ] Treat the reading as input-side information only, not battery-cell power,
+      charging efficiency, temperature, safety, or charger authenticity.
+
 ## Diagnostics evidence
 
 - [ ] Export `diagnostics.json` after the normal flow.

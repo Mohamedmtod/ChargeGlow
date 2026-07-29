@@ -1,6 +1,186 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Accuracy depends on the external meter, cable, and measurement point. The calculated power is voltage multiplied by current." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعتمد الدقة على المقياس الخارجي والكابل ونقطة القياس. تُحسب القدرة بضرب الجهد في التيار."
+          }
+        }
+      }
+    },
+    "Battery temperature" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "درجة حرارة البطارية"
+          }
+        }
+      }
+    },
+    "Calculated input power" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قدرة الإدخال المحسوبة"
+          }
+        }
+      }
+    },
+    "ChargeGlow never estimates volts, milliamps, watts, temperature, or charger quality from battery percentage." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا يقدّر ChargeGlow الجهد أو المللي أمبير أو الواط أو الحرارة أو جودة الشاحن من نسبة البطارية."
+          }
+        }
+      }
+    },
+    "Charging current" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تيار الشحن"
+          }
+        }
+      }
+    },
+    "Clear meter values" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مسح قيم المقياس"
+          }
+        }
+      }
+    },
+    "Electrical charging details" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تفاصيل الشحن الكهربائية"
+          }
+        }
+      }
+    },
+    "Enter positive voltage and current values to calculate watts." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أدخل قيمًا موجبة للجهد والتيار لحساب الواط."
+          }
+        }
+      }
+    },
+    "Enter the values shown by a USB power meter for a real electrical measurement." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أدخل القيم التي يعرضها مقياس طاقة USB للحصول على قياس كهربائي حقيقي."
+          }
+        }
+      }
+    },
+    "External USB power meter" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مقياس طاقة USB خارجي"
+          }
+        }
+      }
+    },
+    "Input power" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قدرة الإدخال"
+          }
+        }
+      }
+    },
+    "Input voltage" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جهد الإدخال"
+          }
+        }
+      }
+    },
+    "Measured current" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "التيار المقاس"
+          }
+        }
+      }
+    },
+    "Measured voltage" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الجهد المقاس"
+          }
+        }
+      }
+    },
+    "Not available from iOS" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غير متاح من iOS"
+          }
+        }
+      }
+    },
+    "Not entered" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غير مُدخل"
+          }
+        }
+      }
+    },
+    "Source: manual external meter reading" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المصدر: قراءة يدوية من مقياس خارجي"
+          }
+        }
+      }
+    },
+    "The public iOS battery API does not provide live electrical sensor readings to third-party apps." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا تتيح واجهة بطارية iOS العامة قراءات كهربائية مباشرة لتطبيقات الجهات الخارجية."
+          }
+        }
+      }
+    },
     "Charging trend based on %lld real samples." : {
       "localizations" : {
         "ar" : {

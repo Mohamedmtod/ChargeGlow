@@ -45,8 +45,12 @@ The product must always communicate that:
 - after reboot, the user must unlock once and may need to launch ChargeGlow
   before relying on charger automations;
 - no wattage, voltage, current, temperature, health, authenticity, safety, or
-  time-to-full is inferred; an optional foreground test may report only the
-  observed public-percentage trend and its measurement confidence.
+  time-to-full is inferred from iPhone telemetry; an optional foreground test
+  may report only the observed public-percentage trend and its measurement
+  confidence;
+- an optional manual USB power-meter calculator may show entered volts and
+  milliamps plus calculated amps and input watts, with the external source and
+  accuracy limits always visible.
 
 ## Confirmed product decisions
 

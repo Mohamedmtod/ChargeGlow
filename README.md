@@ -154,6 +154,15 @@ with the same cable, starting battery range, screen use, temperature, and power
 settings. The reported rate is derived only from changes in the approximate
 public battery percentage.
 
+The Electrical Charging Details card makes this boundary visible in the app.
+Voltage, current, input power, and battery temperature remain marked unavailable
+instead of being estimated. For a real electrical reading, connect an external
+USB power meter between the charger and cable, enter its measured volts and
+milliamps, and ChargeGlow calculates input watts using `V × (mA / 1000)`. The
+result is labeled as a manual external-meter reading. Its accuracy depends on
+the meter, cable, and measurement point; it is not a reading from the iPhone and
+is not a safety or charger-authenticity verdict.
+
 ChargeGlow retains the public `Float` battery value and displays it rounded to
 one decimal. This preserves all detail supplied by the public API, but does not
 create additional sensor precision: a device may still report coarse steps such
