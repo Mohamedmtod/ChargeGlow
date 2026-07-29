@@ -16,15 +16,6 @@ struct BuildInfo: Equatable, Sendable {
         )
     }
 
-    var versionText: String {
-        String(
-            format: String(localized: "Version %@ (%@)"),
-            locale: Locale.current,
-            version,
-            build
-        )
-    }
-
     var buildText: String {
         "\(gitCommit) • CI \(codemagicBuildID)"
     }

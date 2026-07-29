@@ -21,6 +21,26 @@
         }
       }
     },
+    "App language" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لغة التطبيق"
+          }
+        }
+      }
+    },
+    "Arabic" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "العربية"
+          }
+        }
+      }
+    },
     "Approximately %lld percent, %@" : {
       "localizations" : {
         "ar" : {
@@ -281,6 +301,16 @@
         }
       }
     },
+    "English" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإنجليزية"
+          }
+        }
+      }
+    },
     "Ends every ChargeGlow Live Activity. Repeating this action is safe." : {
       "localizations" : {
         "ar" : {
@@ -367,6 +397,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "بدأ النشاط المباشر باستخدام أحدث قراءة عامة للبطارية من iOS."
+          }
+        }
+      }
+    },
+    "Language" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اللغة"
           }
         }
       }
@@ -547,6 +587,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "متوقف"
+          }
+        }
+      }
+    },
+    "System" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "النظام"
           }
         }
       }

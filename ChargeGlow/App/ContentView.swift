@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = ChargeGlowViewModel()
+    @Binding var appLanguage: AppLanguage
 
     private let cardColor = Color.white.opacity(0.07)
 
@@ -28,6 +29,11 @@ struct ContentView: View {
                 .ignoresSafeArea()
             )
             .navigationTitle("ChargeGlow")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    languageMenu
+                }
+            }
             .onAppear {
                 viewModel.startMonitoring()
             }
@@ -39,6 +45,22 @@ struct ContentView: View {
             }
         }
         .tint(.cyan)
+    }
+
+    private var languageMenu: some View {
+        Menu {
+            Picker("App language", selection: $appLanguage) {
+                Text("System")
+                    .tag(AppLanguage.system)
+                Text("English")
+                    .tag(AppLanguage.english)
+                Text("Arabic")
+                    .tag(AppLanguage.arabic)
+            }
+        } label: {
+            Label("Language", systemImage: "globe")
+        }
+        .accessibilityLabel("Language")
     }
 
     private var hero: some View {
@@ -57,7 +79,9 @@ struct ContentView: View {
                 .foregroundStyle(.secondary)
 
             VStack(spacing: 3) {
-                Text(BuildInfo.current.versionText)
+                Text(
+                    "Version \(BuildInfo.current.version) (\(BuildInfo.current.build))"
+                )
                 Text(BuildInfo.current.buildText)
             }
             .font(.caption.monospaced())
@@ -72,25 +96,29 @@ struct ContentView: View {
         VStack(spacing: 12) {
             statusRow(
                 title: "Live Activities",
-                value: viewModel.liveActivitiesEnabled
-                    ? String(localized: "Enabled")
-                    : String(localized: "Disabled"),
                 symbol: viewModel.liveActivitiesEnabled
                     ? "checkmark.circle.fill"
                     : "exclamationmark.triangle.fill",
                 color: viewModel.liveActivitiesEnabled ? .green : .orange
-            )
+            ) {
+                if viewModel.liveActivitiesEnabled {
+                    Text("Enabled")
+                } else {
+                    Text("Disabled")
+                }
+            }
 
             Divider()
 
             statusRow(
                 title: "ChargeGlow Activity",
-                value: viewModel.activityStatus,
                 symbol: viewModel.activeActivityCount == 1
                     ? "bolt.circle.fill"
                     : "bolt.slash.circle",
                 color: viewModel.activeActivityCount == 1 ? .cyan : .secondary
-            )
+            ) {
+                activityStatusText
+            }
         }
         .chargeGlowCard(color: cardColor)
     }
@@ -107,14 +135,17 @@ struct ContentView: View {
 
                 Spacer()
 
-                Label(
-                    viewModel.snapshot.state.displayName,
-                    systemImage: viewModel.snapshot.state.symbolName
-                )
+                Label {
+                    chargingStateText
+                } icon: {
+                    Image(systemName: viewModel.snapshot.state.symbolName)
+                }
                 .foregroundStyle(.cyan)
             }
 
-            Text("Updated \(viewModel.snapshot.observedAt.formatted(date: .omitted, time: .standard))")
+            Text(
+                "Updated \(viewModel.snapshot.observedAt, format: .dateTime.hour().minute().second())"
+            )
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
@@ -174,7 +205,7 @@ struct ContentView: View {
             Label("Status", systemImage: "stethoscope")
                 .font(.headline)
 
-            Text(viewModel.statusMessage)
+            statusMessageText
                 .font(.subheadline)
 
             if let code = viewModel.diagnosticCode {
@@ -209,11 +240,103 @@ struct ContentView: View {
         .padding(.vertical, 8)
     }
 
-    private func statusRow(
+    @ViewBuilder
+    private var activityStatusText: some View {
+        switch viewModel.activeActivityCount {
+        case 0:
+            Text("Stopped")
+        case 1:
+            Text("Running")
+        default:
+            Text(
+                "\(viewModel.activeActivityCount) activities (recovery required)"
+            )
+        }
+    }
+
+    @ViewBuilder
+    private var chargingStateText: some View {
+        switch viewModel.snapshot.state {
+        case .unknown:
+            Text("Unknown")
+        case .disconnected:
+            Text("Disconnected")
+        case .charging:
+            Text("Charging")
+        case .full:
+            Text("Fully Charged")
+        }
+    }
+
+    @ViewBuilder
+    private var statusMessageText: some View {
+        switch viewModel.status {
+        case .ready:
+            Text("Ready to start a charging Live Activity.")
+        case .startedWithoutPercentage:
+            Text(
+                "Started, but iOS did not provide a battery percentage."
+            )
+        case .startedWithLatestReading:
+            Text(
+                "Live Activity started with the latest public iOS battery reading."
+            )
+        case .ended(let count):
+            Text("Ended \(count) ChargeGlow Live Activity.")
+        case .alreadyStopped:
+            Text("ChargeGlow was already stopped.")
+        case .diagnosticsExportFailed:
+            Text("Diagnostics export could not be prepared.")
+        case .failure(let error):
+            Text(errorDescriptionKey(for: error))
+                + Text(" ")
+                + Text(recoverySuggestionKey(for: error))
+        }
+    }
+
+    private func errorDescriptionKey(
+        for error: ChargingActivityError
+    ) -> LocalizedStringKey {
+        switch error {
+        case .liveActivitiesNotAuthorized:
+            return "Live Activities are disabled. Enable them in Settings and try again."
+        case .batteryUnavailable:
+            return "The battery level is currently unavailable. ChargeGlow will never estimate it."
+        case .activityAlreadyRunning:
+            return "A ChargeGlow Live Activity is already running."
+        case .noActiveActivity:
+            return "There is no ChargeGlow Live Activity to update or stop."
+        case .activityStartFailed:
+            return "ChargeGlow could not start the Live Activity."
+        case .activityUpdateFailed:
+            return "ChargeGlow could not update the Live Activity."
+        case .activityEndFailed:
+            return "ChargeGlow could not end the Live Activity."
+        }
+    }
+
+    private func recoverySuggestionKey(
+        for error: ChargingActivityError
+    ) -> LocalizedStringKey {
+        switch error {
+        case .liveActivitiesNotAuthorized:
+            return "Open Settings, select ChargeGlow, and enable Live Activities."
+        case .batteryUnavailable:
+            return "Unlock the device, open ChargeGlow once, and retry the automation."
+        case .activityAlreadyRunning:
+            return "Use Stop Charging Theme before starting another activity."
+        case .noActiveActivity:
+            return "Run Start Charging Theme first."
+        case .activityStartFailed, .activityUpdateFailed, .activityEndFailed:
+            return "Export diagnostics, then retry after reopening ChargeGlow."
+        }
+    }
+
+    private func statusRow<Value: View>(
         title: LocalizedStringKey,
-        value: String,
         symbol: String,
-        color: Color
+        color: Color,
+        @ViewBuilder value: () -> Value
     ) -> some View {
         HStack {
             Label {
@@ -223,7 +346,7 @@ struct ContentView: View {
             }
                 .foregroundStyle(color)
             Spacer()
-            Text(value)
+            value()
                 .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .combine)

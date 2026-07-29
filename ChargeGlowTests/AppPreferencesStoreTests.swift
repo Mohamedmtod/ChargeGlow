@@ -34,6 +34,7 @@ final class AppPreferencesStoreTests: XCTestCase {
             preferences.selectedThemeID,
             AppPreferences.defaultThemeID
         )
+        XCTAssertEqual(preferences.appLanguage, .system)
     }
 
     func testSelectedThemePersists() async {
@@ -64,6 +65,7 @@ final class AppPreferencesStoreTests: XCTestCase {
             AppPreferences.currentSchemaVersion
         )
         XCTAssertEqual(migrated.selectedThemeID, "ember-circuit")
+        XCTAssertEqual(migrated.appLanguage, .system)
     }
 
     func testEmptyThemeFallsBackToDefault() async {
@@ -73,5 +75,33 @@ final class AppPreferencesStoreTests: XCTestCase {
 
         let selectedThemeID = await store.selectedThemeID()
         XCTAssertEqual(selectedThemeID, AppPreferences.defaultThemeID)
+    }
+
+    func testAppLanguagePersists() async {
+        let store = AppPreferencesStore(suiteName: suiteName)
+
+        await store.setAppLanguage(.arabic)
+
+        let reloadedStore = AppPreferencesStore(suiteName: suiteName)
+        let appLanguage = await reloadedStore.appLanguage()
+        XCTAssertEqual(appLanguage, .arabic)
+    }
+
+    func testUnknownStoredLanguageFallsBackToSystem() async throws {
+        let data = try JSONSerialization.data(
+            withJSONObject: [
+                "schemaVersion": AppPreferences.currentSchemaVersion,
+                "selectedThemeID": "aurora-pulse",
+                "appLanguage": "unsupported-language"
+            ]
+        )
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defaults.set(data, forKey: AppPreferencesStore.defaultStorageKey)
+        let store = AppPreferencesStore(suiteName: suiteName)
+
+        let preferences = await store.load()
+
+        XCTAssertEqual(preferences.selectedThemeID, "aurora-pulse")
+        XCTAssertEqual(preferences.appLanguage, .system)
     }
 }

@@ -12,10 +12,12 @@ IDs were applied, languages were confirmed, and the current versus intended
 distribution paths were fixed. M1 is the next implementation milestone.
 
 M1 implementation is in progress. The current candidate adds versioned local
-preferences, injectable battery and activity boundaries, explicit App Shortcut
-registration, English/Arabic String Catalogs, Arabic App Shortcut phrases, and
-CI catalog validation. Its exit gate remains pending until Codemagic compiles
-the project and the production-ID build is installed through iLoader.
+preferences, an in-app System/English/Arabic language selector with persisted
+RTL/LTR behavior, injectable battery and activity boundaries, explicit App
+Shortcut registration, English/Arabic String Catalogs, Arabic App Shortcut
+phrases, and CI catalog validation. Its exit gate remains pending until
+Codemagic compiles the project and the production-ID build is installed through
+iLoader.
 
 Phase 2 can proceed through the existing Codemagic + iLoader engineering path
 without Apple Developer Program enrollment. It prepares a separate TestFlight

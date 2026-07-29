@@ -1,18 +1,42 @@
 import Foundation
 
+enum AppLanguage: String, Codable, CaseIterable, Identifiable, Sendable {
+    case system
+    case english
+    case arabic
+
+    var id: String {
+        rawValue
+    }
+
+    var locale: Locale {
+        switch self {
+        case .system:
+            return .autoupdatingCurrent
+        case .english:
+            return Locale(identifier: "en")
+        case .arabic:
+            return Locale(identifier: "ar")
+        }
+    }
+}
+
 struct AppPreferences: Codable, Equatable, Sendable {
-    static let currentSchemaVersion = 1
+    static let currentSchemaVersion = 2
     static let defaultThemeID = "neon-orbit"
 
     var schemaVersion: Int
     var selectedThemeID: String
+    var appLanguage: AppLanguage
 
     init(
         schemaVersion: Int = Self.currentSchemaVersion,
-        selectedThemeID: String = Self.defaultThemeID
+        selectedThemeID: String = Self.defaultThemeID,
+        appLanguage: AppLanguage = .system
     ) {
         self.schemaVersion = schemaVersion
         self.selectedThemeID = selectedThemeID
+        self.appLanguage = appLanguage
     }
 
     init(from decoder: Decoder) throws {
@@ -25,6 +49,12 @@ struct AppPreferences: Codable, Equatable, Sendable {
             String.self,
             forKey: .selectedThemeID
         ) ?? Self.defaultThemeID
+        appLanguage = (
+            try? container.decodeIfPresent(
+                AppLanguage.self,
+                forKey: .appLanguage
+            )
+        ) ?? .system
     }
 
     func migrated() -> AppPreferences {
@@ -32,7 +62,8 @@ struct AppPreferences: Codable, Equatable, Sendable {
             schemaVersion: Self.currentSchemaVersion,
             selectedThemeID: selectedThemeID.isEmpty
                 ? Self.defaultThemeID
-                : selectedThemeID
+                : selectedThemeID,
+            appLanguage: appLanguage
         )
     }
 }
@@ -82,11 +113,22 @@ actor AppPreferencesStore {
         load().selectedThemeID
     }
 
+    func appLanguage() -> AppLanguage {
+        load().appLanguage
+    }
+
     func setSelectedThemeID(_ themeID: String) {
         var preferences = load()
         preferences.selectedThemeID = themeID.isEmpty
             ? AppPreferences.defaultThemeID
             : themeID
+        preferences.schemaVersion = AppPreferences.currentSchemaVersion
+        persist(preferences)
+    }
+
+    func setAppLanguage(_ appLanguage: AppLanguage) {
+        var preferences = load()
+        preferences.appLanguage = appLanguage
         preferences.schemaVersion = AppPreferences.currentSchemaVersion
         persist(preferences)
     }

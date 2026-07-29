@@ -2,6 +2,16 @@ import ActivityKit
 import Combine
 import Foundation
 
+enum ChargeGlowStatus: Equatable {
+    case ready
+    case startedWithoutPercentage
+    case startedWithLatestReading
+    case ended(Int)
+    case alreadyStopped
+    case diagnosticsExportFailed
+    case failure(ChargingActivityError)
+}
+
 @MainActor
 final class ChargeGlowViewModel: ObservableObject {
     @Published private(set) var snapshot = BatterySnapshot(
@@ -11,9 +21,7 @@ final class ChargeGlowViewModel: ObservableObject {
     )
     @Published private(set) var liveActivitiesEnabled = false
     @Published private(set) var activeActivityCount = 0
-    @Published private(set) var statusMessage = String(
-        localized: "Ready to start a charging Live Activity."
-    )
+    @Published private(set) var status = ChargeGlowStatus.ready
     @Published private(set) var diagnosticCode: String?
     @Published private(set) var diagnosticsURL: URL?
     @Published private(set) var isWorking = false
@@ -32,21 +40,6 @@ final class ChargeGlowViewModel: ObservableObject {
         self.batteryMonitor = batteryMonitor
         self.batterySnapshotProvider = batterySnapshotProvider
         self.activityManager = activityManager
-    }
-
-    var activityStatus: String {
-        switch activeActivityCount {
-        case 0:
-            return String(localized: "Stopped")
-        case 1:
-            return String(localized: "Running")
-        default:
-            return String(
-                format: String(localized: "%lld activities (recovery required)"),
-                locale: Locale.current,
-                activeActivityCount
-            )
-        }
     }
 
     func startMonitoring() {
@@ -140,13 +133,9 @@ final class ChargeGlowViewModel: ObservableObject {
                     snapshot: freshSnapshot,
                     correlationID: correlationID
                 )
-                statusMessage = freshSnapshot.percentage == nil
-                    ? String(
-                        localized: "Started, but iOS did not provide a battery percentage."
-                    )
-                    : String(
-                        localized: "Live Activity started with the latest public iOS battery reading."
-                    )
+                status = freshSnapshot.percentage == nil
+                    ? .startedWithoutPercentage
+                    : .startedWithLatestReading
             } catch let error as ChargingActivityError {
                 show(error)
             } catch {
@@ -179,13 +168,9 @@ final class ChargeGlowViewModel: ObservableObject {
             )
             switch result {
             case .ended(let count):
-                statusMessage = String(
-                    format: String(localized: "Ended %lld ChargeGlow Live Activity."),
-                    locale: Locale.current,
-                    count
-                )
+                status = .ended(count)
             case .nothingToEnd:
-                statusMessage = String(localized: "ChargeGlow was already stopped.")
+                status = .alreadyStopped
             }
             await refreshStatus()
             isWorking = false
@@ -196,9 +181,7 @@ final class ChargeGlowViewModel: ObservableObject {
         Task {
             diagnosticsURL = await DiagnosticsRecorder.shared.exportURL()
             if diagnosticsURL == nil {
-                statusMessage = String(
-                    localized: "Diagnostics export could not be prepared."
-                )
+                status = .diagnosticsExportFailed
             }
         }
     }
@@ -210,7 +193,7 @@ final class ChargeGlowViewModel: ObservableObject {
     }
 
     private func show(_ error: ChargingActivityError) {
-        statusMessage = "\(error.localizedDescription) \(error.recoverySuggestion)"
+        status = .failure(error)
         diagnosticCode = error.diagnosticCode
     }
 }
