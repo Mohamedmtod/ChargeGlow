@@ -5,6 +5,8 @@ workflows:
     max_build_duration: 60
 
     environment:
+      groups:
+        - ChargeGlow
       # Codemagic maps 26.4 to Xcode 26.4.1. The first script verifies the
       # exact patch release so the workflow fails instead of silently drifting.
       xcode: 26.4
@@ -122,6 +124,38 @@ workflows:
           zip -qry "$ARTIFACTS_DIR/ChargeGlow-Spike-unsigned.ipa" Payload
           shasum -a 256 "$ARTIFACTS_DIR/ChargeGlow-Spike-unsigned.ipa" \
             > "$ARTIFACTS_DIR/ChargeGlow-Spike-unsigned.ipa.sha256"
+
+      - name: Publish GitHub Release
+        script: |
+          set -euo pipefail
+          : "${GITHUB_TOKEN:?GITHUB_TOKEN is required from the ChargeGlow group}"
+
+          APP_PATH="$CM_BUILD_DIR/build/device/Build/Products/Release-iphoneos/ChargeGlow.app"
+          IPA_PATH="$CM_BUILD_DIR/artifacts/ChargeGlow-Spike-unsigned.ipa"
+          CHECKSUM_PATH="$CM_BUILD_DIR/artifacts/ChargeGlow-Spike-unsigned.ipa.sha256"
+          APP_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP_PATH/Info.plist")"
+          APP_BUILD="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP_PATH/Info.plist")"
+          RELEASE_TAG="v${APP_VERSION}-build-${APP_BUILD}"
+          TARGET_COMMIT="$(git rev-parse HEAD)"
+          REPOSITORY="${CM_REPO_SLUG:-Mohamedmtod/ChargeGlow}"
+
+          export GH_TOKEN="$GITHUB_TOKEN"
+
+          if gh release view "$RELEASE_TAG" --repo "$REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" \
+              "$IPA_PATH#ChargeGlow-Spike-unsigned.ipa" \
+              "$CHECKSUM_PATH#ChargeGlow-Spike-unsigned.ipa.sha256" \
+              --repo "$REPOSITORY" \
+              --clobber
+          else
+            gh release create "$RELEASE_TAG" \
+              "$IPA_PATH#ChargeGlow-Spike-unsigned.ipa" \
+              "$CHECKSUM_PATH#ChargeGlow-Spike-unsigned.ipa.sha256" \
+              --repo "$REPOSITORY" \
+              --target "$TARGET_COMMIT" \
+              --title "ChargeGlow ${APP_VERSION} (${APP_BUILD})" \
+              --notes "Unsigned ChargeGlow feasibility build for iLoader testing."
+          fi
 
     artifacts:
       - artifacts/ChargeGlow-Spike-unsigned.ipa
