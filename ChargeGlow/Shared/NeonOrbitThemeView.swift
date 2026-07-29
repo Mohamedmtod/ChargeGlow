@@ -632,38 +632,12 @@ private struct EmberCircuitThemeView: View {
                 )
 
             ForEach(0..<3, id: \.self) { index in
-                RoundedRectangle(cornerRadius: compact ? 6 : 18)
-                    .stroke(
-                        Color.orange.opacity(0.32 - Double(index) * 0.08),
-                        lineWidth: compact ? 1 : 2
-                    )
-                    .padding(CGFloat(index) * (compact ? 3 : 9) + 3)
-                    .scaleEffect(
-                        motionEnabled
-                            ? (
-                                circuitPulse
-                                    ? 1 - Double(index) * 0.008
-                                    : 0.94 + Double(index) * 0.012
-                            )
-                            : 1
-                    )
-                    .opacity(
-                        motionEnabled
-                            ? (
-                                circuitPulse
-                                    ? 0.9 - Double(index) * 0.12
-                                    : 0.42 + Double(index) * 0.08
-                            )
-                            : 1
-                    )
-                    .shadow(
-                        color: Color.orange.opacity(
-                            circuitPulse ? 0.55 : 0.12
-                        ),
-                        radius: circuitPulse
-                            ? (compact ? 2 : 7)
-                            : 0
-                    )
+                EmberCircuitFrameLayer(
+                    index: index,
+                    compact: compact,
+                    motionEnabled: motionEnabled,
+                    circuitPulse: circuitPulse
+                )
             }
 
             Circle()
@@ -775,6 +749,81 @@ private struct EmberCircuitThemeView: View {
                 tracePhase = -32
             }
         }
+    }
+}
+
+private struct EmberCircuitFrameLayer: View {
+    let index: Int
+    let compact: Bool
+    let motionEnabled: Bool
+    let circuitPulse: Bool
+
+    private var indexValue: CGFloat {
+        CGFloat(index)
+    }
+
+    private var cornerRadius: CGFloat {
+        compact ? 6 : 18
+    }
+
+    private var strokeOpacity: Double {
+        0.32 - Double(index) * 0.08
+    }
+
+    private var strokeWidth: CGFloat {
+        compact ? 1 : 2
+    }
+
+    private var layerPadding: CGFloat {
+        indexValue * (compact ? 3 : 9) + 3
+    }
+
+    private var layerScale: CGFloat {
+        guard motionEnabled else {
+            return 1
+        }
+
+        if circuitPulse {
+            return 1 - indexValue * 0.008
+        }
+        return 0.94 + indexValue * 0.012
+    }
+
+    private var layerOpacity: Double {
+        guard motionEnabled else {
+            return 1
+        }
+
+        if circuitPulse {
+            return 0.9 - Double(index) * 0.12
+        }
+        return 0.42 + Double(index) * 0.08
+    }
+
+    private var glowOpacity: Double {
+        circuitPulse ? 0.55 : 0.12
+    }
+
+    private var glowRadius: CGFloat {
+        guard circuitPulse else {
+            return 0
+        }
+        return compact ? 2 : 7
+    }
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: cornerRadius)
+            .stroke(
+                Color.orange.opacity(strokeOpacity),
+                lineWidth: strokeWidth
+            )
+            .padding(layerPadding)
+            .scaleEffect(layerScale)
+            .opacity(layerOpacity)
+            .shadow(
+                color: Color.orange.opacity(glowOpacity),
+                radius: glowRadius
+            )
     }
 }
 
