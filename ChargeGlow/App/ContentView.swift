@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = ChargeGlowViewModel()
     @Binding var appLanguage: AppLanguage
@@ -21,14 +22,34 @@ struct ContentView: View {
                 }
                 .padding()
             }
-            .background(
-                LinearGradient(
-                    colors: [Color.black, Color(red: 0.05, green: 0.03, blue: 0.14)],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
+            .background {
+                ZStack {
+                    LinearGradient(
+                        colors: themeBackgroundColors,
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+
+                    Circle()
+                        .fill(themeAccent.opacity(0.16))
+                        .frame(width: 280, height: 280)
+                        .blur(radius: 80)
+                        .offset(x: 145, y: -250)
+
+                    Circle()
+                        .fill(themeSecondaryAccent.opacity(0.1))
+                        .frame(width: 240, height: 240)
+                        .blur(radius: 90)
+                        .offset(x: -150, y: 330)
+                }
                 .ignoresSafeArea()
-            )
+                .animation(
+                    reduceMotion
+                        ? nil
+                        : .easeInOut(duration: 0.65),
+                    value: viewModel.selectedThemeID
+                )
+            }
             .navigationTitle("ChargeGlow")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -45,7 +66,7 @@ struct ContentView: View {
                 viewModel.setApplicationActive(newPhase == .active)
             }
         }
-        .tint(.cyan)
+        .tint(themeAccent)
     }
 
     private var languageMenu: some View {
@@ -60,8 +81,64 @@ struct ContentView: View {
             }
         } label: {
             Label("Language", systemImage: "globe")
+                .labelStyle(.iconOnly)
+                .font(.body.bold())
+                .frame(width: 36, height: 36)
+                .background(
+                    .ultraThinMaterial,
+                    in: Circle()
+                )
+                .overlay {
+                    Circle()
+                        .stroke(themeAccent.opacity(0.35))
+                }
         }
         .accessibilityLabel("Language")
+    }
+
+    private var themeBackgroundColors: [Color] {
+        switch viewModel.selectedThemeID {
+        case .neonOrbit:
+            return [
+                .black,
+                Color(red: 0.025, green: 0.02, blue: 0.08),
+                Color(red: 0.05, green: 0.03, blue: 0.14)
+            ]
+        case .auroraPulse:
+            return [
+                .black,
+                Color(red: 0.01, green: 0.11, blue: 0.14),
+                Color(red: 0.10, green: 0.03, blue: 0.16)
+            ]
+        case .emberCircuit:
+            return [
+                .black,
+                Color(red: 0.09, green: 0.02, blue: 0.01),
+                Color(red: 0.18, green: 0.035, blue: 0.015)
+            ]
+        }
+    }
+
+    private var themeAccent: Color {
+        switch viewModel.selectedThemeID {
+        case .neonOrbit:
+            return .cyan
+        case .auroraPulse:
+            return .mint
+        case .emberCircuit:
+            return .orange
+        }
+    }
+
+    private var themeSecondaryAccent: Color {
+        switch viewModel.selectedThemeID {
+        case .neonOrbit:
+            return .purple
+        case .auroraPulse:
+            return .pink
+        case .emberCircuit:
+            return .red
+        }
     }
 
     private var hero: some View {
@@ -69,12 +146,29 @@ struct ContentView: View {
             ChargingThemeView(
                 themeID: viewModel.selectedThemeID,
                 percentage: viewModel.snapshot.percentage,
-                state: viewModel.snapshot.state
+                state: viewModel.snapshot.state,
+                animated: true
             )
             .frame(width: 150, height: 150)
+            .id(viewModel.selectedThemeID)
+            .transition(
+                .scale(scale: 0.86)
+                    .combined(with: .opacity)
+            )
 
             themeNameText(viewModel.selectedThemeID)
                 .font(.title2.bold())
+                .contentTransition(.opacity)
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [
+                            Color.white,
+                            themeAccent
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
 
             Text("Charging Live Activity")
                 .font(.subheadline)
@@ -87,17 +181,42 @@ struct ContentView: View {
                 Text(BuildInfo.current.buildText)
             }
             .font(.caption.monospaced())
-            .foregroundStyle(.cyan.opacity(0.85))
+            .foregroundStyle(themeAccent.opacity(0.9))
             .textSelection(.enabled)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
+        .padding(20)
+        .background(
+            .ultraThinMaterial,
+            in: RoundedRectangle(cornerRadius: 28)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 28)
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            themeAccent.opacity(0.65),
+                            Color.white.opacity(0.08),
+                            themeSecondaryAccent.opacity(0.38)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1.2
+                )
+        }
+        .shadow(
+            color: themeAccent.opacity(0.2),
+            radius: 24,
+            y: 10
+        )
     }
 
     private var themeGallery: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Themes")
+            Label("Themes", systemImage: "sparkles")
                 .font(.headline)
+                .foregroundStyle(themeAccent)
 
             Text("Choose the look for your next Live Activity.")
                 .font(.caption)
@@ -118,7 +237,14 @@ struct ContentView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .chargeGlowCard(color: cardColor)
+        .chargeGlowCard(
+            color: cardColor,
+            accent: themeAccent
+        )
+        .sensoryFeedback(
+            .selection,
+            trigger: viewModel.selectedThemeID
+        )
     }
 
     private func themeCard(
@@ -127,13 +253,23 @@ struct ContentView: View {
         let isSelected = descriptor.id == viewModel.selectedThemeID
 
         return Button {
-            viewModel.selectTheme(descriptor.id)
+            withAnimation(
+                reduceMotion
+                    ? nil
+                    : .spring(
+                        response: 0.42,
+                        dampingFraction: 0.72
+                    )
+            ) {
+                viewModel.selectTheme(descriptor.id)
+            }
         } label: {
             VStack(spacing: 9) {
                 ChargingThemeView(
                     themeID: descriptor.id,
                     percentage: viewModel.snapshot.percentage,
-                    state: viewModel.snapshot.state
+                    state: viewModel.snapshot.state,
+                    animated: isSelected
                 )
                 .frame(width: 82, height: 82)
 
@@ -147,7 +283,11 @@ struct ContentView: View {
                         systemImage: "checkmark.circle.fill"
                     )
                     .font(.caption2)
-                    .foregroundStyle(.cyan)
+                    .foregroundStyle(themeAccent)
+                    .transition(
+                        .scale(scale: 0.7)
+                            .combined(with: .opacity)
+                    )
                 }
             }
             .frame(maxWidth: .infinity)
@@ -155,7 +295,7 @@ struct ContentView: View {
             .padding(.horizontal, 8)
             .background(
                 isSelected
-                    ? Color.cyan.opacity(0.12)
+                    ? themeAccent.opacity(0.14)
                     : Color.white.opacity(0.04),
                 in: RoundedRectangle(cornerRadius: 16)
             )
@@ -163,13 +303,30 @@ struct ContentView: View {
                 RoundedRectangle(cornerRadius: 16)
                     .stroke(
                         isSelected
-                            ? Color.cyan.opacity(0.65)
+                            ? themeAccent.opacity(0.7)
                             : Color.white.opacity(0.08),
                         lineWidth: isSelected ? 1.5 : 1
                     )
             }
         }
         .buttonStyle(.plain)
+        .scaleEffect(isSelected ? 1.025 : 0.985)
+        .shadow(
+            color: isSelected
+                ? themeAccent.opacity(0.3)
+                : Color.clear,
+            radius: isSelected ? 12 : 0,
+            y: isSelected ? 5 : 0
+        )
+        .animation(
+            reduceMotion
+                ? nil
+                : .spring(
+                    response: 0.42,
+                    dampingFraction: 0.72
+                ),
+            value: isSelected
+        )
     }
 
     private func themeNameText(_ themeID: ThemeID) -> Text {
@@ -206,12 +363,17 @@ struct ContentView: View {
                 symbol: viewModel.activeActivityCount == 1
                     ? "bolt.circle.fill"
                     : "bolt.slash.circle",
-                color: viewModel.activeActivityCount == 1 ? .cyan : .secondary
+                color: viewModel.activeActivityCount == 1
+                    ? themeAccent
+                    : .secondary
             ) {
                 activityStatusText
             }
         }
-        .chargeGlowCard(color: cardColor)
+        .chargeGlowCard(
+            color: cardColor,
+            accent: themeAccent
+        )
     }
 
     private var batteryCard: some View {
@@ -223,6 +385,17 @@ struct ContentView: View {
                 Text(viewModel.snapshot.displayPercentage)
                     .font(.system(size: 40, weight: .bold, design: .rounded))
                     .monospacedDigit()
+                    .contentTransition(.numericText())
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [
+                                Color.white,
+                                themeAccent
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
 
                 Spacer()
 
@@ -231,7 +404,7 @@ struct ContentView: View {
                 } icon: {
                     Image(systemName: viewModel.snapshot.state.symbolName)
                 }
-                .foregroundStyle(.cyan)
+                .foregroundStyle(themeAccent)
             }
 
             Text(
@@ -256,7 +429,10 @@ struct ContentView: View {
                 .foregroundStyle(.orange)
             }
         }
-        .chargeGlowCard(color: cardColor)
+        .chargeGlowCard(
+            color: cardColor,
+            accent: themeAccent
+        )
     }
 
     private var controls: some View {
@@ -267,7 +443,13 @@ struct ContentView: View {
                 Label("Start Live Activity", systemImage: "bolt.fill")
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(
+                ChargeGlowPrimaryButtonStyle(
+                    accent: themeAccent,
+                    secondaryAccent: themeSecondaryAccent,
+                    reduceMotion: reduceMotion
+                )
+            )
             .disabled(viewModel.isWorking)
 
             HStack {
@@ -277,7 +459,12 @@ struct ContentView: View {
                     Label("Stop", systemImage: "stop.fill")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(
+                    ChargeGlowSecondaryButtonStyle(
+                        accent: themeAccent,
+                        reduceMotion: reduceMotion
+                    )
+                )
 
                 Button {
                     viewModel.refresh()
@@ -285,7 +472,12 @@ struct ContentView: View {
                     Label("Refresh", systemImage: "arrow.clockwise")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(
+                    ChargeGlowSecondaryButtonStyle(
+                        accent: themeAccent,
+                        reduceMotion: reduceMotion
+                    )
+                )
             }
             .disabled(viewModel.isWorking)
         }
@@ -318,7 +510,10 @@ struct ContentView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .chargeGlowCard(color: cardColor)
+        .chargeGlowCard(
+            color: cardColor,
+            accent: themeAccent
+        )
     }
 
     private var limitationNotice: some View {
@@ -444,12 +639,155 @@ struct ContentView: View {
     }
 }
 private extension View {
-    func chargeGlowCard(color: Color) -> some View {
+    func chargeGlowCard(
+        color: Color,
+        accent: Color
+    ) -> some View {
         padding(16)
-            .background(color, in: RoundedRectangle(cornerRadius: 20))
-            .overlay {
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color.white.opacity(0.08))
+            .background {
+                RoundedRectangle(cornerRadius: 22)
+                    .fill(color)
+                    .overlay {
+                        LinearGradient(
+                            colors: [
+                                accent.opacity(0.09),
+                                Color.clear,
+                                Color.white.opacity(0.025)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                        .clipShape(
+                            RoundedRectangle(cornerRadius: 22)
+                        )
+                    }
             }
+            .overlay {
+                RoundedRectangle(cornerRadius: 22)
+                    .stroke(
+                        LinearGradient(
+                            colors: [
+                                accent.opacity(0.26),
+                                Color.white.opacity(0.08),
+                                Color.clear
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+            .shadow(
+                color: Color.black.opacity(0.26),
+                radius: 16,
+                y: 8
+            )
+    }
+}
+
+private struct ChargeGlowPrimaryButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
+    let accent: Color
+    let secondaryAccent: Color
+    let reduceMotion: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.headline)
+            .foregroundStyle(.white)
+            .padding(.vertical, 15)
+            .padding(.horizontal, 18)
+            .background {
+                Capsule()
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                accent,
+                                secondaryAccent
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .overlay {
+                        Capsule()
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        Color.white.opacity(0.3),
+                                        Color.clear
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .center
+                                )
+                            )
+                    }
+            }
+            .overlay {
+                Capsule()
+                    .stroke(Color.white.opacity(0.24))
+            }
+            .shadow(
+                color: accent.opacity(
+                    configuration.isPressed ? 0.18 : 0.42
+                ),
+                radius: configuration.isPressed ? 7 : 16,
+                y: configuration.isPressed ? 3 : 8
+            )
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .opacity(isEnabled ? 1 : 0.5)
+            .animation(
+                reduceMotion
+                    ? nil
+                    : .spring(
+                        response: 0.28,
+                        dampingFraction: 0.72
+                    ),
+                value: configuration.isPressed
+            )
+    }
+}
+
+private struct ChargeGlowSecondaryButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
+    let accent: Color
+    let reduceMotion: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.subheadline.bold())
+            .foregroundStyle(accent)
+            .padding(.vertical, 13)
+            .padding(.horizontal, 14)
+            .background {
+                Capsule()
+                    .fill(.ultraThinMaterial)
+                    .overlay {
+                        Capsule()
+                            .fill(
+                                accent.opacity(
+                                    configuration.isPressed
+                                        ? 0.16
+                                        : 0.08
+                                )
+                            )
+                    }
+            }
+            .overlay {
+                Capsule()
+                    .stroke(accent.opacity(0.3))
+            }
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .opacity(isEnabled ? 1 : 0.82)
+            .animation(
+                reduceMotion
+                    ? nil
+                    : .spring(
+                        response: 0.28,
+                        dampingFraction: 0.75
+                    ),
+                value: configuration.isPressed
+            )
     }
 }

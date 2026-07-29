@@ -120,6 +120,10 @@ reading and becomes visibly outdated.
 - [ ] Every theme fits the Lock Screen presentation without clipping.
 - [ ] Every theme fits Dynamic Island compact, minimal, and expanded
       presentations.
+- [ ] App theme motion is smooth and does not obscure the percentage.
+- [ ] Reduce Motion disables ambient theme movement and selection scaling.
+- [ ] Lock Screen and Dynamic Island remain legible without depending on
+      continuous animation.
 - [ ] English selection updates the app, Lock Screen, and Dynamic Island.
 - [ ] Arabic selection updates the app, Lock Screen, and Dynamic Island with
       correct RTL layout.

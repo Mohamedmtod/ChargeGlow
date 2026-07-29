@@ -17,8 +17,10 @@ language behavior passed on the physical test device.
 
 M2 implementation is in progress. The current candidate adds the three-theme
 catalog, persistent selection, unknown-theme fallback, Home gallery previews,
-and selected-theme propagation into the next Live Activity without changing an
-already-running activity.
+distinct app-only ambient motion with Reduce Motion support, and selected-theme
+propagation into the next Live Activity without changing an already-running
+activity. Lock Screen and Dynamic Island render deterministic theme states
+without relying on continuous animation.
 
 Phase 2 can proceed through the existing Codemagic + iLoader engineering path
 without Apple Developer Program enrollment. It prepares a separate TestFlight

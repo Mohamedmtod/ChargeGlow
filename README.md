@@ -8,6 +8,7 @@ charging interface.
 The current engineering beta contains:
 
 - Neon Orbit, Aurora Pulse, and Ember Circuit themes;
+- app-only ambient theme motion with Reduce Motion support;
 - persistent local theme and language preferences;
 - English and Arabic with runtime RTL/LTR switching;
 - Lock Screen and Dynamic Island layouts for each theme;
