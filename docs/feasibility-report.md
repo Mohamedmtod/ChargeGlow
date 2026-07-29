@@ -2,8 +2,9 @@
 
 > **Status: Pending physical-device verification**
 >
-> The Codemagic build and unit-test gate passed. No physical-device behavior in
-> this document is currently claimed as passed. The full MVP remains gated.
+> The Codemagic build, direct iLoader installation, real battery snapshot, and
+> Lock Screen presentation passed. Automatic locked start/stop and Dynamic
+> Island evidence remain pending. The full MVP remains gated.
 
 ## Build and device
 
@@ -30,14 +31,14 @@ relative links or artifact names here.
 | Codemagic unit-test log | Build artifacts for ID `6a6990de1b3c5bfe2f350249` |
 | Codemagic device-build log | Build artifacts for ID `6a6990de1b3c5bfe2f350249` |
 | IPA SHA-256 | Downloaded build artifacts; local verification still required |
-| iLoader log | TBD |
+| iLoader log | Not supplied; successful install proven by app launch and embedded Live Activity rendering |
 | SideStore log | TBD |
-| `diagnostics.json` normal flow | TBD |
+| `diagnostics.json` normal flow | User-supplied JSON, 2026-07-29 05:45 UTC |
 | `diagnostics.json` failure flow | TBD |
 | Connected automation screenshot | TBD |
 | Disconnected automation screenshot | TBD |
 | Locked flow screen recording | TBD |
-| Lock Screen screenshot | TBD |
+| Lock Screen screenshot | User-supplied screenshot, 2026-07-29 08:45 Africa/Cairo |
 | Dynamic Island screenshots | TBD |
 
 ## Procedure and results
@@ -48,14 +49,14 @@ test state.
 | ID | Test | Expected | Actual | Result | Evidence |
 | --- | --- | --- | --- | --- | --- |
 | F-01 | Codemagic build and unit tests | All targets compile and tests pass | Workflow finished successfully in 2m 30s and published the unsigned IPA/app artifacts | PASS | Codemagic build `6a6990de1b3c5bfe2f350249` |
-| F-02 | Direct iLoader installation | App and widget are signed and installed | TBD | NOT RUN | TBD |
+| F-02 | Direct iLoader installation | App and widget are signed and installed | App launched, Live Activities reported enabled, and the embedded widget rendered on the Lock Screen | PASS | App and Lock Screen screenshots |
 | F-03 | SideStore installation | App and widget remain functional | TBD | NOT RUN | TBD |
 | F-04 | Intent discovery | Start and Stop appear in Shortcuts | TBD | NOT RUN | TBD |
 | F-05 | Manual Start intent | Starts without presenting app UI | TBD | NOT RUN | TBD |
 | F-06 | Connected automation, locked | Exactly one activity appears | TBD | NOT RUN | TBD |
-| F-07 | Lock Screen layout | Neon Orbit card is readable and unclipped | TBD | NOT RUN | TBD |
+| F-07 | Lock Screen layout | Neon Orbit card is readable and unclipped | Neon Orbit rendered below the clock with percentage, state, and update time readable | PASS | Lock Screen screenshot at 08:45 |
 | F-08 | Dynamic Island layouts | Compact, minimal, and expanded render | TBD | NOT RUN | TBD |
-| F-09 | Real battery snapshot | Matches device value or displays unavailable | TBD | NOT RUN | TBD |
+| F-09 | Real battery snapshot | Matches device value or displays unavailable | App captured 25% Charging at 08:45:08; activity started at 08:45:28 and displayed 25% with the matching update time | PASS | App screenshots, Lock Screen screenshot, diagnostics JSON |
 | F-10 | Disconnected automation, locked | Activity ends without unlocking | TBD | NOT RUN | TBD |
 | F-11 | Duplicate Start | Second call does not create a duplicate | TBD | NOT RUN | TBD |
 | F-12 | Idempotent Stop | Second call reports already stopped | TBD | NOT RUN | TBD |
@@ -78,7 +79,10 @@ packaging gate only; it does not prove installation or runtime behavior.
 
 ### iLoader direct USB
 
-TBD.
+The app launched successfully after local signing. Live Activities authorization
+reported Enabled, and the widget extension rendered a real Live Activity on the
+Lock Screen. This proves the direct signing path preserved both bundles. The
+exact iLoader version and raw iLoader log remain to be recorded.
 
 ### SideStore
 
@@ -86,14 +90,22 @@ TBD.
 
 ### ChargeGlow diagnostics
 
-TBD.
+The supplied local diagnostics recorded:
+
+- app launch at `2026-07-29T05:45:08Z`;
+- Live Activity `ED29FE58-64D3-43E7-9654-A1C068A7858B` started at
+  `2026-07-29T05:45:28Z`.
 
 ### Battery freshness
 
 Record the start snapshot, the system battery value, the last update before
 suspension, and whether the timestamp made staleness clear.
 
-TBD.
+The app and Live Activity displayed the real 25% charging snapshot with an
+08:45 update time. The later Lock Screen status bar showed 24% while the Live
+Activity intentionally retained 25%. This confirms that the activity preserves
+the last real value rather than estimating background progress, and that the
+timestamp communicates its age.
 
 ## Limitations discovered
 
