@@ -235,6 +235,12 @@ struct ChargingLiveActivity: Widget {
             return Text("Aurora Pulse")
         case .emberCircuit:
             return Text("Ember Circuit")
+        case .aquaFlux:
+            return Text("Aqua Flux")
+        case .plasmaCore:
+            return Text("Plasma Core")
+        case .lumenBloom:
+            return Text("Lumen Bloom")
         }
     }
 

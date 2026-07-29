@@ -40,11 +40,11 @@ final class AppPreferencesStoreTests: XCTestCase {
     func testSelectedThemePersists() async {
         let store = AppPreferencesStore(suiteName: suiteName)
 
-        await store.setSelectedTheme(.auroraPulse)
+        await store.setSelectedTheme(.plasmaCore)
 
         let reloadedStore = AppPreferencesStore(suiteName: suiteName)
         let selectedTheme = await reloadedStore.selectedTheme()
-        XCTAssertEqual(selectedTheme, .auroraPulse)
+        XCTAssertEqual(selectedTheme, .plasmaCore)
     }
 
     func testLegacyPreferencesMigrateWithoutLosingTheme() async throws {

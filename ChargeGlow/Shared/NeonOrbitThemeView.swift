@@ -4,6 +4,9 @@ enum ThemeID: String, Codable, CaseIterable, Hashable, Sendable {
     case neonOrbit = "neon-orbit"
     case auroraPulse = "aurora-pulse"
     case emberCircuit = "ember-circuit"
+    case aquaFlux = "aqua-flux"
+    case plasmaCore = "plasma-core"
+    case lumenBloom = "lumen-bloom"
 }
 
 struct ThemeDescriptor: Identifiable, Equatable, Sendable {
@@ -15,7 +18,10 @@ enum ThemeCatalog {
     static let all: [ThemeDescriptor] = [
         ThemeDescriptor(id: .neonOrbit, sortOrder: 0),
         ThemeDescriptor(id: .auroraPulse, sortOrder: 1),
-        ThemeDescriptor(id: .emberCircuit, sortOrder: 2)
+        ThemeDescriptor(id: .emberCircuit, sortOrder: 2),
+        ThemeDescriptor(id: .aquaFlux, sortOrder: 3),
+        ThemeDescriptor(id: .plasmaCore, sortOrder: 4),
+        ThemeDescriptor(id: .lumenBloom, sortOrder: 5)
     ]
 
     static func resolve(_ rawValue: String) -> ThemeID {
@@ -48,6 +54,27 @@ struct ChargingThemeView: View {
             )
         case .emberCircuit:
             EmberCircuitThemeView(
+                percentage: percentage,
+                state: state,
+                compact: compact,
+                animated: animated
+            )
+        case .aquaFlux:
+            AquaFluxThemeView(
+                percentage: percentage,
+                state: state,
+                compact: compact,
+                animated: animated
+            )
+        case .plasmaCore:
+            PlasmaCoreThemeView(
+                percentage: percentage,
+                state: state,
+                compact: compact,
+                animated: animated
+            )
+        case .lumenBloom:
+            LumenBloomThemeView(
                 percentage: percentage,
                 state: state,
                 compact: compact,
@@ -91,6 +118,38 @@ struct ChargingThemeMark: View {
                             endPoint: .bottomTrailing
                         ),
                         lineWidth: 2.5
+                    )
+            case .aquaFlux:
+                Circle()
+                    .stroke(
+                        LinearGradient(
+                            colors: [.cyan, .blue, .indigo],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 2.5
+                    )
+            case .plasmaCore:
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [.white, .pink, .purple],
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 10
+                        )
+                    )
+            case .lumenBloom:
+                Circle()
+                    .stroke(
+                        AngularGradient(
+                            colors: [.green, .mint, .yellow, .green],
+                            center: .center
+                        ),
+                        style: StrokeStyle(
+                            lineWidth: 2.5,
+                            dash: [2, 2]
+                        )
                     )
             }
 
@@ -629,6 +688,555 @@ private struct EmberCircuitThemeView: View {
                 tracePhase = -32
             }
         }
+    }
+}
+
+private struct AquaFluxThemeView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.locale) private var locale
+    @State private var wavePhase: CGFloat = 0
+    @State private var bubbleDrift = false
+
+    let percentage: Int?
+    let state: ChargingState
+    let compact: Bool
+    let animated: Bool
+
+    private var progress: Double {
+        min(max(Double(percentage ?? 0) / 100, 0), 1)
+    }
+
+    private var motionEnabled: Bool {
+        animated && !compact && !reduceMotion
+    }
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            Color(red: 0.02, green: 0.2, blue: 0.32),
+                            Color(red: 0.01, green: 0.04, blue: 0.12)
+                        ],
+                        center: .topLeading,
+                        startRadius: 0,
+                        endRadius: compact ? 35 : 110
+                    )
+                )
+
+            LiquidWaveShape(
+                fillLevel: CGFloat(progress),
+                phase: wavePhase
+            )
+            .fill(
+                LinearGradient(
+                    colors: [
+                        Color.cyan.opacity(0.82),
+                        Color.blue.opacity(0.55),
+                        Color.indigo.opacity(0.7)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .padding(compact ? 3 : 8)
+            .clipShape(Circle())
+            .shadow(
+                color: Color.cyan.opacity(0.55),
+                radius: compact ? 2 : 9
+            )
+
+            LiquidWaveShape(
+                fillLevel: max(CGFloat(progress) - 0.045, 0),
+                phase: wavePhase + .pi
+            )
+            .fill(Color.white.opacity(0.16))
+            .padding(compact ? 3 : 8)
+            .clipShape(Circle())
+
+            GeometryReader { proxy in
+                let diameter = min(
+                    proxy.size.width,
+                    proxy.size.height
+                )
+
+                ZStack {
+                    ForEach(0..<4, id: \.self) { index in
+                        Circle()
+                            .fill(Color.white.opacity(0.46))
+                            .frame(
+                                width: compact
+                                    ? CGFloat(2 + index % 2)
+                                    : CGFloat(4 + index % 3),
+                                height: compact
+                                    ? CGFloat(2 + index % 2)
+                                    : CGFloat(4 + index % 3)
+                            )
+                            .offset(
+                                x: diameter
+                                    * (
+                                        CGFloat(index) * 0.13
+                                            - 0.2
+                                    ),
+                                y: bubbleDrift
+                                    ? -diameter
+                                        * (
+                                            0.12
+                                                + CGFloat(index) * 0.05
+                                        )
+                                    : diameter
+                                        * (
+                                            0.14
+                                                - CGFloat(index) * 0.03
+                                        )
+                            )
+                            .opacity(
+                                motionEnabled
+                                    ? (bubbleDrift ? 0.08 : 0.72)
+                                    : 0.34
+                            )
+                    }
+                }
+                .frame(
+                    width: proxy.size.width,
+                    height: proxy.size.height
+                )
+            }
+            .clipShape(Circle())
+            .allowsHitTesting(false)
+
+            Circle()
+                .stroke(
+                    Color.white.opacity(0.14),
+                    lineWidth: compact ? 2 : 5
+                )
+
+            Circle()
+                .trim(from: 0, to: progress)
+                .stroke(
+                    LinearGradient(
+                        colors: [.white, .cyan, .blue],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    style: StrokeStyle(
+                        lineWidth: compact ? 3 : 7,
+                        lineCap: .round
+                    )
+                )
+                .rotationEffect(.degrees(-90))
+                .shadow(
+                    color: Color.cyan.opacity(0.78),
+                    radius: compact ? 2 : 7
+                )
+
+            ThemeBatteryReadout(
+                percentage: percentage,
+                state: state,
+                compact: compact,
+                accent: state == .charging ? .cyan : state.themeAccent
+            )
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            themeAccessibilityDescription(
+                percentage: percentage,
+                state: state,
+                locale: locale
+            )
+        )
+        .task(id: motionEnabled) { @MainActor in
+            wavePhase = 0
+            bubbleDrift = false
+            guard motionEnabled else {
+                return
+            }
+            await Task.yield()
+            withAnimation(
+                .linear(duration: 3.2)
+                    .repeatForever(autoreverses: false)
+            ) {
+                wavePhase = .pi * 2
+            }
+            withAnimation(
+                .easeInOut(duration: 2.2)
+                    .repeatForever(autoreverses: true)
+            ) {
+                bubbleDrift = true
+            }
+        }
+    }
+}
+
+private struct PlasmaCoreThemeView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.locale) private var locale
+    @State private var corePulse = false
+    @State private var plasmaRotation = 0.0
+
+    let percentage: Int?
+    let state: ChargingState
+    let compact: Bool
+    let animated: Bool
+
+    private var progress: Double {
+        min(max(Double(percentage ?? 0) / 100, 0), 1)
+    }
+
+    private var motionEnabled: Bool {
+        animated && !compact && !reduceMotion
+    }
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            Color.pink.opacity(0.24),
+                            Color.purple.opacity(0.2),
+                            Color.black.opacity(0.96)
+                        ],
+                        center: .center,
+                        startRadius: compact ? 2 : 5,
+                        endRadius: compact ? 28 : 82
+                    )
+                )
+
+            ForEach(0..<3, id: \.self) { index in
+                Ellipse()
+                    .stroke(
+                        AngularGradient(
+                            colors: [
+                                Color.clear,
+                                index == 1 ? .pink : .purple,
+                                .white.opacity(0.7),
+                                Color.clear
+                            ],
+                            center: .center
+                        ),
+                        style: StrokeStyle(
+                            lineWidth: compact ? 1 : 2,
+                            lineCap: .round,
+                            dash: compact ? [2, 4] : [7, 10]
+                        )
+                    )
+                    .frame(
+                        width: compact ? 34 : 112,
+                        height: compact
+                            ? CGFloat(14 + index * 3)
+                            : CGFloat(42 + index * 9)
+                    )
+                    .rotationEffect(
+                        .degrees(
+                            plasmaRotation
+                                * Double(
+                                    index.isMultiple(of: 2) ? 1 : -1
+                                )
+                                + Double(index) * 58
+                        )
+                    )
+                    .opacity(0.72 - Double(index) * 0.12)
+            }
+
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            .white,
+                            .pink,
+                            .purple,
+                            Color.clear
+                        ],
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: compact ? 13 : 38
+                    )
+                )
+                .frame(
+                    width: compact ? 22 : 68,
+                    height: compact ? 22 : 68
+                )
+                .scaleEffect(
+                    motionEnabled
+                        ? (corePulse ? 1.12 : 0.82)
+                        : 0.94
+                )
+                .opacity(
+                    motionEnabled
+                        ? (corePulse ? 0.95 : 0.56)
+                        : 0.7
+                )
+                .blur(radius: compact ? 1 : 3)
+                .shadow(
+                    color: Color.pink.opacity(0.9),
+                    radius: compact ? 3 : 14
+                )
+
+            Circle()
+                .stroke(
+                    Color.white.opacity(0.12),
+                    lineWidth: compact ? 2 : 5
+                )
+
+            Circle()
+                .trim(from: 0, to: progress)
+                .stroke(
+                    AngularGradient(
+                        colors: [.pink, .white, .purple, .pink],
+                        center: .center
+                    ),
+                    style: StrokeStyle(
+                        lineWidth: compact ? 3 : 7,
+                        lineCap: .round
+                    )
+                )
+                .rotationEffect(.degrees(-90))
+                .shadow(
+                    color: Color.pink.opacity(0.8),
+                    radius: compact ? 2 : 8
+                )
+
+            ThemeBatteryReadout(
+                percentage: percentage,
+                state: state,
+                compact: compact,
+                accent: state == .charging ? .pink : state.themeAccent
+            )
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            themeAccessibilityDescription(
+                percentage: percentage,
+                state: state,
+                locale: locale
+            )
+        )
+        .task(id: motionEnabled) { @MainActor in
+            corePulse = false
+            plasmaRotation = 0
+            guard motionEnabled else {
+                return
+            }
+            await Task.yield()
+            withAnimation(
+                .easeInOut(duration: 1.35)
+                    .repeatForever(autoreverses: true)
+            ) {
+                corePulse = true
+            }
+            withAnimation(
+                .linear(duration: 8.5)
+                    .repeatForever(autoreverses: false)
+            ) {
+                plasmaRotation = 360
+            }
+        }
+    }
+}
+
+private struct LumenBloomThemeView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.locale) private var locale
+    @State private var bloomPulse = false
+    @State private var bloomRotation = 0.0
+
+    let percentage: Int?
+    let state: ChargingState
+    let compact: Bool
+    let animated: Bool
+
+    private var progress: Double {
+        min(max(Double(percentage ?? 0) / 100, 0), 1)
+    }
+
+    private var motionEnabled: Bool {
+        animated && !compact && !reduceMotion
+    }
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            Color.green.opacity(0.18),
+                            Color(red: 0.015, green: 0.1, blue: 0.07),
+                            Color.black.opacity(0.94)
+                        ],
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: compact ? 30 : 90
+                    )
+                )
+
+            ZStack {
+                ForEach(0..<8, id: \.self) { index in
+                    Capsule()
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    index.isMultiple(of: 2)
+                                        ? Color.mint
+                                        : Color.yellow,
+                                    Color.green.opacity(0.14)
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                        .frame(
+                            width: compact ? 6 : 18,
+                            height: compact ? 20 : 58
+                        )
+                        .offset(y: compact ? -13 : -38)
+                        .rotationEffect(
+                            .degrees(
+                                Double(index) * 45
+                                    + bloomRotation
+                            )
+                        )
+                        .opacity(
+                            0.34
+                                + Double(index % 3) * 0.13
+                        )
+                        .shadow(
+                            color: Color.mint.opacity(0.5),
+                            radius: compact ? 1 : 5
+                        )
+                }
+            }
+            .scaleEffect(
+                motionEnabled
+                    ? (bloomPulse ? 1.04 : 0.84)
+                    : 0.92
+            )
+
+            Circle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            .white,
+                            .yellow,
+                            .green,
+                            Color.clear
+                        ],
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: compact ? 10 : 30
+                    )
+                )
+                .frame(
+                    width: compact ? 19 : 58,
+                    height: compact ? 19 : 58
+                )
+                .opacity(bloomPulse ? 0.95 : 0.68)
+                .shadow(
+                    color: Color.green.opacity(0.8),
+                    radius: compact ? 2 : 10
+                )
+
+            Circle()
+                .stroke(
+                    Color.white.opacity(0.11),
+                    lineWidth: compact ? 2 : 5
+                )
+
+            Circle()
+                .trim(from: 0, to: progress)
+                .stroke(
+                    AngularGradient(
+                        colors: [.green, .mint, .yellow, .green],
+                        center: .center
+                    ),
+                    style: StrokeStyle(
+                        lineWidth: compact ? 3 : 7,
+                        lineCap: .round,
+                        dash: compact ? [] : [5, 3]
+                    )
+                )
+                .rotationEffect(.degrees(-90))
+                .shadow(
+                    color: Color.green.opacity(0.78),
+                    radius: compact ? 2 : 8
+                )
+
+            ThemeBatteryReadout(
+                percentage: percentage,
+                state: state,
+                compact: compact,
+                accent: state == .charging ? .mint : state.themeAccent
+            )
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(
+            themeAccessibilityDescription(
+                percentage: percentage,
+                state: state,
+                locale: locale
+            )
+        )
+        .task(id: motionEnabled) { @MainActor in
+            bloomPulse = false
+            bloomRotation = 0
+            guard motionEnabled else {
+                return
+            }
+            await Task.yield()
+            withAnimation(
+                .easeInOut(duration: 1.9)
+                    .repeatForever(autoreverses: true)
+            ) {
+                bloomPulse = true
+            }
+            withAnimation(
+                .linear(duration: 18)
+                    .repeatForever(autoreverses: false)
+            ) {
+                bloomRotation = 360
+            }
+        }
+    }
+}
+
+private struct LiquidWaveShape: Shape {
+    var fillLevel: CGFloat
+    var phase: CGFloat
+
+    var animatableData: CGFloat {
+        get { phase }
+        set { phase = newValue }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        let normalizedLevel = min(max(fillLevel, 0), 1)
+        let waterline = rect.height * (1 - normalizedLevel)
+        let amplitude = max(rect.height * 0.035, 1)
+        let step = max(rect.width / 48, 1)
+
+        var path = Path()
+        path.move(to: CGPoint(x: 0, y: rect.height))
+        path.addLine(to: CGPoint(x: 0, y: waterline))
+
+        var x: CGFloat = 0
+        while x <= rect.width {
+            let normalizedX = x / max(rect.width, 1)
+            let y = waterline
+                + sin(normalizedX * .pi * 2 + phase)
+                    * amplitude
+            path.addLine(to: CGPoint(x: x, y: y))
+            x += step
+        }
+
+        path.addLine(
+            to: CGPoint(
+                x: rect.width,
+                y: rect.height
+            )
+        )
+        path.closeSubpath()
+        return path
     }
 }
 

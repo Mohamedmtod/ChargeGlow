@@ -61,6 +61,16 @@
         }
       }
     },
+    "Aqua Flux" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تدفق مائي"
+          }
+        }
+      }
+    },
     "Aurora Pulse" : {
       "localizations" : {
         "ar" : {
@@ -473,6 +483,16 @@
         }
       }
     },
+    "Lumen Bloom" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "زهرة الضوء"
+          }
+        }
+      }
+    },
     "Neon Orbit" : {
       "localizations" : {
         "ar" : {
@@ -499,6 +519,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "قديمة · آخر تحديث"
+          }
+        }
+      }
+    },
+    "Plasma Core" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نواة البلازما"
           }
         }
       }

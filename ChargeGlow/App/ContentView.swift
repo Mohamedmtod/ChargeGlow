@@ -113,6 +113,24 @@ struct ContentView: View {
                 Color(red: 0.09, green: 0.02, blue: 0.01),
                 Color(red: 0.18, green: 0.035, blue: 0.015)
             ]
+        case .aquaFlux:
+            return [
+                .black,
+                Color(red: 0.01, green: 0.09, blue: 0.16),
+                Color(red: 0.015, green: 0.18, blue: 0.28)
+            ]
+        case .plasmaCore:
+            return [
+                .black,
+                Color(red: 0.13, green: 0.015, blue: 0.17),
+                Color(red: 0.22, green: 0.025, blue: 0.13)
+            ]
+        case .lumenBloom:
+            return [
+                .black,
+                Color(red: 0.01, green: 0.12, blue: 0.07),
+                Color(red: 0.08, green: 0.18, blue: 0.025)
+            ]
         }
     }
 
@@ -124,6 +142,12 @@ struct ContentView: View {
             return .mint
         case .emberCircuit:
             return .orange
+        case .aquaFlux:
+            return .cyan
+        case .plasmaCore:
+            return .pink
+        case .lumenBloom:
+            return .mint
         }
     }
 
@@ -135,6 +159,12 @@ struct ContentView: View {
             return .pink
         case .emberCircuit:
             return .red
+        case .aquaFlux:
+            return .blue
+        case .plasmaCore:
+            return .purple
+        case .lumenBloom:
+            return .yellow
         }
     }
 
@@ -305,6 +335,12 @@ struct ContentView: View {
             return Text("Aurora Pulse")
         case .emberCircuit:
             return Text("Ember Circuit")
+        case .aquaFlux:
+            return Text("Aqua Flux")
+        case .plasmaCore:
+            return Text("Plasma Core")
+        case .lumenBloom:
+            return Text("Lumen Bloom")
         }
     }
 

@@ -115,6 +115,9 @@ reading and becomes visibly outdated.
 - [ ] Neon Orbit can be selected and persists after force quit.
 - [ ] Aurora Pulse can be selected and persists after force quit.
 - [ ] Ember Circuit can be selected and persists after force quit.
+- [ ] Aqua Flux can be selected and persists after force quit.
+- [ ] Plasma Core can be selected and persists after force quit.
+- [ ] Lumen Bloom can be selected and persists after force quit.
 - [ ] Changing the selection does not restyle an already-running activity.
 - [ ] After Stop, the next Start uses the newly selected theme.
 - [ ] Every theme fits the Lock Screen presentation without clipping.

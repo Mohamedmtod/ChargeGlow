@@ -3,19 +3,26 @@ import XCTest
 @testable import ChargeGlow
 
 final class ChargingModelsTests: XCTestCase {
-    func testThemeCatalogHasThreeUniqueOrderedThemes() {
+    func testThemeCatalogHasSixUniqueOrderedThemes() {
         let descriptors = ThemeCatalog.all
         let IDs = descriptors.map(\.id)
 
-        XCTAssertEqual(descriptors.count, 3)
+        XCTAssertEqual(descriptors.count, 6)
         XCTAssertEqual(Set(IDs).count, descriptors.count)
         XCTAssertEqual(
             IDs,
-            [.neonOrbit, .auroraPulse, .emberCircuit]
+            [
+                .neonOrbit,
+                .auroraPulse,
+                .emberCircuit,
+                .aquaFlux,
+                .plasmaCore,
+                .lumenBloom
+            ]
         )
         XCTAssertEqual(
             descriptors.map(\.sortOrder),
-            [0, 1, 2]
+            [0, 1, 2, 3, 4, 5]
         )
     }
 

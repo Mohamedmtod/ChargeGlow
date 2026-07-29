@@ -7,7 +7,8 @@ charging interface.
 
 The current engineering beta contains:
 
-- Neon Orbit, Aurora Pulse, and Ember Circuit themes;
+- six local themes: Neon Orbit, Aurora Pulse, Ember Circuit, Aqua Flux,
+  Plasma Core, and Lumen Bloom;
 - app-only ambient theme motion with Reduce Motion support;
 - native interactive Liquid Glass surfaces on iOS 26 with a material fallback
   on iOS 17 through iOS 25;
@@ -162,7 +163,7 @@ continuous heartbeat or claim otherwise.
 ## Identifying the installed build
 
 The app displays its version, bundle build number, Git commit, and Codemagic
-build ID directly below the Neon Orbit heading. Codemagic stamps these values
+build ID directly below the selected theme heading. Codemagic stamps these values
 before compilation and verifies the packaged app contains them. Every new
 diagnostic event also includes the same identity fields.
 
