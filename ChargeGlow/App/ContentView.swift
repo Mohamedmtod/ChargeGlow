@@ -12,6 +12,7 @@ struct ContentView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     hero
+                    themeGallery
                     readinessCard
                     batteryCard
                     controls
@@ -65,13 +66,14 @@ struct ContentView: View {
 
     private var hero: some View {
         VStack(spacing: 14) {
-            NeonOrbitThemeView(
+            ChargingThemeView(
+                themeID: viewModel.selectedThemeID,
                 percentage: viewModel.snapshot.percentage,
                 state: viewModel.snapshot.state
             )
             .frame(width: 150, height: 150)
 
-            Text("Neon Orbit")
+            themeNameText(viewModel.selectedThemeID)
                 .font(.title2.bold())
 
             Text("Charging Live Activity")
@@ -90,6 +92,95 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
+    }
+
+    private var themeGallery: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Themes")
+                .font(.headline)
+
+            Text("Choose the look for your next Live Activity.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            LazyVGrid(
+                columns: [
+                    GridItem(
+                        .adaptive(minimum: 130),
+                        spacing: 10
+                    )
+                ],
+                spacing: 10
+            ) {
+                ForEach(ThemeCatalog.all) { descriptor in
+                    themeCard(descriptor)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .chargeGlowCard(color: cardColor)
+    }
+
+    private func themeCard(
+        _ descriptor: ThemeDescriptor
+    ) -> some View {
+        let isSelected = descriptor.id == viewModel.selectedThemeID
+
+        return Button {
+            viewModel.selectTheme(descriptor.id)
+        } label: {
+            VStack(spacing: 9) {
+                ChargingThemeView(
+                    themeID: descriptor.id,
+                    percentage: viewModel.snapshot.percentage,
+                    state: viewModel.snapshot.state
+                )
+                .frame(width: 82, height: 82)
+
+                themeNameText(descriptor.id)
+                    .font(.caption.bold())
+                    .multilineTextAlignment(.center)
+
+                if isSelected {
+                    Label(
+                        "Selected",
+                        systemImage: "checkmark.circle.fill"
+                    )
+                    .font(.caption2)
+                    .foregroundStyle(.cyan)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 8)
+            .background(
+                isSelected
+                    ? Color.cyan.opacity(0.12)
+                    : Color.white.opacity(0.04),
+                in: RoundedRectangle(cornerRadius: 16)
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(
+                        isSelected
+                            ? Color.cyan.opacity(0.65)
+                            : Color.white.opacity(0.08),
+                        lineWidth: isSelected ? 1.5 : 1
+                    )
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func themeNameText(_ themeID: ThemeID) -> Text {
+        switch themeID {
+        case .neonOrbit:
+            return Text("Neon Orbit")
+        case .auroraPulse:
+            return Text("Aurora Pulse")
+        case .emberCircuit:
+            return Text("Ember Circuit")
+        }
     }
 
     private var readinessCard: some View {

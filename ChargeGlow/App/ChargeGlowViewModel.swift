@@ -21,6 +21,7 @@ final class ChargeGlowViewModel: ObservableObject {
     )
     @Published private(set) var liveActivitiesEnabled = false
     @Published private(set) var activeActivityCount = 0
+    @Published private(set) var selectedThemeID = ThemeID.neonOrbit
     @Published private(set) var status = ChargeGlowStatus.ready
     @Published private(set) var diagnosticCode: String?
     @Published private(set) var diagnosticsURL: URL?
@@ -29,6 +30,7 @@ final class ChargeGlowViewModel: ObservableObject {
     let batteryMonitor: BatteryMonitor
     private let batterySnapshotProvider: any BatterySnapshotProviding
     private let activityManager: any ChargingActivityManaging
+    private var themePersistenceTask: Task<Void, Never>?
 
     init(
         batteryMonitor: BatteryMonitor = BatteryMonitor(),
@@ -87,6 +89,8 @@ final class ChargeGlowViewModel: ObservableObject {
         batteryMonitor.start()
 
         Task {
+            selectedThemeID =
+                await AppPreferencesStore.shared.selectedTheme()
             await refreshStatus()
             await DiagnosticsRecorder.shared.record(
                 category: "app",
@@ -110,14 +114,29 @@ final class ChargeGlowViewModel: ObservableObject {
         }
     }
 
+    func selectTheme(_ themeID: ThemeID) {
+        guard themeID != selectedThemeID else {
+            return
+        }
+        selectedThemeID = themeID
+
+        let previousTask = themePersistenceTask
+        themePersistenceTask = Task {
+            await previousTask?.value
+            await AppPreferencesStore.shared.setSelectedTheme(themeID)
+        }
+    }
+
     func startActivity() {
         guard !isWorking else {
             return
         }
         isWorking = true
         diagnosticCode = nil
+        let pendingThemeSave = themePersistenceTask
 
         Task {
+            await pendingThemeSave?.value
             let freshSnapshot = await batterySnapshotProvider.capture()
             snapshot = freshSnapshot
             let correlationID = UUID().uuidString

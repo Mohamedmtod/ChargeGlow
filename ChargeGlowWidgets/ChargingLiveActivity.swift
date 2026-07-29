@@ -15,7 +15,10 @@ struct ChargingLiveActivity: Widget {
                         languageIdentifier:
                             context.state.languageIdentifier
                     ) {
-                        NeonOrbitThemeView(
+                        ChargingThemeView(
+                            themeID: ThemeCatalog.resolve(
+                                context.attributes.themeID
+                            ),
                             percentage: context.state.batteryPercentage,
                             state: context.state.chargingState,
                             compact: true
@@ -39,9 +42,13 @@ struct ChargingLiveActivity: Widget {
                         languageIdentifier:
                             context.state.languageIdentifier
                     ) {
-                        Text("Neon Orbit")
-                            .font(.headline)
-                            .foregroundStyle(.white)
+                        themeNameText(
+                            ThemeCatalog.resolve(
+                                context.attributes.themeID
+                            )
+                        )
+                        .font(.headline)
+                        .foregroundStyle(.white)
                     }
                 }
 
@@ -73,15 +80,13 @@ struct ChargingLiveActivity: Widget {
                     languageIdentifier:
                         context.state.languageIdentifier
                 ) {
-                    Image(
-                        systemName:
-                            context.state.chargingState.symbolName
+                    ChargingThemeMark(
+                        themeID: ThemeCatalog.resolve(
+                            context.attributes.themeID
+                        ),
+                        state: context.state.chargingState
                     )
-                    .foregroundStyle(
-                        context.state.chargingState == .full
-                            ? .green
-                            : .cyan
-                    )
+                    .frame(width: 22, height: 22)
                     .accessibilityLabel(
                         chargingStateText(
                             context.state.chargingState
@@ -101,7 +106,10 @@ struct ChargingLiveActivity: Widget {
                     languageIdentifier:
                         context.state.languageIdentifier
                 ) {
-                    NeonOrbitThemeView(
+                    ChargingThemeView(
+                        themeID: ThemeCatalog.resolve(
+                            context.attributes.themeID
+                        ),
                         percentage: context.state.batteryPercentage,
                         state: context.state.chargingState,
                         compact: true
@@ -117,18 +125,25 @@ struct ChargingLiveActivity: Widget {
         context: ActivityViewContext<ChargingActivityAttributes>
     ) -> some View {
         HStack(spacing: 16) {
-            NeonOrbitThemeView(
+            ChargingThemeView(
+                themeID: ThemeCatalog.resolve(
+                    context.attributes.themeID
+                ),
                 percentage: context.state.batteryPercentage,
                 state: context.state.chargingState
             )
             .frame(width: 76, height: 76)
 
             VStack(alignment: .leading, spacing: 5) {
-                Text("Neon Orbit")
-                    .textCase(.uppercase)
-                    .font(.caption.bold())
-                    .tracking(1.4)
-                    .foregroundStyle(.cyan)
+                themeNameText(
+                    ThemeCatalog.resolve(
+                        context.attributes.themeID
+                    )
+                )
+                .textCase(.uppercase)
+                .font(.caption.bold())
+                .tracking(1.4)
+                .foregroundStyle(.cyan)
 
                 percentageText(context.state.batteryPercentage)
                     .font(.title.bold())
@@ -209,6 +224,17 @@ struct ChargingLiveActivity: Widget {
             return Text("Charging")
         case .full:
             return Text("Fully Charged")
+        }
+    }
+
+    private func themeNameText(_ themeID: ThemeID) -> Text {
+        switch themeID {
+        case .neonOrbit:
+            return Text("Neon Orbit")
+        case .auroraPulse:
+            return Text("Aurora Pulse")
+        case .emberCircuit:
+            return Text("Ember Circuit")
         }
     }
 

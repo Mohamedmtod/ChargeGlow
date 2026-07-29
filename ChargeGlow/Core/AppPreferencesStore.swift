@@ -43,7 +43,7 @@ enum AppLanguage: String, Codable, CaseIterable, Identifiable, Sendable {
 
 struct AppPreferences: Codable, Equatable, Sendable {
     static let currentSchemaVersion = 2
-    static let defaultThemeID = "neon-orbit"
+    static let defaultThemeID = ThemeID.neonOrbit.rawValue
 
     var schemaVersion: Int
     var selectedThemeID: String
@@ -80,9 +80,8 @@ struct AppPreferences: Codable, Equatable, Sendable {
     func migrated() -> AppPreferences {
         AppPreferences(
             schemaVersion: Self.currentSchemaVersion,
-            selectedThemeID: selectedThemeID.isEmpty
-                ? Self.defaultThemeID
-                : selectedThemeID,
+            selectedThemeID:
+                ThemeCatalog.resolve(selectedThemeID).rawValue,
             appLanguage: appLanguage
         )
     }
@@ -133,17 +132,24 @@ actor AppPreferencesStore {
         load().selectedThemeID
     }
 
+    func selectedTheme() -> ThemeID {
+        ThemeCatalog.resolve(load().selectedThemeID)
+    }
+
     func appLanguage() -> AppLanguage {
         load().appLanguage
     }
 
     func setSelectedThemeID(_ themeID: String) {
         var preferences = load()
-        preferences.selectedThemeID = themeID.isEmpty
-            ? AppPreferences.defaultThemeID
-            : themeID
+        preferences.selectedThemeID =
+            ThemeCatalog.resolve(themeID).rawValue
         preferences.schemaVersion = AppPreferences.currentSchemaVersion
         persist(preferences)
+    }
+
+    func setSelectedTheme(_ themeID: ThemeID) {
+        setSelectedThemeID(themeID.rawValue)
     }
 
     func setAppLanguage(_ appLanguage: AppLanguage) {

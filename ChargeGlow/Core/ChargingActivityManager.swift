@@ -112,9 +112,11 @@ actor ChargingActivityManager: ChargingActivityManaging {
 
         let languageIdentifier =
             await selectedLanguageIdentifier()
+        let selectedTheme =
+            await AppPreferencesStore.shared.selectedTheme()
         let attributes = ChargingActivityAttributes(
             sessionID: UUID().uuidString,
-            themeID: "neon-orbit",
+            themeID: selectedTheme.rawValue,
             startDate: Date()
         )
         let content = ActivityContent(

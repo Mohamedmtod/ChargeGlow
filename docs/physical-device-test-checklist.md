@@ -110,6 +110,21 @@ reading and becomes visibly outdated.
 - [ ] Battery unavailable behavior recorded if it can be reproduced.
 - [ ] Disconnect after reaching 100% ends the activity.
 
+## Phase 2 themes and localization
+
+- [ ] Neon Orbit can be selected and persists after force quit.
+- [ ] Aurora Pulse can be selected and persists after force quit.
+- [ ] Ember Circuit can be selected and persists after force quit.
+- [ ] Changing the selection does not restyle an already-running activity.
+- [ ] After Stop, the next Start uses the newly selected theme.
+- [ ] Every theme fits the Lock Screen presentation without clipping.
+- [ ] Every theme fits Dynamic Island compact, minimal, and expanded
+      presentations.
+- [ ] English selection updates the app, Lock Screen, and Dynamic Island.
+- [ ] Arabic selection updates the app, Lock Screen, and Dynamic Island with
+      correct RTL layout.
+- [ ] System selection follows the iOS app language.
+
 ## Diagnostics evidence
 
 - [ ] Export `diagnostics.json` after the normal flow.

@@ -1,24 +1,26 @@
-# ChargeGlow Phase 0/1 Feasibility Spike
+# ChargeGlow Phase 2 Engineering Beta
 
-ChargeGlow is an iOS 17+ feasibility build that tests whether a user-created
-Shortcuts charger automation can start and stop an official Live Activity while
-the iPhone is locked. It does not replace Apple's charging interface.
+ChargeGlow is an iOS 17+ SwiftUI app that lets a person choose a local charging
+theme and use user-created Shortcuts charger automations to start and stop an
+official Live Activity while the iPhone is locked. It does not replace Apple's
+charging interface.
 
-This repository intentionally contains only:
+The current engineering beta contains:
 
-- one SwiftUI app screen;
-- one Neon Orbit Live Activity;
-- Lock Screen and basic Dynamic Island layouts;
+- Neon Orbit, Aurora Pulse, and Ember Circuit themes;
+- persistent local theme and language preferences;
+- English and Arabic with runtime RTL/LTR switching;
+- Lock Screen and Dynamic Island layouts for each theme;
 - Start and Stop App Intents;
 - approximate point-in-time readings from the public iOS battery API;
 - duplicate recovery, diagnostics, and unit tests.
 
-The full theme gallery, onboarding, purchases, backend, analytics, and production
-polish are out of scope until the physical-device gate passes.
+Onboarding, purchases, backend, analytics, and production distribution remain
+out of scope for the current milestone.
 
 ## Current status
 
-**CONDITIONAL GO — Phase 0/1 physical-device feasibility is complete.**
+**Phase 0/1: CONDITIONAL GO. Phase 2 M1: complete. M2: in progress.**
 
 Codemagic build/tests, direct iLoader installation, locked automatic Start/Stop,
 Lock Screen, all Dynamic Island layouts, duplicate prevention, Outdated
@@ -30,7 +32,7 @@ and manual fallback accepted. See
 [the feasibility report](docs/feasibility-report.md) for the evidence and final
 decision.
 
-The proposed next step is the
+Implementation and remaining gates are tracked in the
 [Phase 2 Beta MVP plan](docs/phase-2-beta-mvp-plan.md).
 
 ## Requirements

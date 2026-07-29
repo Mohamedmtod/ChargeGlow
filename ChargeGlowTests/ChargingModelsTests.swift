@@ -3,6 +3,29 @@ import XCTest
 @testable import ChargeGlow
 
 final class ChargingModelsTests: XCTestCase {
+    func testThemeCatalogHasThreeUniqueOrderedThemes() {
+        let descriptors = ThemeCatalog.all
+        let IDs = descriptors.map(\.id)
+
+        XCTAssertEqual(descriptors.count, 3)
+        XCTAssertEqual(Set(IDs).count, descriptors.count)
+        XCTAssertEqual(
+            IDs,
+            [.neonOrbit, .auroraPulse, .emberCircuit]
+        )
+        XCTAssertEqual(
+            descriptors.map(\.sortOrder),
+            [0, 1, 2]
+        )
+    }
+
+    func testUnknownThemeResolvesToNeonOrbit() {
+        XCTAssertEqual(
+            ThemeCatalog.resolve("removed-theme"),
+            .neonOrbit
+        )
+    }
+
     func testContentStateUsesRealSnapshot() {
         let observedAt = Date(timeIntervalSince1970: 123)
         let snapshot = BatterySnapshot(

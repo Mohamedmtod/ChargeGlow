@@ -40,11 +40,11 @@ final class AppPreferencesStoreTests: XCTestCase {
     func testSelectedThemePersists() async {
         let store = AppPreferencesStore(suiteName: suiteName)
 
-        await store.setSelectedThemeID("aurora-pulse")
+        await store.setSelectedTheme(.auroraPulse)
 
         let reloadedStore = AppPreferencesStore(suiteName: suiteName)
-        let selectedThemeID = await reloadedStore.selectedThemeID()
-        XCTAssertEqual(selectedThemeID, "aurora-pulse")
+        let selectedTheme = await reloadedStore.selectedTheme()
+        XCTAssertEqual(selectedTheme, .auroraPulse)
     }
 
     func testLegacyPreferencesMigrateWithoutLosingTheme() async throws {
@@ -75,6 +75,36 @@ final class AppPreferencesStoreTests: XCTestCase {
 
         let selectedThemeID = await store.selectedThemeID()
         XCTAssertEqual(selectedThemeID, AppPreferences.defaultThemeID)
+    }
+
+    func testUnknownThemeFallsBackToNeonOrbit() async {
+        let store = AppPreferencesStore(suiteName: suiteName)
+
+        await store.setSelectedThemeID("removed-theme")
+
+        let selectedTheme = await store.selectedTheme()
+        XCTAssertEqual(selectedTheme, .neonOrbit)
+    }
+
+    func testUnknownStoredThemeMigratesToNeonOrbit() async throws {
+        let data = try JSONSerialization.data(
+            withJSONObject: [
+                "schemaVersion": AppPreferences.currentSchemaVersion,
+                "selectedThemeID": "removed-theme",
+                "appLanguage": AppLanguage.english.rawValue
+            ]
+        )
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defaults.set(data, forKey: AppPreferencesStore.defaultStorageKey)
+        let store = AppPreferencesStore(suiteName: suiteName)
+
+        let preferences = await store.load()
+
+        XCTAssertEqual(
+            preferences.selectedThemeID,
+            ThemeID.neonOrbit.rawValue
+        )
+        XCTAssertEqual(preferences.appLanguage, .english)
     }
 
     func testAppLanguagePersists() async {

@@ -61,6 +61,16 @@
         }
       }
     },
+    "Aurora Pulse" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نبض الشفق"
+          }
+        }
+      }
+    },
     "Battery percentage unavailable" : {
       "localizations" : {
         "ar" : {
@@ -241,6 +251,16 @@
         }
       }
     },
+    "Choose the look for your next Live Activity." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختر مظهر نشاطك المباشر التالي."
+          }
+        }
+      }
+    },
     "Diagnostics export could not be prepared." : {
       "localizations" : {
         "ar" : {
@@ -277,6 +297,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "تم إنهاء نشاط مكرر أثناء الاسترداد"
+          }
+        }
+      }
+    },
+    "Ember Circuit" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "دائرة الجمر"
           }
         }
       }
@@ -533,6 +563,16 @@
         }
       }
     },
+    "Selected" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "محدد"
+          }
+        }
+      }
+    },
     "Share diagnostics.json" : {
       "localizations" : {
         "ar" : {
@@ -629,6 +669,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "النظام"
+          }
+        }
+      }
+    },
+    "Themes" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الثيمات"
           }
         }
       }
