@@ -30,6 +30,9 @@ and manual fallback accepted. See
 [the feasibility report](docs/feasibility-report.md) for the evidence and final
 decision.
 
+The proposed next step is the
+[Phase 2 Beta MVP plan](docs/phase-2-beta-mvp-plan.md).
+
 ## Requirements
 
 - GitHub repository connected to Codemagic.
