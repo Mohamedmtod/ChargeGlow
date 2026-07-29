@@ -135,13 +135,20 @@ workflows:
           CHECKSUM_PATH="$CM_BUILD_DIR/artifacts/ChargeGlow-Spike-unsigned.ipa.sha256"
           APP_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP_PATH/Info.plist")"
           APP_BUILD="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP_PATH/Info.plist")"
-          RELEASE_TAG="v${APP_VERSION}-build-${APP_BUILD}"
+          RELEASE_TAG="dev-latest"
+          RELEASE_TITLE="ChargeGlow Latest Development Build"
           TARGET_COMMIT="$(git rev-parse HEAD)"
           REPOSITORY="${CM_REPO_SLUG:-Mohamedmtod/ChargeGlow}"
+          RELEASE_NOTES="$(printf 'Version: %s\nBuild: %s\nCommit: %s' \
+            "$APP_VERSION" "$APP_BUILD" "$TARGET_COMMIT")"
 
           export GH_TOKEN="$GITHUB_TOKEN"
 
           if gh release view "$RELEASE_TAG" --repo "$REPOSITORY" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" \
+              --repo "$REPOSITORY" \
+              --title "$RELEASE_TITLE" \
+              --notes "$RELEASE_NOTES"
             gh release upload "$RELEASE_TAG" \
               "$IPA_PATH#ChargeGlow-Spike-unsigned.ipa" \
               "$CHECKSUM_PATH#ChargeGlow-Spike-unsigned.ipa.sha256" \
@@ -153,8 +160,8 @@ workflows:
               "$CHECKSUM_PATH#ChargeGlow-Spike-unsigned.ipa.sha256" \
               --repo "$REPOSITORY" \
               --target "$TARGET_COMMIT" \
-              --title "ChargeGlow ${APP_VERSION} (${APP_BUILD})" \
-              --notes "Unsigned ChargeGlow feasibility build for iLoader testing."
+              --title "$RELEASE_TITLE" \
+              --notes "$RELEASE_NOTES"
           fi
 
     artifacts:
