@@ -47,10 +47,19 @@ actor AppPreferencesStore {
     private let decoder = JSONDecoder()
 
     init(
-        defaults: UserDefaults = .standard,
+        suiteName: String? = nil,
         storageKey: String = AppPreferencesStore.defaultStorageKey
     ) {
-        self.defaults = defaults
+        if let suiteName {
+            guard let suiteDefaults = UserDefaults(suiteName: suiteName) else {
+                preconditionFailure(
+                    "Could not create UserDefaults suite \(suiteName)"
+                )
+            }
+            defaults = suiteDefaults
+        } else {
+            defaults = .standard
+        }
         self.storageKey = storageKey
     }
 

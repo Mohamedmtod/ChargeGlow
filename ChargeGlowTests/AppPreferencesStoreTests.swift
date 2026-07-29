@@ -4,23 +4,25 @@ import XCTest
 
 final class AppPreferencesStoreTests: XCTestCase {
     private var suiteName: String!
-    private var defaults: UserDefaults!
 
     override func setUp() {
         super.setUp()
         suiteName = "ChargeGlowTests.\(UUID().uuidString)"
-        defaults = UserDefaults(suiteName: suiteName)
     }
 
     override func tearDown() {
-        defaults.removePersistentDomain(forName: suiteName)
-        defaults = nil
+        if
+            let suiteName,
+            let defaults = UserDefaults(suiteName: suiteName)
+        {
+            defaults.removePersistentDomain(forName: suiteName)
+        }
         suiteName = nil
         super.tearDown()
     }
 
     func testDefaultsToNeonOrbit() async {
-        let store = AppPreferencesStore(defaults: defaults)
+        let store = AppPreferencesStore(suiteName: suiteName)
 
         let preferences = await store.load()
 
@@ -35,11 +37,11 @@ final class AppPreferencesStoreTests: XCTestCase {
     }
 
     func testSelectedThemePersists() async {
-        let store = AppPreferencesStore(defaults: defaults)
+        let store = AppPreferencesStore(suiteName: suiteName)
 
         await store.setSelectedThemeID("aurora-pulse")
 
-        let reloadedStore = AppPreferencesStore(defaults: defaults)
+        let reloadedStore = AppPreferencesStore(suiteName: suiteName)
         let selectedThemeID = await reloadedStore.selectedThemeID()
         XCTAssertEqual(selectedThemeID, "aurora-pulse")
     }
@@ -48,11 +50,12 @@ final class AppPreferencesStoreTests: XCTestCase {
         let legacyData = try JSONSerialization.data(
             withJSONObject: ["selectedThemeID": "ember-circuit"]
         )
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
         defaults.set(
             legacyData,
             forKey: AppPreferencesStore.defaultStorageKey
         )
-        let store = AppPreferencesStore(defaults: defaults)
+        let store = AppPreferencesStore(suiteName: suiteName)
 
         let migrated = await store.load()
 
@@ -64,7 +67,7 @@ final class AppPreferencesStoreTests: XCTestCase {
     }
 
     func testEmptyThemeFallsBackToDefault() async {
-        let store = AppPreferencesStore(defaults: defaults)
+        let store = AppPreferencesStore(suiteName: suiteName)
 
         await store.setSelectedThemeID("")
 
