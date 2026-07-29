@@ -32,7 +32,7 @@ workflows:
             -project "$CM_BUILD_DIR/$XCODE_PROJECT" \
             -scheme "$XCODE_SCHEME" \
             -configuration Debug \
-            -destination "platform=iOS Simulator,name=iPhone 17 Pro,OS=26.4" \
+            -destination "platform=iOS Simulator,name=iPhone 17 Pro,OS=26.4.1" \
             -resultBundlePath "$CM_BUILD_DIR/test-results/ChargeGlowTests.xcresult" \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
