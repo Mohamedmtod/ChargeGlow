@@ -2,16 +2,16 @@
 
 > **Status: Pending physical-device verification**
 >
-> No physical-device behavior in this document is currently claimed as passed.
-> The full MVP remains gated.
+> The Codemagic build and unit-test gate passed. No physical-device behavior in
+> this document is currently claimed as passed. The full MVP remains gated.
 
 ## Build and device
 
 | Field | Actual value |
 | --- | --- |
-| Commit SHA | TBD |
-| Codemagic build number | TBD |
-| Xcode version reported by CI | TBD; expected 26.4.1 |
+| Commit SHA | `034a6c8` |
+| Codemagic build ID / index | `6a6990de1b3c5bfe2f350249` / `2` |
+| Xcode version reported by CI | 26.4.1; exact-version guard passed |
 | iPhone model | TBD |
 | iOS version and build | TBD |
 | Dynamic Island | TBD |
@@ -27,9 +27,9 @@ relative links or artifact names here.
 
 | Evidence | Location |
 | --- | --- |
-| Codemagic unit-test log | TBD |
-| Codemagic device-build log | TBD |
-| IPA SHA-256 | TBD |
+| Codemagic unit-test log | Build artifacts for ID `6a6990de1b3c5bfe2f350249` |
+| Codemagic device-build log | Build artifacts for ID `6a6990de1b3c5bfe2f350249` |
+| IPA SHA-256 | Downloaded build artifacts; local verification still required |
 | iLoader log | TBD |
 | SideStore log | TBD |
 | `diagnostics.json` normal flow | TBD |
@@ -47,7 +47,7 @@ test state.
 
 | ID | Test | Expected | Actual | Result | Evidence |
 | --- | --- | --- | --- | --- | --- |
-| F-01 | Codemagic build and unit tests | All targets compile and tests pass | TBD | NOT RUN | TBD |
+| F-01 | Codemagic build and unit tests | All targets compile and tests pass | Workflow finished successfully in 2m 30s and published the unsigned IPA/app artifacts | PASS | Codemagic build `6a6990de1b3c5bfe2f350249` |
 | F-02 | Direct iLoader installation | App and widget are signed and installed | TBD | NOT RUN | TBD |
 | F-03 | SideStore installation | App and widget remain functional | TBD | NOT RUN | TBD |
 | F-04 | Intent discovery | Start and Stop appear in Shortcuts | TBD | NOT RUN | TBD |
@@ -71,7 +71,10 @@ test state.
 
 ### Codemagic
 
-TBD.
+Build index 2 completed successfully from `main` at commit `034a6c8`. The
+workflow published `ChargeGlow-Spike-unsigned.ipa`, `ChargeGlow.app.zip`, and
+the combined artifacts archive. This proves the compile/unit-test/unsigned
+packaging gate only; it does not prove installation or runtime behavior.
 
 ### iLoader direct USB
 
