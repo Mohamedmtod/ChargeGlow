@@ -102,6 +102,15 @@ final class BatteryMonitor: ObservableObject {
             state: BatteryReader.map(state: UIDevice.current.batteryState),
             observedAt: Date()
         )
+        let observedSnapshot = snapshot
+        Task {
+            await DiagnosticsRecorder.shared.record(
+                category: "battery",
+                level: .debug,
+                message: "Battery snapshot observed while the app had execution time.",
+                snapshot: observedSnapshot
+            )
+        }
         onSnapshot?(snapshot)
     }
 }

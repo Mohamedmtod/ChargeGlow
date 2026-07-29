@@ -11,10 +11,16 @@ enum DiagnosticLevel: String, Sendable {
 struct DiagnosticEvent: Codable, Identifiable, Sendable {
     let id: UUID
     let timestamp: Date
+    let sequence: Int?
+    let uptimeSeconds: Double?
     let category: String
     let level: String
     let message: String
     let diagnosticCode: String?
+    let correlationID: String?
+    let batteryPercentage: Int?
+    let chargingState: String?
+    let activeActivityCount: Int?
 }
 
 actor DiagnosticsRecorder {
@@ -24,13 +30,19 @@ actor DiagnosticsRecorder {
     private let maximumEvents = 500
     private var events: [DiagnosticEvent] = []
     private var hasLoadedEvents = false
+    private var nextSequence = 1
 
     func record(
         category: String,
         level: DiagnosticLevel = .info,
         message: String,
-        diagnosticCode: String? = nil
+        diagnosticCode: String? = nil,
+        correlationID: String? = nil,
+        snapshot: BatterySnapshot? = nil,
+        activeActivityCount: Int? = nil
     ) {
+        loadEventsIfNeeded()
+
         let logger = Logger(subsystem: subsystem, category: category)
         switch level {
         case .error:
@@ -43,17 +55,23 @@ actor DiagnosticsRecorder {
             logger.info("\(message, privacy: .public)")
         }
 
-        loadEventsIfNeeded()
         events.append(
             DiagnosticEvent(
                 id: UUID(),
                 timestamp: Date(),
+                sequence: nextSequence,
+                uptimeSeconds: ProcessInfo.processInfo.systemUptime,
                 category: category,
                 level: level.rawValue,
                 message: message,
-                diagnosticCode: diagnosticCode
+                diagnosticCode: diagnosticCode,
+                correlationID: correlationID,
+                batteryPercentage: snapshot?.percentage,
+                chargingState: snapshot?.state.rawValue,
+                activeActivityCount: activeActivityCount
             )
         )
+        nextSequence += 1
 
         if events.count > maximumEvents {
             events.removeFirst(events.count - maximumEvents)
@@ -82,6 +100,7 @@ actor DiagnosticsRecorder {
         }
 
         events = (try? JSONDecoder.chargeGlow.decode([DiagnosticEvent].self, from: data)) ?? []
+        nextSequence = (events.compactMap(\.sequence).max() ?? 0) + 1
     }
 
     private func persistEvents() {

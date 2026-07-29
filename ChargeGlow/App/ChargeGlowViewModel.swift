@@ -70,8 +70,19 @@ final class ChargeGlowViewModel: ObservableObject {
         diagnosticCode = nil
 
         Task {
+            let correlationID = UUID().uuidString
+            await DiagnosticsRecorder.shared.record(
+                category: "ui",
+                message: "Manual Start button tapped.",
+                correlationID: correlationID,
+                snapshot: snapshot,
+                activeActivityCount: activeActivityCount
+            )
             do {
-                _ = try await ChargingActivityManager.shared.start(snapshot: snapshot)
+                _ = try await ChargingActivityManager.shared.start(
+                    snapshot: snapshot,
+                    correlationID: correlationID
+                )
                 statusMessage = snapshot.percentage == nil
                     ? "Started, but iOS did not provide a battery percentage."
                     : "Live Activity started with a real battery snapshot."
@@ -93,7 +104,18 @@ final class ChargeGlowViewModel: ObservableObject {
         diagnosticCode = nil
 
         Task {
-            let result = await ChargingActivityManager.shared.endAll(snapshot: snapshot)
+            let correlationID = UUID().uuidString
+            await DiagnosticsRecorder.shared.record(
+                category: "ui",
+                message: "Manual Stop button tapped.",
+                correlationID: correlationID,
+                snapshot: snapshot,
+                activeActivityCount: activeActivityCount
+            )
+            let result = await ChargingActivityManager.shared.endAll(
+                snapshot: snapshot,
+                correlationID: correlationID
+            )
             switch result {
             case .ended(let count):
                 statusMessage = "Ended \(count) ChargeGlow Live Activity."

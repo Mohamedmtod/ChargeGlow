@@ -117,3 +117,20 @@ ChargeGlow reads the battery using public `UIDevice` APIs. It updates the Live
 Activity only while iOS gives the app execution time. Once the process is
 suspended, the last real reading and timestamp remain visible; the percentage is
 never estimated.
+
+## Diagnostic timeline
+
+The exported `diagnostics.json` records an ordered, bounded timeline of every
+meaningful event that iOS delivers to ChargeGlow:
+
+- App Intent invocation, battery capture, completion, and error.
+- Activity recovery, start, skipped update, real update, and end.
+- Manual Start and Stop actions.
+- Battery callbacks while the app has execution time.
+- Foreground, inactive, and background scene transitions.
+
+New records include a sequence number, process uptime, correlation ID, battery
+snapshot, charging state, and active-activity count where applicable. iOS can
+suspend the process while the phone is locked, so the absence of events during
+that interval means the app had no execution time; ChargeGlow does not run a
+continuous heartbeat or claim otherwise.

@@ -47,4 +47,8 @@ unverified until physical evidence exists.
 - Diagnostics are bounded local JSON plus OSLog entries.
 - Diagnostics contain operation state and error codes, not Apple credentials or
   personal content.
+- The ordered timeline correlates UI and Intent operations with ActivityKit
+  actions and real battery snapshots.
+- There is no background heartbeat; a timeline gap while suspended is expected
+  evidence that iOS did not provide execution time.
 - iLoader and SideStore are external test tools and are not part of ChargeGlow.

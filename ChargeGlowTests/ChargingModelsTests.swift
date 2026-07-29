@@ -45,4 +45,30 @@ final class ChargingModelsTests: XCTestCase {
             ChargingActivityError.activityStartFailed.recoverySuggestion.isEmpty
         )
     }
+
+    func testLegacyDiagnosticsRemainDecodable() throws {
+        let legacyJSON = """
+        [
+          {
+            "category": "app",
+            "id": "55BA4775-1384-44E9-95C8-086E743BD6CB",
+            "level": "info",
+            "message": "ChargeGlow launched.",
+            "timestamp": "2026-07-29T05:45:08Z"
+          }
+        ]
+        """
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        let events = try decoder.decode(
+            [DiagnosticEvent].self,
+            from: Data(legacyJSON.utf8)
+        )
+
+        XCTAssertEqual(events.count, 1)
+        XCTAssertNil(events[0].sequence)
+        XCTAssertNil(events[0].correlationID)
+        XCTAssertEqual(events[0].message, "ChargeGlow launched.")
+    }
 }
