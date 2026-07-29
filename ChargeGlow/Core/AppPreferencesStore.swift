@@ -9,15 +9,38 @@ enum AppLanguage: String, Codable, CaseIterable, Identifiable, Sendable {
         rawValue
     }
 
+    var resolved: AppLanguage {
+        guard self == .system else {
+            return self
+        }
+        let preferredLocalization =
+            Bundle.main.preferredLocalizations.first
+                ?? Locale.preferredLanguages.first
+        return Self.resolveSystemLanguage(
+            preferredLocalization: preferredLocalization
+        )
+    }
+
     var locale: Locale {
-        switch self {
+        switch resolved {
         case .system:
-            return .autoupdatingCurrent
+            return Locale(identifier: "en")
         case .english:
             return Locale(identifier: "en")
         case .arabic:
             return Locale(identifier: "ar")
         }
+    }
+
+    static func resolveSystemLanguage(
+        preferredLocalization: String?
+    ) -> AppLanguage {
+        guard let preferredLocalization else {
+            return .english
+        }
+        let languageCode = Locale(identifier: preferredLocalization)
+            .language.languageCode?.identifier.lowercased()
+        return languageCode == "ar" ? .arabic : .english
     }
 }
 

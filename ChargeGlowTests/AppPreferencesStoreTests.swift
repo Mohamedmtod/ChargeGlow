@@ -104,4 +104,40 @@ final class AppPreferencesStoreTests: XCTestCase {
         XCTAssertEqual(preferences.selectedThemeID, "aurora-pulse")
         XCTAssertEqual(preferences.appLanguage, .system)
     }
+
+    func testSystemLanguageResolvesArabicLanguageIdentifiers() {
+        XCTAssertEqual(
+            AppLanguage.resolveSystemLanguage(
+                preferredLocalization: "ar"
+            ),
+            .arabic
+        )
+        XCTAssertEqual(
+            AppLanguage.resolveSystemLanguage(
+                preferredLocalization: "ar-EG"
+            ),
+            .arabic
+        )
+    }
+
+    func testSystemLanguageDefaultsUnsupportedLanguagesToEnglish() {
+        XCTAssertEqual(
+            AppLanguage.resolveSystemLanguage(
+                preferredLocalization: "en-GB"
+            ),
+            .english
+        )
+        XCTAssertEqual(
+            AppLanguage.resolveSystemLanguage(
+                preferredLocalization: "fr"
+            ),
+            .english
+        )
+        XCTAssertEqual(
+            AppLanguage.resolveSystemLanguage(
+                preferredLocalization: nil
+            ),
+            .english
+        )
+    }
 }

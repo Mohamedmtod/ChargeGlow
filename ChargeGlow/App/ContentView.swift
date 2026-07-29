@@ -52,9 +52,9 @@ struct ContentView: View {
             Picker("App language", selection: $appLanguage) {
                 Text("System")
                     .tag(AppLanguage.system)
-                Text("English")
+                Text("Language option: English")
                     .tag(AppLanguage.english)
-                Text("Arabic")
+                Text("Language option: Arabic")
                     .tag(AppLanguage.arabic)
             }
         } label: {

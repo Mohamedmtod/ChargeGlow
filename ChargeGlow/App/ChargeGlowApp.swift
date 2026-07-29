@@ -1,10 +1,12 @@
 import AppIntents
+import Combine
 import SwiftUI
 
 @main
 struct ChargeGlowApp: App {
     @Environment(\.scenePhase) private var scenePhase
-    @State private var appLanguage = AppLanguage.system
+    @StateObject private var languageController =
+        AppLanguageController()
 
     init() {
         ChargeGlowShortcutsProvider.updateAppShortcutParameters()
@@ -12,23 +14,23 @@ struct ChargeGlowApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(appLanguage: $appLanguage)
+            ContentView(
+                appLanguage: Binding(
+                    get: { languageController.selection },
+                    set: { languageController.select($0) }
+                )
+            )
                 .preferredColorScheme(.dark)
-                .environment(\.locale, appLanguage.locale)
+                .environment(
+                    \.locale,
+                    languageController.selection.locale
+                )
                 .environment(
                     \.layoutDirection,
-                    appLanguage.layoutDirection
+                    languageController.selection.layoutDirection
                 )
                 .task {
-                    appLanguage =
-                        await AppPreferencesStore.shared.appLanguage()
-                }
-                .onChange(of: appLanguage) { _, newLanguage in
-                    Task {
-                        await AppPreferencesStore.shared.setAppLanguage(
-                            newLanguage
-                        )
-                    }
+                    await languageController.load()
                 }
                 .onChange(of: scenePhase) { oldPhase, newPhase in
                     let transition = "\(oldPhase.logName) -> \(newPhase.logName)"
@@ -43,17 +45,41 @@ struct ChargeGlowApp: App {
     }
 }
 
+@MainActor
+private final class AppLanguageController: ObservableObject {
+    @Published private(set) var selection = AppLanguage.system
+
+    private var userSelectedLanguage = false
+    private var persistenceTask: Task<Void, Never>?
+
+    func load() async {
+        let storedLanguage =
+            await AppPreferencesStore.shared.appLanguage()
+        guard !userSelectedLanguage else {
+            return
+        }
+        selection = storedLanguage
+    }
+
+    func select(_ language: AppLanguage) {
+        userSelectedLanguage = true
+        selection = language
+
+        let previousTask = persistenceTask
+        persistenceTask = Task {
+            await previousTask?.value
+            await AppPreferencesStore.shared.setAppLanguage(language)
+        }
+    }
+}
+
 private extension AppLanguage {
     var layoutDirection: LayoutDirection {
-        switch self {
+        switch resolved {
         case .arabic:
             return .rightToLeft
-        case .english:
+        case .english, .system:
             return .leftToRight
-        case .system:
-            return Locale.current.language.characterDirection == .rightToLeft
-                ? .rightToLeft
-                : .leftToRight
         }
     }
 }
