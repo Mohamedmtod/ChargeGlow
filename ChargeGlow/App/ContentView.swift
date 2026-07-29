@@ -177,6 +177,7 @@ struct ContentView: View {
                 animated: true
             )
             .frame(width: 150, height: 150)
+            .padding(10)
             .id(viewModel.selectedThemeID)
             .transition(
                 .scale(scale: 0.86)
@@ -278,9 +279,11 @@ struct ContentView: View {
                     themeID: descriptor.id,
                     percentage: viewModel.snapshot.percentage,
                     state: viewModel.snapshot.state,
+                    compact: true,
                     animated: isSelected
                 )
                 .frame(width: 82, height: 82)
+                .clipped()
 
                 themeNameText(descriptor.id)
                     .font(.caption.bold())

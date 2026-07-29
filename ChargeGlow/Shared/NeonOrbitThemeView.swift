@@ -1088,9 +1088,9 @@ private struct LumenBloomThemeView: View {
                         )
                         .frame(
                             width: compact ? 6 : 18,
-                            height: compact ? 20 : 58
+                            height: compact ? 18 : 58
                         )
-                        .offset(y: compact ? -13 : -38)
+                        .offset(y: compact ? -11 : -38)
                         .rotationEffect(
                             .degrees(
                                 Double(index) * 45
@@ -1247,24 +1247,66 @@ private struct ThemeBatteryReadout: View {
     let accent: Color
 
     var body: some View {
-        VStack(spacing: compact ? 0 : 3) {
-            Image(systemName: state.symbolName)
-                .font(compact ? .caption2 : .caption)
-                .foregroundStyle(accent)
+        ZStack {
+            Circle()
+                .fill(
+                    Color.black.opacity(
+                        compact ? 0.58 : 0.46
+                    )
+                )
+                .overlay {
+                    Circle()
+                        .stroke(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(0.22),
+                                    accent.opacity(0.42),
+                                    Color.clear
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: compact ? 0.7 : 1
+                        )
+                }
+                .shadow(
+                    color: Color.black.opacity(0.42),
+                    radius: compact ? 2 : 7
+                )
+                .frame(
+                    width: compact ? 30 : 68,
+                    height: compact ? 30 : 68
+                )
 
-            Text(percentage.map { "≈\($0)" } ?? "—")
-                .font(compact ? .caption2.bold() : .title2.bold())
-                .monospacedDigit()
-                .foregroundStyle(.white)
-                .contentTransition(.numericText())
-                .animation(.snappy, value: percentage)
+            VStack(spacing: compact ? 0 : 3) {
+                Image(systemName: state.symbolName)
+                    .font(compact ? .system(size: 8) : .caption)
+                    .foregroundStyle(accent)
 
-            if !compact {
-                Text("%")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                Text(percentage.map { "≈\($0)" } ?? "—")
+                    .font(
+                        compact
+                            ? .system(size: 10, weight: .bold)
+                            : .title2.bold()
+                    )
+                    .minimumScaleFactor(0.72)
+                    .lineLimit(1)
+                    .frame(
+                        maxWidth: compact ? 27 : 62
+                    )
+                    .monospacedDigit()
+                    .foregroundStyle(.white)
+                    .contentTransition(.numericText())
+                    .animation(.snappy, value: percentage)
+
+                if !compact {
+                    Text("%")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
             }
         }
+        .accessibilityHidden(true)
     }
 }
 

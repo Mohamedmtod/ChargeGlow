@@ -24,6 +24,7 @@ struct ChargingLiveActivity: Widget {
                             compact: true
                         )
                         .frame(width: 42, height: 42)
+                        .clipped()
                     }
                 }
 
@@ -115,6 +116,7 @@ struct ChargingLiveActivity: Widget {
                         compact: true
                     )
                     .padding(2)
+                    .clipped()
                 }
             }
             .keylineTint(.purple)
@@ -130,9 +132,11 @@ struct ChargingLiveActivity: Widget {
                     context.attributes.themeID
                 ),
                 percentage: context.state.batteryPercentage,
-                state: context.state.chargingState
+                state: context.state.chargingState,
+                compact: true
             )
             .frame(width: 76, height: 76)
+            .clipped()
 
             VStack(alignment: .leading, spacing: 5) {
                 themeNameText(

@@ -123,6 +123,10 @@ reading and becomes visibly outdated.
 - [ ] Every theme fits the Lock Screen presentation without clipping.
 - [ ] Every theme fits Dynamic Island compact, minimal, and expanded
       presentations.
+- [ ] Percentage, charging symbol, progress ring, and decorative layers do not
+      collide or clip at 0%, 50%, and 100%.
+- [ ] Gallery previews stay inside their cards and do not overlap theme names
+      in English or Arabic.
 - [ ] App theme motion is smooth and does not obscure the percentage.
 - [ ] Reduce Motion disables ambient theme movement and selection scaling.
 - [ ] On iOS 26, cards and controls use native Liquid Glass and react cleanly
