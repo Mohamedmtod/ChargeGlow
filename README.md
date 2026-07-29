@@ -19,7 +19,10 @@ The current engineering beta contains:
 - Start and Stop App Intents;
 - approximate point-in-time readings from the public iOS battery API;
 - a foreground charging-session comparison showing elapsed time, percentage
-  gain, observed percentage-points/hour, samples, and measurement confidence;
+  gain, a least-squares observed percentage-points/hour trend, samples, and
+  measurement confidence;
+- one-decimal presentation of the raw public battery API value in the app and
+  the Plasma Core Live Activity theme, without interpolating between readings;
 - duplicate recovery, diagnostics, and unit tests.
 
 Onboarding, purchases, backend, analytics, and production distribution remain
@@ -146,6 +149,12 @@ app open on screen; leaving the foreground ends the test. Compare chargers only
 with the same cable, starting battery range, screen use, temperature, and power
 settings. The reported rate is derived only from changes in the approximate
 public battery percentage.
+
+ChargeGlow retains the public `Float` battery value and displays it rounded to
+one decimal. This preserves all detail supplied by the public API, but does not
+create additional sensor precision: a device may still report coarse steps such
+as `45.0`, `50.0`, and `55.0`. The observed session trend uses least-squares
+fitting across accepted real samples and rejects rapid unchanged duplicates.
 
 The tested charger automations also did not invoke ChargeGlow after an iPhone
 reboot when the app had not been opened. The test did not isolate whether first

@@ -37,11 +37,38 @@ struct BatterySnapshot: Codable, Equatable, Sendable {
     static let liveActivityFreshnessInterval: TimeInterval = 120
 
     let percentage: Int?
+    let apiPercentage: Double?
     let state: ChargingState
     let observedAt: Date
 
+    init(
+        percentage: Int?,
+        apiPercentage: Double? = nil,
+        state: ChargingState,
+        observedAt: Date
+    ) {
+        self.percentage = percentage
+        self.apiPercentage = apiPercentage
+        self.state = state
+        self.observedAt = observedAt
+    }
+
+    var mostDetailedPercentage: Double? {
+        apiPercentage ?? percentage.map { Double($0) }
+    }
+
     var displayPercentage: String {
         percentage.map { "≈\($0)%" } ?? "—"
+    }
+
+    var detailedDisplayPercentage: String {
+        guard let mostDetailedPercentage else {
+            return "—"
+        }
+        return String(
+            format: "≈%.1f%%",
+            mostDetailedPercentage
+        )
     }
 
     var liveActivityStaleDate: Date {
@@ -52,6 +79,7 @@ struct BatterySnapshot: Codable, Equatable, Sendable {
 struct ChargingActivityAttributes: ActivityAttributes {
     struct ContentState: Codable, Hashable {
         let batteryPercentage: Int?
+        let batteryPercentageDecimal: Double?
         let chargingState: ChargingState
         let lastUpdatedAt: Date
         let displayMessage: String
@@ -70,6 +98,7 @@ extension ChargingActivityAttributes.ContentState {
         languageIdentifier: String? = nil
     ) {
         batteryPercentage = snapshot.percentage
+        batteryPercentageDecimal = snapshot.apiPercentage
         chargingState = snapshot.state
         lastUpdatedAt = snapshot.observedAt
         displayMessage = message ?? snapshot.state.displayName

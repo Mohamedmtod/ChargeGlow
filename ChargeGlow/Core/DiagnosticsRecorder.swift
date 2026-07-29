@@ -19,6 +19,7 @@ struct DiagnosticEvent: Codable, Identifiable, Sendable {
     let diagnosticCode: String?
     let correlationID: String?
     let batteryPercentage: Int?
+    let batteryPercentageDecimal: Double?
     let chargingState: String?
     let activeActivityCount: Int?
     let appVersion: String?
@@ -72,6 +73,7 @@ actor DiagnosticsRecorder {
                 diagnosticCode: diagnosticCode,
                 correlationID: correlationID,
                 batteryPercentage: snapshot?.percentage,
+                batteryPercentageDecimal: snapshot?.apiPercentage,
                 chargingState: snapshot?.state.rawValue,
                 activeActivityCount: activeActivityCount,
                 appVersion: buildInfo.version,

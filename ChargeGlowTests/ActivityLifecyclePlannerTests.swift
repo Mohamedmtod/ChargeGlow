@@ -99,6 +99,7 @@ final class ActivityLifecyclePlannerTests: XCTestCase {
         XCTAssertTrue(
             ActivityLifecyclePlanner.shouldUpdateActivity(
                 currentPercentage: 45,
+                currentDecimalPercentage: 45,
                 currentState: .charging,
                 lastUpdatedAt: lastUpdatedAt,
                 with: BatterySnapshot(
@@ -111,6 +112,7 @@ final class ActivityLifecyclePlannerTests: XCTestCase {
         XCTAssertTrue(
             ActivityLifecyclePlanner.shouldUpdateActivity(
                 currentPercentage: 45,
+                currentDecimalPercentage: 45,
                 currentState: .charging,
                 lastUpdatedAt: lastUpdatedAt,
                 with: BatterySnapshot(
@@ -123,10 +125,25 @@ final class ActivityLifecyclePlannerTests: XCTestCase {
         XCTAssertFalse(
             ActivityLifecyclePlanner.shouldUpdateActivity(
                 currentPercentage: 45,
+                currentDecimalPercentage: 45,
                 currentState: .charging,
                 lastUpdatedAt: lastUpdatedAt,
                 with: BatterySnapshot(
                     percentage: 45,
+                    state: .charging,
+                    observedAt: lastUpdatedAt.addingTimeInterval(1)
+                )
+            )
+        )
+        XCTAssertTrue(
+            ActivityLifecyclePlanner.shouldUpdateActivity(
+                currentPercentage: 45,
+                currentDecimalPercentage: 45.1,
+                currentState: .charging,
+                lastUpdatedAt: lastUpdatedAt,
+                with: BatterySnapshot(
+                    percentage: 45,
+                    apiPercentage: 45.2,
                     state: .charging,
                     observedAt: lastUpdatedAt.addingTimeInterval(1)
                 )

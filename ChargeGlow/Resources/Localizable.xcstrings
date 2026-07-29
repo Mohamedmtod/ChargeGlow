@@ -1,6 +1,46 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Approximately %.1f percent, %@" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حوالي %.1f بالمئة، %@"
+          }
+        }
+      }
+    },
+    "points" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نقطة مئوية"
+          }
+        }
+      }
+    },
+    "The decimal is the raw public API value rounded to one decimal; it may still change in coarse steps." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الرقم العشري هو قيمة واجهة iOS العامة مقربة إلى منزلة واحدة؛ وقد تظل تتغير على خطوات كبيرة."
+          }
+        }
+      }
+    },
+    "Uses every accepted public API sample to fit a more stable observed trend." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يستخدم كل عينة مقبولة من واجهة iOS العامة لحساب اتجاه ملحوظ أكثر استقرارًا."
+          }
+        }
+      }
+    },
     "%lld points" : {
       "localizations" : {
         "ar" : {

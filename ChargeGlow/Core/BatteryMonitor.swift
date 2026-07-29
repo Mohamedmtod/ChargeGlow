@@ -30,8 +30,18 @@ enum BatteryReader {
             return nil
         }
 
-        let percentage = Int((level * 100).rounded())
+        let clamped = min(max(Double(level), 0), 1)
+        let percentage = Int((clamped * 100).rounded())
         return min(max(percentage, 0), 100)
+    }
+
+    static func normalizeAPILevel(level: Float) -> Double? {
+        guard level >= 0 else {
+            return nil
+        }
+
+        let clamped = min(max(Double(level), 0), 1)
+        return (clamped * 1_000).rounded() / 10
     }
 
     static func map(state: UIDevice.BatteryState) -> ChargingState {
@@ -51,8 +61,10 @@ enum BatteryReader {
 
     @MainActor
     private static func currentSnapshot() -> BatterySnapshot {
-        BatterySnapshot(
-            percentage: normalize(level: UIDevice.current.batteryLevel),
+        let level = UIDevice.current.batteryLevel
+        return BatterySnapshot(
+            percentage: normalize(level: level),
+            apiPercentage: normalizeAPILevel(level: level),
             state: map(state: UIDevice.current.batteryState),
             observedAt: Date()
         )
@@ -79,7 +91,7 @@ enum ChargingTestConfidence: String, Equatable, Sendable {
 }
 
 struct ChargingSessionSample: Equatable, Sendable {
-    let percentage: Int
+    let percentage: Double
     let observedAt: Date
 }
 
@@ -93,15 +105,15 @@ struct ChargingSessionTest: Equatable, Sendable {
         samples.first?.observedAt
     }
 
-    var latestPercentage: Int? {
+    var latestPercentage: Double? {
         samples.last?.percentage
     }
 
-    var startPercentage: Int? {
+    var startPercentage: Double? {
         samples.first?.percentage
     }
 
-    var gainedPercentagePoints: Int? {
+    var gainedPercentagePoints: Double? {
         guard
             let startPercentage,
             let latestPercentage
@@ -129,13 +141,35 @@ struct ChargingSessionTest: Equatable, Sendable {
     var observedPercentagePointsPerHour: Double? {
         guard
             measurementDuration >= 300,
+            samples.count >= 2,
             let gainedPercentagePoints,
             gainedPercentagePoints > 0
         else {
             return nil
         }
-        return Double(gainedPercentagePoints)
-            / (measurementDuration / 3_600)
+
+        let origin = samples[0].observedAt
+        let points = samples.map {
+            (
+                x: $0.observedAt.timeIntervalSince(origin) / 3_600,
+                y: $0.percentage
+            )
+        }
+        let meanX =
+            points.reduce(0) { $0 + $1.x } / Double(points.count)
+        let meanY =
+            points.reduce(0) { $0 + $1.y } / Double(points.count)
+        let numerator = points.reduce(0) {
+            $0 + ($1.x - meanX) * ($1.y - meanY)
+        }
+        let denominator = points.reduce(0) {
+            $0 + pow($1.x - meanX, 2)
+        }
+
+        guard denominator > 0 else {
+            return nil
+        }
+        return max(numerator / denominator, 0)
     }
 
     var confidence: ChargingTestConfidence {
@@ -169,7 +203,7 @@ struct ChargingSessionTest: Equatable, Sendable {
     mutating func start(with snapshot: BatterySnapshot) -> Bool {
         guard
             snapshot.state == .charging,
-            let percentage = snapshot.percentage
+            let percentage = snapshot.mostDetailedPercentage
         else {
             return false
         }
@@ -191,7 +225,7 @@ struct ChargingSessionTest: Equatable, Sendable {
             return
         }
 
-        if let percentage = snapshot.percentage {
+        if let percentage = snapshot.mostDetailedPercentage {
             appendSample(
                 percentage: percentage,
                 observedAt: snapshot.observedAt
@@ -229,12 +263,23 @@ struct ChargingSessionTest: Equatable, Sendable {
     }
 
     private mutating func appendSample(
-        percentage: Int,
+        percentage: Double,
         observedAt: Date
     ) {
-        guard observedAt >= (samples.last?.observedAt ?? .distantPast) else {
+        guard
+            let latestSample = samples.last,
+            observedAt >= latestSample.observedAt
+        else {
             return
         }
+
+        let interval = observedAt.timeIntervalSince(
+            latestSample.observedAt
+        )
+        guard interval >= 20 || percentage != latestSample.percentage else {
+            return
+        }
+
         samples.append(
             ChargingSessionSample(
                 percentage: percentage,
@@ -255,7 +300,7 @@ struct ChargingSessionTest: Equatable, Sendable {
 
 @MainActor
 final class BatteryMonitor: ObservableObject {
-    private static let foregroundPollInterval: Duration = .seconds(60)
+    private static let foregroundPollInterval: Duration = .seconds(30)
 
     @Published private(set) var snapshot = BatterySnapshot(
         percentage: nil,
@@ -348,8 +393,10 @@ final class BatteryMonitor: ObservableObject {
     }
 
     private func publishCurrent(trigger: String) {
+        let level = UIDevice.current.batteryLevel
         snapshot = BatterySnapshot(
-            percentage: BatteryReader.normalize(level: UIDevice.current.batteryLevel),
+            percentage: BatteryReader.normalize(level: level),
+            apiPercentage: BatteryReader.normalizeAPILevel(level: level),
             state: BatteryReader.map(state: UIDevice.current.batteryState),
             observedAt: Date()
         )

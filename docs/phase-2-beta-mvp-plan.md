@@ -84,7 +84,10 @@ build.
 - consistent Lock Screen and Dynamic Island rendering for every theme;
 - honest approximate/unavailable/outdated battery presentation;
 - a foreground-only charging-session comparison using real public percentage
-  samples, with explicit confidence and hardware-quality disclaimers;
+  samples and a fitted observed trend, with explicit confidence and
+  hardware-quality disclaimers;
+- preservation of the public battery API's raw `Float` detail, shown to one
+  decimal in Plasma Core without interpolated or fabricated values;
 - first-run Shortcuts setup walkthrough and test actions;
 - String Catalog localization with English as the development language;
 - Arabic localization and full RTL verification, with no hard-coded

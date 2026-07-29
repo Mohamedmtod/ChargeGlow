@@ -51,6 +51,8 @@ actor ChargingActivityManager: ChargingActivityManaging {
         for activity in activities where plan.IDsToEnd.contains(activity.id) {
             let finalState = ChargingActivityAttributes.ContentState(
                 batteryPercentage: activity.content.state.batteryPercentage,
+                batteryPercentageDecimal:
+                    activity.content.state.batteryPercentageDecimal,
                 chargingState: .disconnected,
                 lastUpdatedAt: Date(),
                 displayMessage: String(
@@ -170,6 +172,8 @@ actor ChargingActivityManager: ChargingActivityManaging {
             current.languageIdentifier != languageIdentifier
                 || ActivityLifecyclePlanner.shouldUpdateActivity(
                 currentPercentage: current.batteryPercentage,
+                currentDecimalPercentage:
+                    current.batteryPercentageDecimal,
                 currentState: current.chargingState,
                 lastUpdatedAt: current.lastUpdatedAt,
                 with: snapshot
@@ -229,6 +233,9 @@ actor ChargingActivityManager: ChargingActivityManaging {
         for activity in activities {
             let finalState = ChargingActivityAttributes.ContentState(
                 batteryPercentage: snapshot?.percentage ?? activity.content.state.batteryPercentage,
+                batteryPercentageDecimal:
+                    snapshot?.apiPercentage
+                        ?? activity.content.state.batteryPercentageDecimal,
                 chargingState: .disconnected,
                 lastUpdatedAt: snapshot?.observedAt ?? Date(),
                 displayMessage: String(localized: "Charger disconnected"),

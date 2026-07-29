@@ -153,6 +153,16 @@ reading and becomes visibly outdated.
       time at `00:00`.
 - [ ] Keep ChargeGlow foregrounded for at least 15–20 minutes; sample count,
       battery gain, and observed points/hour update without fabricated values.
+- [ ] The app battery card shows the raw public API percentage to one decimal.
+      Confirm that the decimal is not animated or interpolated between actual
+      readings.
+- [ ] Plasma Core shows the same one-decimal value in the app, Lock Screen, and
+      supported Dynamic Island presentations without clipping.
+- [ ] If the device reports coarse values such as `45.0` then `50.0`, ChargeGlow
+      preserves them and does not manufacture intermediate decimal values.
+- [ ] Rapid unchanged observations do not inflate the accepted sample count.
+- [ ] The observed rate is fitted across all accepted samples and remains
+      unavailable until at least five minutes and a positive net gain.
 - [ ] Manual Stop freezes elapsed time and retains the result.
 - [ ] Disconnect automatically completes the test with the disconnected reason.
 - [ ] Reaching Full automatically completes the test with the full reason.

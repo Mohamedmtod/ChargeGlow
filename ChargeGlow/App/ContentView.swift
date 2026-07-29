@@ -238,6 +238,7 @@ struct ContentView: View {
             ChargingThemeView(
                 themeID: viewModel.selectedThemeID,
                 percentage: viewModel.snapshot.percentage,
+                apiPercentage: viewModel.snapshot.apiPercentage,
                 state: viewModel.snapshot.state,
                 animated: scenePhase == .active
             )
@@ -343,6 +344,7 @@ struct ContentView: View {
                 ChargingThemeView(
                     themeID: descriptor.id,
                     percentage: viewModel.snapshot.percentage,
+                    apiPercentage: viewModel.snapshot.apiPercentage,
                     state: viewModel.snapshot.state,
                     compact: true,
                     animated: isSelected
@@ -460,7 +462,7 @@ struct ContentView: View {
                 .font(.headline)
 
             HStack(alignment: .firstTextBaseline) {
-                Text(viewModel.snapshot.displayPercentage)
+                batteryAPIPercentageText
                     .font(.system(size: 40, weight: .bold, design: .rounded))
                     .monospacedDigit()
                     .contentTransition(.numericText())
@@ -505,12 +507,36 @@ struct ContentView: View {
                 )
                 .font(.caption)
                 .foregroundStyle(.orange)
+
+                Text(
+                    "The decimal is the raw public API value rounded to one decimal; it may still change in coarse steps."
+                )
+                .font(.caption2)
+                .foregroundStyle(.secondary)
             }
         }
         .chargeGlowCard(
             color: cardColor,
             accent: themeAccent
         )
+    }
+
+    @ViewBuilder
+    private var batteryAPIPercentageText: some View {
+        if let percentage = viewModel.snapshot.mostDetailedPercentage {
+            HStack(spacing: 0) {
+                Text("≈")
+                Text(
+                    percentage,
+                    format: .number.precision(
+                        .fractionLength(1)
+                    )
+                )
+                Text("%")
+            }
+        } else {
+            Text("—")
+        }
     }
 
     private var chargingSessionTestCard: some View {
@@ -530,13 +556,20 @@ struct ContentView: View {
             .font(.caption)
             .foregroundStyle(.secondary)
 
+            Label(
+                "Uses every accepted public API sample to fit a more stable observed trend.",
+                systemImage: "function"
+            )
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+
             Divider()
 
             switch test.phase {
             case .idle:
                 if
                     viewModel.snapshot.state == .charging,
-                    viewModel.snapshot.percentage != nil
+                    viewModel.snapshot.mostDetailedPercentage != nil
                 {
                     Label(
                         "Ready. Keep the same cable, charger, screen use, and temperature during the test.",
@@ -568,7 +601,7 @@ struct ContentView: View {
                 )
                 .disabled(
                     viewModel.snapshot.state != .charging
-                        || viewModel.snapshot.percentage == nil
+                        || viewModel.snapshot.mostDetailedPercentage == nil
                 )
 
             case .running:
@@ -698,7 +731,15 @@ struct ContentView: View {
             color: themeAccent
         ) {
             if let gain = test.gainedPercentagePoints {
-                Text("\(gain) points")
+                HStack(spacing: 3) {
+                    Text(
+                        gain,
+                        format: .number.precision(
+                            .fractionLength(1)
+                        )
+                    )
+                    Text("points")
+                }
             } else {
                 Text("Unavailable")
             }
@@ -735,14 +776,16 @@ struct ContentView: View {
 
     @ViewBuilder
     private func chargingTestPercentageText(
-        _ percentage: Int?
+        _ percentage: Double?
     ) -> some View {
         if let percentage {
             HStack(spacing: 0) {
                 Text("≈")
                 Text(
                     percentage,
-                    format: .number
+                    format: .number.precision(
+                        .fractionLength(1)
+                    )
                 )
                 Text("%")
             }

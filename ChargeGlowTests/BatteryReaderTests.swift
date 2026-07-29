@@ -14,6 +14,20 @@ final class BatteryReaderTests: XCTestCase {
         XCTAssertEqual(BatteryReader.normalize(level: 1.4), 100)
     }
 
+    func testPublicAPIBatteryLevelKeepsOneDecimalWithoutInterpolation() {
+        XCTAssertEqual(
+            BatteryReader.normalizeAPILevel(level: 0.456) ?? -1,
+            45.6,
+            accuracy: 0.001
+        )
+        XCTAssertEqual(
+            BatteryReader.normalizeAPILevel(level: 1.4) ?? -1,
+            100,
+            accuracy: 0.001
+        )
+        XCTAssertNil(BatteryReader.normalizeAPILevel(level: -1))
+    }
+
     func testBatteryStateMapping() {
         XCTAssertEqual(BatteryReader.map(state: .unknown), .unknown)
         XCTAssertEqual(BatteryReader.map(state: .unplugged), .disconnected)
@@ -49,6 +63,7 @@ final class BatteryReaderTests: XCTestCase {
         let started = test.start(
             with: BatterySnapshot(
                 percentage: 20,
+                apiPercentage: 20,
                 state: .charging,
                 observedAt: startDate
             )
@@ -56,9 +71,11 @@ final class BatteryReaderTests: XCTestCase {
         XCTAssertTrue(started)
 
         for minute in [2, 4, 6, 8, 10] {
+            let apiPercentage = 20 + Double(minute) * 0.3
             test.observe(
                 BatterySnapshot(
-                    percentage: 20 + minute / 3,
+                    percentage: Int(apiPercentage.rounded()),
+                    apiPercentage: apiPercentage,
                     state: .charging,
                     observedAt: startDate.addingTimeInterval(
                         TimeInterval(minute * 60)
@@ -67,7 +84,11 @@ final class BatteryReaderTests: XCTestCase {
             )
         }
 
-        XCTAssertEqual(test.gainedPercentagePoints, 3)
+        XCTAssertEqual(
+            test.gainedPercentagePoints ?? -1,
+            3,
+            accuracy: 0.001
+        )
         XCTAssertEqual(test.sampleCount, 6)
         XCTAssertEqual(test.confidence, .indicative)
         XCTAssertEqual(
@@ -83,6 +104,7 @@ final class BatteryReaderTests: XCTestCase {
         let started = test.start(
             with: BatterySnapshot(
                 percentage: 30,
+                apiPercentage: 30,
                 state: .charging,
                 observedAt: startDate
             )
@@ -93,6 +115,7 @@ final class BatteryReaderTests: XCTestCase {
             test.observe(
                 BatterySnapshot(
                     percentage: 30 + sample / 2,
+                    apiPercentage: Double(30 + sample / 2),
                     state: .charging,
                     observedAt: startDate.addingTimeInterval(
                         TimeInterval(sample * 120)
@@ -101,7 +124,11 @@ final class BatteryReaderTests: XCTestCase {
             )
         }
 
-        XCTAssertEqual(test.gainedPercentagePoints, 5)
+        XCTAssertEqual(
+            test.gainedPercentagePoints ?? -1,
+            5,
+            accuracy: 0.001
+        )
         XCTAssertEqual(test.confidence, .strong)
     }
 
@@ -127,7 +154,11 @@ final class BatteryReaderTests: XCTestCase {
 
         XCTAssertEqual(test.phase, .completed)
         XCTAssertEqual(test.completionReason, .disconnected)
-        XCTAssertEqual(test.gainedPercentagePoints, 2)
+        XCTAssertEqual(
+            test.gainedPercentagePoints ?? -1,
+            2,
+            accuracy: 0.001
+        )
     }
 
     func testChargingSessionCanEndWhenAppLeavesForeground() {
@@ -174,6 +205,79 @@ final class BatteryReaderTests: XCTestCase {
 
         XCTAssertEqual(test.phase, .completed)
         XCTAssertEqual(test.completionReason, .fullyCharged)
-        XCTAssertEqual(test.latestPercentage, 100)
+        XCTAssertEqual(
+            test.latestPercentage ?? -1,
+            100,
+            accuracy: 0.001
+        )
+    }
+
+    func testChargingSessionUsesDecimalSamplesAndRegression() {
+        let startDate = Date(timeIntervalSince1970: 6_000)
+        var test = ChargingSessionTest()
+        let started = test.start(
+            with: BatterySnapshot(
+                percentage: 40,
+                apiPercentage: 40.2,
+                state: .charging,
+                observedAt: startDate
+            )
+        )
+        XCTAssertTrue(started)
+
+        for (minute, percentage) in [
+            (2, 40.8),
+            (4, 41.4),
+            (6, 42.0),
+            (8, 42.6),
+            (10, 43.2)
+        ] {
+            test.observe(
+                BatterySnapshot(
+                    percentage: Int(percentage.rounded()),
+                    apiPercentage: percentage,
+                    state: .charging,
+                    observedAt: startDate.addingTimeInterval(
+                        TimeInterval(minute * 60)
+                    )
+                )
+            )
+        }
+
+        XCTAssertEqual(
+            test.gainedPercentagePoints ?? 0,
+            3,
+            accuracy: 0.001
+        )
+        XCTAssertEqual(
+            test.observedPercentagePointsPerHour ?? 0,
+            18,
+            accuracy: 0.001
+        )
+        XCTAssertEqual(test.confidence, .indicative)
+    }
+
+    func testChargingSessionRejectsDuplicateRapidSamples() {
+        let startDate = Date(timeIntervalSince1970: 7_000)
+        var test = ChargingSessionTest()
+        _ = test.start(
+            with: BatterySnapshot(
+                percentage: 50,
+                apiPercentage: 50,
+                state: .charging,
+                observedAt: startDate
+            )
+        )
+
+        test.observe(
+            BatterySnapshot(
+                percentage: 50,
+                apiPercentage: 50,
+                state: .charging,
+                observedAt: startDate.addingTimeInterval(5)
+            )
+        )
+
+        XCTAssertEqual(test.sampleCount, 1)
     }
 }

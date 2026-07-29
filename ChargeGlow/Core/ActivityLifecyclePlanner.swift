@@ -57,11 +57,18 @@ enum ActivityLifecyclePlanner {
 
     static func shouldUpdateActivity(
         currentPercentage: Int?,
+        currentDecimalPercentage: Double?,
         currentState: ChargingState,
         lastUpdatedAt: Date,
         with snapshot: BatterySnapshot
     ) -> Bool {
-        currentPercentage != snapshot.percentage
+        let currentDetailedPercentage =
+            currentDecimalPercentage
+                ?? currentPercentage.map { Double($0) }
+
+        return currentPercentage != snapshot.percentage
+            || currentDetailedPercentage
+                != snapshot.mostDetailedPercentage
             || currentState != snapshot.state
             || snapshot.observedAt.timeIntervalSince(lastUpdatedAt)
                 >= minimumSameValueRefreshInterval

@@ -40,6 +40,7 @@ final class ChargingModelsTests: XCTestCase {
         let observedAt = Date(timeIntervalSince1970: 123)
         let snapshot = BatterySnapshot(
             percentage: 64,
+            apiPercentage: 63.7,
             state: .charging,
             observedAt: observedAt
         )
@@ -50,6 +51,7 @@ final class ChargingModelsTests: XCTestCase {
         )
 
         XCTAssertEqual(state.batteryPercentage, 64)
+        XCTAssertEqual(state.batteryPercentageDecimal, 63.7)
         XCTAssertEqual(state.chargingState, .charging)
         XCTAssertEqual(state.lastUpdatedAt, observedAt)
         XCTAssertEqual(state.displayMessage, snapshot.state.displayName)
@@ -73,11 +75,13 @@ final class ChargingModelsTests: XCTestCase {
         let observedAt = Date(timeIntervalSince1970: 1_000)
         let snapshot = BatterySnapshot(
             percentage: 15,
+            apiPercentage: 15.2,
             state: .charging,
             observedAt: observedAt
         )
 
         XCTAssertEqual(snapshot.displayPercentage, "≈15%")
+        XCTAssertEqual(snapshot.detailedDisplayPercentage, "≈15.2%")
         XCTAssertEqual(
             snapshot.liveActivityStaleDate,
             observedAt.addingTimeInterval(120)
@@ -121,6 +125,7 @@ final class ChargingModelsTests: XCTestCase {
         XCTAssertEqual(events.count, 1)
         XCTAssertNil(events[0].sequence)
         XCTAssertNil(events[0].correlationID)
+        XCTAssertNil(events[0].batteryPercentageDecimal)
         XCTAssertNil(events[0].appVersion)
         XCTAssertEqual(events[0].message, "ChargeGlow launched.")
     }

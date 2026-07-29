@@ -38,6 +38,7 @@ enum ThemeCatalog {
 struct ChargingThemeView: View {
     let themeID: ThemeID
     let percentage: Int?
+    var apiPercentage: Double? = nil
     let state: ChargingState
     var compact = false
     var animated = false
@@ -75,6 +76,7 @@ struct ChargingThemeView: View {
         case .plasmaCore:
             PlasmaCoreThemeView(
                 percentage: percentage,
+                apiPercentage: apiPercentage,
                 state: state,
                 compact: compact,
                 animated: animated
@@ -1005,12 +1007,20 @@ private struct PlasmaCoreThemeView: View {
     @State private var plasmaRotation = 0.0
 
     let percentage: Int?
+    let apiPercentage: Double?
     let state: ChargingState
     let compact: Bool
     let animated: Bool
 
     private var progress: Double {
-        min(max(Double(percentage ?? 0) / 100, 0), 1)
+        min(
+            max(
+                (apiPercentage ?? percentage.map { Double($0) } ?? 0)
+                    / 100,
+                0
+            ),
+            1
+        )
     }
 
     private var motionEnabled: Bool {
@@ -1139,7 +1149,8 @@ private struct PlasmaCoreThemeView: View {
                 state: state,
                 compact: compact,
                 accent: state == .charging ? .pink : state.themeAccent,
-                animated: motionEnabled
+                animated: motionEnabled,
+                apiPercentage: apiPercentage
             )
         }
         .accessibilityElement(children: .ignore)
@@ -1147,7 +1158,8 @@ private struct PlasmaCoreThemeView: View {
             themeAccessibilityDescription(
                 percentage: percentage,
                 state: state,
-                locale: locale
+                locale: locale,
+                apiPercentage: apiPercentage
             )
         )
         .task(id: motionEnabled) { @MainActor in
@@ -1888,6 +1900,7 @@ private struct LiquidWaveShape: Shape {
 }
 
 private struct ThemeBatteryReadout: View {
+    @Environment(\.locale) private var locale
     @State private var energyPulse = false
 
     let percentage: Int?
@@ -1895,9 +1908,25 @@ private struct ThemeBatteryReadout: View {
     let compact: Bool
     let accent: Color
     let animated: Bool
+    var apiPercentage: Double? = nil
 
     private var energyActive: Bool {
         animated && state == .charging
+    }
+
+    private var displaysDecimal: Bool {
+        apiPercentage != nil
+    }
+
+    private var readoutText: String {
+        if let apiPercentage {
+            return String(
+                format: "≈%.1f",
+                locale: locale,
+                apiPercentage
+            )
+        }
+        return percentage.map { "≈\($0)" } ?? "—"
     }
 
     var body: some View {
@@ -1918,8 +1947,12 @@ private struct ThemeBatteryReadout: View {
                         : 1
                 )
                 .frame(
-                    width: compact ? 31 : 71,
-                    height: compact ? 31 : 71
+                    width: compact
+                        ? (displaysDecimal ? 39 : 31)
+                        : (displaysDecimal ? 83 : 71),
+                    height: compact
+                        ? (displaysDecimal ? 39 : 31)
+                        : (displaysDecimal ? 83 : 71)
                 )
 
             Circle()
@@ -1948,8 +1981,12 @@ private struct ThemeBatteryReadout: View {
                     radius: compact ? 2 : 7
                 )
                 .frame(
-                    width: compact ? 30 : 68,
-                    height: compact ? 30 : 68
+                    width: compact
+                        ? (displaysDecimal ? 38 : 30)
+                        : (displaysDecimal ? 80 : 68),
+                    height: compact
+                        ? (displaysDecimal ? 38 : 30)
+                        : (displaysDecimal ? 80 : 68)
                 )
 
             VStack(spacing: compact ? 0 : 3) {
@@ -1970,20 +2007,28 @@ private struct ThemeBatteryReadout: View {
                         radius: compact ? 1 : 4
                     )
 
-                Text(percentage.map { "≈\($0)" } ?? "—")
+                Text(readoutText)
                     .font(
                         compact
-                            ? .system(size: 10, weight: .bold)
-                            : .title2.bold()
+                            ? .system(
+                                size: displaysDecimal ? 8 : 10,
+                                weight: .bold
+                            )
+                            : displaysDecimal
+                                ? .title3.bold()
+                                : .title2.bold()
                     )
-                    .minimumScaleFactor(0.72)
+                    .minimumScaleFactor(0.62)
                     .lineLimit(1)
                     .frame(
-                        maxWidth: compact ? 27 : 62
+                        maxWidth: compact
+                            ? (displaysDecimal ? 36 : 27)
+                            : (displaysDecimal ? 75 : 62)
                     )
                     .monospacedDigit()
                     .foregroundStyle(.white)
                     .contentTransition(.numericText())
+                    .animation(.snappy, value: apiPercentage)
                     .animation(.snappy, value: percentage)
 
                 if !compact {
@@ -2028,9 +2073,21 @@ private extension ChargingState {
 private func themeAccessibilityDescription(
     percentage: Int?,
     state: ChargingState,
-    locale: Locale
+    locale: Locale,
+    apiPercentage: Double? = nil
 ) -> String {
     let stateName = localizedStateName(state, locale: locale)
+    if let apiPercentage {
+        return String(
+            format: String(
+                localized: "Approximately %.1f percent, %@",
+                locale: locale
+            ),
+            locale: locale,
+            apiPercentage,
+            stateName
+        )
+    }
     if let percentage {
         return String(
             format: String(

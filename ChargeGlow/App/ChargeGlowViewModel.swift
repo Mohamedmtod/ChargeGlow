@@ -110,6 +110,7 @@ final class ChargeGlowViewModel: ObservableObject {
             !isActive,
             chargingSessionTest.phase == .running
         {
+            batteryMonitor.refresh()
             var test = chargingSessionTest
             test.stop(at: Date(), reason: .appInactive)
             chargingSessionTest = test
@@ -152,6 +153,7 @@ final class ChargeGlowViewModel: ObservableObject {
     }
 
     func stopChargingSessionTest() {
+        batteryMonitor.refresh()
         var test = chargingSessionTest
         test.stop(at: Date())
         guard test != chargingSessionTest else {
@@ -316,7 +318,9 @@ private extension ActivityEndResult {
 
 private extension ChargingSessionTest {
     var diagnosticSummary: String {
-        let gain = gainedPercentagePoints.map { String($0) } ?? "unavailable"
+        let gain = gainedPercentagePoints.map {
+            String(format: "%.2f", $0)
+        } ?? "unavailable"
         let rate = observedPercentagePointsPerHour.map {
             String(format: "%.2f", $0)
         } ?? "unavailable"

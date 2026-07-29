@@ -20,6 +20,8 @@ struct ChargingLiveActivity: Widget {
                                 context.attributes.themeID
                             ),
                             percentage: context.state.batteryPercentage,
+                            apiPercentage:
+                                context.state.batteryPercentageDecimal,
                             state: context.state.chargingState,
                             compact: true
                         )
@@ -33,7 +35,14 @@ struct ChargingLiveActivity: Widget {
                         languageIdentifier:
                             context.state.languageIdentifier
                     ) {
-                        percentageText(context.state.batteryPercentage)
+                        percentageText(
+                            context.state.batteryPercentage,
+                            apiPercentage:
+                                context.state.batteryPercentageDecimal,
+                            themeID: ThemeCatalog.resolve(
+                                context.attributes.themeID
+                            )
+                        )
                             .font(.title3.bold())
                     }
                 }
@@ -99,7 +108,14 @@ struct ChargingLiveActivity: Widget {
                     languageIdentifier:
                         context.state.languageIdentifier
                 ) {
-                    percentageText(context.state.batteryPercentage)
+                    percentageText(
+                        context.state.batteryPercentage,
+                        apiPercentage:
+                            context.state.batteryPercentageDecimal,
+                        themeID: ThemeCatalog.resolve(
+                            context.attributes.themeID
+                        )
+                    )
                         .font(.caption.bold())
                 }
             } minimal: {
@@ -112,6 +128,8 @@ struct ChargingLiveActivity: Widget {
                             context.attributes.themeID
                         ),
                         percentage: context.state.batteryPercentage,
+                        apiPercentage:
+                            context.state.batteryPercentageDecimal,
                         state: context.state.chargingState,
                         compact: true
                     )
@@ -132,6 +150,8 @@ struct ChargingLiveActivity: Widget {
                     context.attributes.themeID
                 ),
                 percentage: context.state.batteryPercentage,
+                apiPercentage:
+                    context.state.batteryPercentageDecimal,
                 state: context.state.chargingState,
                 compact: true
             )
@@ -149,7 +169,14 @@ struct ChargingLiveActivity: Widget {
                 .tracking(1.4)
                 .foregroundStyle(.cyan)
 
-                percentageText(context.state.batteryPercentage)
+                percentageText(
+                    context.state.batteryPercentage,
+                    apiPercentage:
+                        context.state.batteryPercentageDecimal,
+                    themeID: ThemeCatalog.resolve(
+                        context.attributes.themeID
+                    )
+                )
                     .font(.title.bold())
 
                 Label {
@@ -194,8 +221,28 @@ struct ChargingLiveActivity: Widget {
     }
 
     @ViewBuilder
-    private func percentageText(_ percentage: Int?) -> some View {
-        if let percentage {
+    private func percentageText(
+        _ percentage: Int?,
+        apiPercentage: Double?,
+        themeID: ThemeID
+    ) -> some View {
+        if
+            themeID == .plasmaCore,
+            let apiPercentage
+        {
+            (
+                Text("≈")
+                + Text(
+                    apiPercentage,
+                    format: .number.precision(.fractionLength(1))
+                )
+                + Text("%")
+            )
+                .monospacedDigit()
+                .contentTransition(.numericText())
+                .lineLimit(1)
+                .minimumScaleFactor(0.68)
+        } else if let percentage {
             Text("≈\(percentage)%")
                 .monospacedDigit()
         } else {
