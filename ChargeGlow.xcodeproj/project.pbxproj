@@ -27,6 +27,11 @@
 		C00000000000000000000012 /* ChargingModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000012 /* ChargingModelsTests.swift */; };
 		C00000000000000000000013 /* ChargeGlowWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = K00000000000000000000002 /* ChargeGlowWidgets.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C00000000000000000000014 /* BuildInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000013 /* BuildInfo.swift */; };
+		C00000000000000000000015 /* AppPreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000014 /* AppPreferencesStore.swift */; };
+		C00000000000000000000016 /* AppPreferencesStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000015 /* AppPreferencesStoreTests.swift */; };
+		C00000000000000000000017 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000016 /* Localizable.xcstrings */; };
+		C00000000000000000000018 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000016 /* Localizable.xcstrings */; };
+		C00000000000000000000019 /* AppShortcuts.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B00000000000000000000017 /* AppShortcuts.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +85,10 @@
 		B00000000000000000000011 /* ActivityLifecyclePlannerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityLifecyclePlannerTests.swift; sourceTree = "<group>"; };
 		B00000000000000000000012 /* ChargingModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChargingModelsTests.swift; sourceTree = "<group>"; };
 		B00000000000000000000013 /* BuildInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildInfo.swift; sourceTree = "<group>"; };
+		B00000000000000000000014 /* AppPreferencesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferencesStore.swift; sourceTree = "<group>"; };
+		B00000000000000000000015 /* AppPreferencesStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferencesStoreTests.swift; sourceTree = "<group>"; };
+		B00000000000000000000016 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		B00000000000000000000017 /* AppShortcuts.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = AppShortcuts.xcstrings; sourceTree = "<group>"; };
 		K00000000000000000000001 /* ChargeGlow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChargeGlow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		K00000000000000000000002 /* ChargeGlowWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ChargeGlowWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		K00000000000000000000003 /* ChargeGlowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ChargeGlowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -137,6 +146,7 @@
 		D00000000000000000000005 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				B00000000000000000000014 /* AppPreferencesStore.swift */,
 				B00000000000000000000006 /* ChargingActivityError.swift */,
 				B00000000000000000000007 /* ActivityLifecyclePlanner.swift */,
 				B00000000000000000000008 /* BatteryMonitor.swift */,
@@ -168,6 +178,8 @@
 			isa = PBXGroup;
 			children = (
 				B0000000000000000000000C /* Info.plist */,
+				B00000000000000000000016 /* Localizable.xcstrings */,
+				B00000000000000000000017 /* AppShortcuts.xcstrings */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -188,6 +200,7 @@
 				B00000000000000000000010 /* BatteryReaderTests.swift */,
 				B00000000000000000000011 /* ActivityLifecyclePlannerTests.swift */,
 				B00000000000000000000012 /* ChargingModelsTests.swift */,
+				B00000000000000000000015 /* AppPreferencesStoreTests.swift */,
 			);
 			path = ChargeGlowTests;
 			sourceTree = "<group>";
@@ -264,7 +277,7 @@
 			compatibilityVersion = "Xcode 16.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
-			knownRegions = (en, Base, );
+			knownRegions = (en, ar, Base, );
 			mainGroup = D00000000000000000000001;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
@@ -280,8 +293,23 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		E00000000000000000000003 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
-		E00000000000000000000007 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		E00000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C00000000000000000000017 /* Localizable.xcstrings in Resources */,
+				C00000000000000000000019 /* AppShortcuts.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E00000000000000000000007 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C00000000000000000000018 /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E0000000000000000000000A /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXResourcesBuildPhase section */
 
@@ -299,6 +327,7 @@
 				C00000000000000000000007 /* ActivityLifecyclePlanner.swift in Sources */,
 				C00000000000000000000008 /* BatteryMonitor.swift in Sources */,
 				C00000000000000000000014 /* BuildInfo.swift in Sources */,
+				C00000000000000000000015 /* AppPreferencesStore.swift in Sources */,
 				C00000000000000000000009 /* DiagnosticsRecorder.swift in Sources */,
 				C0000000000000000000000A /* ChargingActivityManager.swift in Sources */,
 				C0000000000000000000000B /* ChargingIntents.swift in Sources */,
@@ -323,6 +352,7 @@
 				C00000000000000000000010 /* BatteryReaderTests.swift in Sources */,
 				C00000000000000000000011 /* ActivityLifecyclePlannerTests.swift in Sources */,
 				C00000000000000000000012 /* ChargingModelsTests.swift in Sources */,
+				C00000000000000000000016 /* AppPreferencesStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -445,7 +475,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ChargeGlow/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", );
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedalaa.chargeglow;
 				PRODUCT_MODULE_NAME = ChargeGlow;
 				PRODUCT_NAME = ChargeGlow;
@@ -467,7 +497,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ChargeGlow/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", );
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedalaa.chargeglow;
 				PRODUCT_MODULE_NAME = ChargeGlow;
 				PRODUCT_NAME = ChargeGlow;
@@ -489,7 +519,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ChargeGlowWidgets/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks", );
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedalaa.chargeglow.widgets;
 				PRODUCT_NAME = ChargeGlowWidgets;
 				SKIP_INSTALL = YES;
@@ -511,7 +541,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ChargeGlowWidgets/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks", );
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedalaa.chargeglow.widgets;
 				PRODUCT_NAME = ChargeGlowWidgets;
 				SKIP_INSTALL = YES;

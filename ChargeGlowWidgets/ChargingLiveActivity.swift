@@ -72,7 +72,8 @@ struct ChargingLiveActivity: Widget {
             .frame(width: 76, height: 76)
 
             VStack(alignment: .leading, spacing: 5) {
-                Text("NEON ORBIT")
+                Text("Neon Orbit")
+                    .textCase(.uppercase)
                     .font(.caption.bold())
                     .tracking(1.4)
                     .foregroundStyle(.cyan)
@@ -87,11 +88,19 @@ struct ChargingLiveActivity: Widget {
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
-                Text(
-                    context.isStale
-                        ? "Outdated · Updated \(context.state.lastUpdatedAt.formatted(date: .omitted, time: .shortened))"
-                        : "Updated \(context.state.lastUpdatedAt.formatted(date: .omitted, time: .shortened))"
-                )
+                HStack(spacing: 3) {
+                    if context.isStale {
+                        Text("Outdated · Updated")
+                    } else {
+                        Text("Updated")
+                    }
+                    Text(
+                        context.state.lastUpdatedAt.formatted(
+                            date: .omitted,
+                            time: .shortened
+                        )
+                    )
+                }
                     .font(.caption2)
                     .foregroundStyle(context.isStale ? Color.orange : Color.secondary)
             }

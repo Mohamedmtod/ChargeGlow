@@ -1,0 +1,636 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%lld activities (recovery required)" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld أنشطة (يلزم الاسترداد)"
+          }
+        }
+      }
+    },
+    "A ChargeGlow Live Activity is already running." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يوجد نشاط مباشر لـ ChargeGlow قيد التشغيل بالفعل."
+          }
+        }
+      }
+    },
+    "Approximately %lld percent, %@" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حوالي %lld بالمئة، %@"
+          }
+        }
+      }
+    },
+    "Approximate public API value; it can differ from the status bar." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قيمة تقريبية من واجهة النظام العامة؛ قد تختلف عن شريط الحالة."
+          }
+        }
+      }
+    },
+    "Battery percentage unavailable" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نسبة البطارية غير متاحة"
+          }
+        }
+      }
+    },
+    "Battery percentage unavailable, %@" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نسبة البطارية غير متاحة، %@"
+          }
+        }
+      }
+    },
+    "Charger disconnected" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم فصل الشاحن"
+          }
+        }
+      }
+    },
+    "ChargeGlow" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ChargeGlow"
+          }
+        }
+      }
+    },
+    "ChargeGlow Activity" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نشاط ChargeGlow"
+          }
+        }
+      }
+    },
+    "ChargeGlow could not end the Live Activity." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعذر على ChargeGlow إنهاء النشاط المباشر."
+          }
+        }
+      }
+    },
+    "ChargeGlow could not start the Live Activity." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعذر على ChargeGlow بدء النشاط المباشر."
+          }
+        }
+      }
+    },
+    "ChargeGlow could not start. Open the app and export diagnostics." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعذر بدء ChargeGlow. افتح التطبيق وصدّر التشخيصات."
+          }
+        }
+      }
+    },
+    "ChargeGlow could not update the Live Activity." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعذر على ChargeGlow تحديث النشاط المباشر."
+          }
+        }
+      }
+    },
+    "ChargeGlow is already running." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ChargeGlow قيد التشغيل بالفعل."
+          }
+        }
+      }
+    },
+    "ChargeGlow refreshes once per minute while foregrounded. After suspension, the Live Activity marks its last public API reading as outdated." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يحدّث ChargeGlow القراءة مرة كل دقيقة أثناء وجوده في الواجهة. بعد التعليق، يضع النشاط المباشر علامة «قديمة» على آخر قراءة من واجهة النظام العامة."
+          }
+        }
+      }
+    },
+    "ChargeGlow started, but iOS did not provide a battery percentage." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بدأ ChargeGlow، لكن iOS لم يوفر نسبة البطارية."
+          }
+        }
+      }
+    },
+    "ChargeGlow started with the current iOS battery reading." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بدأ ChargeGlow باستخدام قراءة البطارية الحالية من iOS."
+          }
+        }
+      }
+    },
+    "ChargeGlow stopped." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم إيقاف ChargeGlow."
+          }
+        }
+      }
+    },
+    "ChargeGlow was already stopped." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "كان ChargeGlow متوقفًا بالفعل."
+          }
+        }
+      }
+    },
+    "Charging" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جارٍ الشحن"
+          }
+        }
+      }
+    },
+    "Charging Live Activity" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نشاط شحن مباشر"
+          }
+        }
+      }
+    },
+    "Diagnostic code: %@" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رمز التشخيص: %@"
+          }
+        }
+      }
+    },
+    "Diagnostics export could not be prepared." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعذر تجهيز تصدير التشخيصات."
+          }
+        }
+      }
+    },
+    "Disabled" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "معطلة"
+          }
+        }
+      }
+    },
+    "Disconnected" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غير متصل"
+          }
+        }
+      }
+    },
+    "Duplicate activity ended during recovery" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم إنهاء نشاط مكرر أثناء الاسترداد"
+          }
+        }
+      }
+    },
+    "Enabled" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مفعلة"
+          }
+        }
+      }
+    },
+    "Ended %lld ChargeGlow Live Activity." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم إنهاء %lld من أنشطة ChargeGlow المباشرة."
+          }
+        }
+      }
+    },
+    "Ends every ChargeGlow Live Activity. Repeating this action is safe." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ينهي جميع أنشطة ChargeGlow المباشرة. يمكن تكرار هذا الإجراء بأمان."
+          }
+        }
+      }
+    },
+    "Export diagnostics, then retry after reopening ChargeGlow." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "صدّر التشخيصات، ثم أعد المحاولة بعد فتح ChargeGlow مجددًا."
+          }
+        }
+      }
+    },
+    "Fully Charged" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مكتملة الشحن"
+          }
+        }
+      }
+    },
+    "iOS battery API snapshot" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قراءة واجهة بطارية iOS"
+          }
+        }
+      }
+    },
+    "iOS did not provide a value. ChargeGlow will not estimate it." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لم يوفر iOS قيمة. لن يقوم ChargeGlow بتقديرها."
+          }
+        }
+      }
+    },
+    "Live Activities" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الأنشطة المباشرة"
+          }
+        }
+      }
+    },
+    "Live Activities are disabled. Enable them in Settings and try again." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الأنشطة المباشرة معطلة. فعّلها من الإعدادات ثم حاول مجددًا."
+          }
+        }
+      }
+    },
+    "Live Activities are disabled. Enable them in Settings, then try again." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الأنشطة المباشرة معطلة. فعّلها من الإعدادات، ثم حاول مجددًا."
+          }
+        }
+      }
+    },
+    "Live Activity started with the latest public iOS battery reading." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بدأ النشاط المباشر باستخدام أحدث قراءة عامة للبطارية من iOS."
+          }
+        }
+      }
+    },
+    "Neon Orbit" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نيون أوربت"
+          }
+        }
+      }
+    },
+    "Open Settings, select ChargeGlow, and enable Live Activities." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "افتح الإعدادات، واختر ChargeGlow، ثم فعّل الأنشطة المباشرة."
+          }
+        }
+      }
+    },
+    "Outdated · Updated" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قديمة · آخر تحديث"
+          }
+        }
+      }
+    },
+    "Prepare diagnostics export" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تجهيز تصدير التشخيصات"
+          }
+        }
+      }
+    },
+    "Reading outdated" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "القراءة قديمة"
+          }
+        }
+      }
+    },
+    "Ready to start a charging Live Activity." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جاهز لبدء نشاط شحن مباشر."
+          }
+        }
+      }
+    },
+    "Refresh" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تحديث"
+          }
+        }
+      }
+    },
+    "Run Start Charging Theme first." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شغّل إجراء بدء ثيم الشحن أولًا."
+          }
+        }
+      }
+    },
+    "Running" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قيد التشغيل"
+          }
+        }
+      }
+    },
+    "Share diagnostics.json" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مشاركة diagnostics.json"
+          }
+        }
+      }
+    },
+    "Start Charging Theme" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بدء ثيم الشحن"
+          }
+        }
+      }
+    },
+    "Start Live Activity" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بدء النشاط المباشر"
+          }
+        }
+      }
+    },
+    "Started, but iOS did not provide a battery percentage." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم البدء، لكن iOS لم يوفر نسبة البطارية."
+          }
+        }
+      }
+    },
+    "Starts the selected ChargeGlow Live Activity using the current public iOS battery reading." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يبدأ نشاط ChargeGlow المباشر المحدد باستخدام قراءة البطارية العامة الحالية من iOS."
+          }
+        }
+      }
+    },
+    "Status" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الحالة"
+          }
+        }
+      }
+    },
+    "Stop" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إيقاف"
+          }
+        }
+      }
+    },
+    "Stop Charging Theme" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إيقاف ثيم الشحن"
+          }
+        }
+      }
+    },
+    "Stopped" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "متوقف"
+          }
+        }
+      }
+    },
+    "The battery level is currently unavailable. ChargeGlow will never estimate it." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مستوى البطارية غير متاح حاليًا. لن يقوم ChargeGlow بتقديره."
+          }
+        }
+      }
+    },
+    "There is no ChargeGlow Live Activity to update or stop." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لا يوجد نشاط مباشر لـ ChargeGlow لتحديثه أو إيقافه."
+          }
+        }
+      }
+    },
+    "Unknown" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غير معروف"
+          }
+        }
+      }
+    },
+    "Unlock the device, open ChargeGlow once, and retry the automation." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "افتح قفل الجهاز، وافتح ChargeGlow مرة واحدة، ثم أعد تجربة الأتمتة."
+          }
+        }
+      }
+    },
+    "Updated" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "آخر تحديث"
+          }
+        }
+      }
+    },
+    "Updated %@" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "آخر تحديث %@"
+          }
+        }
+      }
+    },
+    "Use Stop Charging Theme before starting another activity." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استخدم إجراء إيقاف ثيم الشحن قبل بدء نشاط آخر."
+          }
+        }
+      }
+    },
+    "Version %@ (%@)" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الإصدار %@ (%@)"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

@@ -2,6 +2,16 @@ import Combine
 import Foundation
 import UIKit
 
+protocol BatterySnapshotProviding: Sendable {
+    func capture() async -> BatterySnapshot
+}
+
+struct SystemBatterySnapshotProvider: BatterySnapshotProviding {
+    func capture() async -> BatterySnapshot {
+        await BatteryReader.capture()
+    }
+}
+
 enum BatteryReader {
     @MainActor
     static func capture() async -> BatterySnapshot {

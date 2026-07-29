@@ -12,7 +12,24 @@ enum ActivityEndResult: Equatable, Sendable {
     case nothingToEnd
 }
 
-actor ChargingActivityManager {
+protocol ChargingActivityManaging: Sendable {
+    func recover(correlationID: String?) async -> ActivityRecoveryResult
+    func start(
+        snapshot: BatterySnapshot,
+        correlationID: String?
+    ) async throws -> String
+    func update(
+        snapshot: BatterySnapshot,
+        correlationID: String?
+    ) async throws
+    func endAll(
+        snapshot: BatterySnapshot?,
+        correlationID: String?
+    ) async -> ActivityEndResult
+    func activeActivityCount() async -> Int
+}
+
+actor ChargingActivityManager: ChargingActivityManaging {
     static let shared = ChargingActivityManager()
 
     private typealias ChargingActivity = Activity<ChargingActivityAttributes>
@@ -36,7 +53,9 @@ actor ChargingActivityManager {
                 batteryPercentage: activity.content.state.batteryPercentage,
                 chargingState: .disconnected,
                 lastUpdatedAt: Date(),
-                displayMessage: "Duplicate activity ended during recovery"
+                displayMessage: String(
+                    localized: "Duplicate activity ended during recovery"
+                )
             )
             await activity.end(
                 ActivityContent(state: finalState, staleDate: nil),
@@ -197,7 +216,7 @@ actor ChargingActivityManager {
                 batteryPercentage: snapshot?.percentage ?? activity.content.state.batteryPercentage,
                 chargingState: .disconnected,
                 lastUpdatedAt: snapshot?.observedAt ?? Date(),
-                displayMessage: "Charger disconnected"
+                displayMessage: String(localized: "Charger disconnected")
             )
             await activity.end(
                 ActivityContent(state: finalState, staleDate: nil),
@@ -215,7 +234,7 @@ actor ChargingActivityManager {
         return .ended(count: activities.count)
     }
 
-    func activeActivityCount() -> Int {
+    func activeActivityCount() async -> Int {
         ChargingActivity.activities.count
     }
 

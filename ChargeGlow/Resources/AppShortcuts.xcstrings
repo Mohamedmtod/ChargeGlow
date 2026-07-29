@@ -1,0 +1,46 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Start ${applicationName}" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ابدأ ${applicationName}"
+          }
+        }
+      }
+    },
+    "Start my charging theme with ${applicationName}" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ابدأ ثيم الشحن باستخدام ${applicationName}"
+          }
+        }
+      }
+    },
+    "Stop ${applicationName}" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أوقف ${applicationName}"
+          }
+        }
+      }
+    },
+    "Stop my charging theme with ${applicationName}" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أوقف ثيم الشحن باستخدام ${applicationName}"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

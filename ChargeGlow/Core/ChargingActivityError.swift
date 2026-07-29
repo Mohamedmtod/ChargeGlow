@@ -31,34 +31,48 @@ enum ChargingActivityError: Error, Equatable, LocalizedError, Sendable {
     var errorDescription: String? {
         switch self {
         case .liveActivitiesNotAuthorized:
-            return "Live Activities are disabled. Enable them in Settings and try again."
+            return String(
+                localized: "Live Activities are disabled. Enable them in Settings and try again."
+            )
         case .batteryUnavailable:
-            return "The battery level is currently unavailable. ChargeGlow will never estimate it."
+            return String(
+                localized: "The battery level is currently unavailable. ChargeGlow will never estimate it."
+            )
         case .activityAlreadyRunning:
-            return "A ChargeGlow Live Activity is already running."
+            return String(localized: "A ChargeGlow Live Activity is already running.")
         case .noActiveActivity:
-            return "There is no ChargeGlow Live Activity to update or stop."
+            return String(
+                localized: "There is no ChargeGlow Live Activity to update or stop."
+            )
         case .activityStartFailed:
-            return "ChargeGlow could not start the Live Activity."
+            return String(localized: "ChargeGlow could not start the Live Activity.")
         case .activityUpdateFailed:
-            return "ChargeGlow could not update the Live Activity."
+            return String(localized: "ChargeGlow could not update the Live Activity.")
         case .activityEndFailed:
-            return "ChargeGlow could not end the Live Activity."
+            return String(localized: "ChargeGlow could not end the Live Activity.")
         }
     }
 
     var recoverySuggestion: String {
         switch self {
         case .liveActivitiesNotAuthorized:
-            return "Open Settings, select ChargeGlow, and enable Live Activities."
+            return String(
+                localized: "Open Settings, select ChargeGlow, and enable Live Activities."
+            )
         case .batteryUnavailable:
-            return "Unlock the device, open ChargeGlow once, and retry the automation."
+            return String(
+                localized: "Unlock the device, open ChargeGlow once, and retry the automation."
+            )
         case .activityAlreadyRunning:
-            return "Use Stop Charging Theme before starting another activity."
+            return String(
+                localized: "Use Stop Charging Theme before starting another activity."
+            )
         case .noActiveActivity:
-            return "Run Start Charging Theme first."
+            return String(localized: "Run Start Charging Theme first.")
         case .activityStartFailed, .activityUpdateFailed, .activityEndFailed:
-            return "Export diagnostics, then retry after reopening ChargeGlow."
+            return String(
+                localized: "Export diagnostics, then retry after reopening ChargeGlow."
+            )
         }
     }
 }

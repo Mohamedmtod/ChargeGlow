@@ -1,8 +1,13 @@
+import AppIntents
 import SwiftUI
 
 @main
 struct ChargeGlowApp: App {
     @Environment(\.scenePhase) private var scenePhase
+
+    init() {
+        ChargeGlowShortcutsProvider.updateAppShortcutParameters()
+    }
 
     var body: some Scene {
         WindowGroup {

@@ -10,13 +10,13 @@ enum ChargingState: String, Codable, CaseIterable, Hashable, Sendable {
     var displayName: String {
         switch self {
         case .unknown:
-            return "Unknown"
+            return String(localized: "Unknown")
         case .disconnected:
-            return "Disconnected"
+            return String(localized: "Disconnected")
         case .charging:
-            return "Charging"
+            return String(localized: "Charging")
         case .full:
-            return "Fully Charged"
+            return String(localized: "Fully Charged")
         }
     }
 

@@ -16,7 +16,7 @@ final class ChargingModelsTests: XCTestCase {
         XCTAssertEqual(state.batteryPercentage, 64)
         XCTAssertEqual(state.chargingState, .charging)
         XCTAssertEqual(state.lastUpdatedAt, observedAt)
-        XCTAssertEqual(state.displayMessage, "Charging")
+        XCTAssertEqual(state.displayMessage, snapshot.state.displayName)
     }
 
     func testUnavailablePercentageIsNotFabricated() {

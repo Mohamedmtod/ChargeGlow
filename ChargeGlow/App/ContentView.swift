@@ -72,7 +72,9 @@ struct ContentView: View {
         VStack(spacing: 12) {
             statusRow(
                 title: "Live Activities",
-                value: viewModel.liveActivitiesEnabled ? "Enabled" : "Disabled",
+                value: viewModel.liveActivitiesEnabled
+                    ? String(localized: "Enabled")
+                    : String(localized: "Disabled"),
                 symbol: viewModel.liveActivitiesEnabled
                     ? "checkmark.circle.fill"
                     : "exclamationmark.triangle.fill",
@@ -208,13 +210,17 @@ struct ContentView: View {
     }
 
     private func statusRow(
-        title: String,
+        title: LocalizedStringKey,
         value: String,
         symbol: String,
         color: Color
     ) -> some View {
         HStack {
-            Label(title, systemImage: symbol)
+            Label {
+                Text(title)
+            } icon: {
+                Image(systemName: symbol)
+            }
                 .foregroundStyle(color)
             Spacer()
             Text(value)

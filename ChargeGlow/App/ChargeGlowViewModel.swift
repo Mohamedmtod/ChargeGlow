@@ -11,21 +11,41 @@ final class ChargeGlowViewModel: ObservableObject {
     )
     @Published private(set) var liveActivitiesEnabled = false
     @Published private(set) var activeActivityCount = 0
-    @Published private(set) var statusMessage = "Ready to start a charging Live Activity."
+    @Published private(set) var statusMessage = String(
+        localized: "Ready to start a charging Live Activity."
+    )
     @Published private(set) var diagnosticCode: String?
     @Published private(set) var diagnosticsURL: URL?
     @Published private(set) var isWorking = false
 
-    let batteryMonitor = BatteryMonitor()
+    let batteryMonitor: BatteryMonitor
+    private let batterySnapshotProvider: any BatterySnapshotProviding
+    private let activityManager: any ChargingActivityManaging
+
+    init(
+        batteryMonitor: BatteryMonitor = BatteryMonitor(),
+        batterySnapshotProvider: any BatterySnapshotProviding =
+            SystemBatterySnapshotProvider(),
+        activityManager: any ChargingActivityManaging =
+            ChargingActivityManager.shared
+    ) {
+        self.batteryMonitor = batteryMonitor
+        self.batterySnapshotProvider = batterySnapshotProvider
+        self.activityManager = activityManager
+    }
 
     var activityStatus: String {
         switch activeActivityCount {
         case 0:
-            return "Stopped"
+            return String(localized: "Stopped")
         case 1:
-            return "Running"
+            return String(localized: "Running")
         default:
-            return "\(activeActivityCount) activities (recovery required)"
+            return String(
+                format: String(localized: "%lld activities (recovery required)"),
+                locale: Locale.current,
+                activeActivityCount
+            )
         }
     }
 
@@ -37,7 +57,7 @@ final class ChargeGlowViewModel: ObservableObject {
             self.snapshot = snapshot
             Task {
                 let activityCount =
-                    await ChargingActivityManager.shared.activeActivityCount()
+                    await self.activityManager.activeActivityCount()
 
                 if ActivityLifecyclePlanner.shouldEndForBatteryState(
                     snapshot.state,
@@ -51,7 +71,7 @@ final class ChargeGlowViewModel: ObservableObject {
                         snapshot: snapshot,
                         activeActivityCount: activityCount
                     )
-                    let result = await ChargingActivityManager.shared.endAll(
+                    let result = await self.activityManager.endAll(
                         snapshot: snapshot,
                         correlationID: correlationID
                     )
@@ -63,7 +83,10 @@ final class ChargeGlowViewModel: ObservableObject {
                         activeActivityCount: 0
                     )
                 } else {
-                    try? await ChargingActivityManager.shared.update(snapshot: snapshot)
+                    try? await self.activityManager.update(
+                        snapshot: snapshot,
+                        correlationID: nil
+                    )
                 }
                 await self.refreshStatus()
             }
@@ -102,7 +125,7 @@ final class ChargeGlowViewModel: ObservableObject {
         diagnosticCode = nil
 
         Task {
-            let freshSnapshot = await BatteryReader.capture()
+            let freshSnapshot = await batterySnapshotProvider.capture()
             snapshot = freshSnapshot
             let correlationID = UUID().uuidString
             await DiagnosticsRecorder.shared.record(
@@ -113,13 +136,17 @@ final class ChargeGlowViewModel: ObservableObject {
                 activeActivityCount: activeActivityCount
             )
             do {
-                _ = try await ChargingActivityManager.shared.start(
+                _ = try await activityManager.start(
                     snapshot: freshSnapshot,
                     correlationID: correlationID
                 )
                 statusMessage = freshSnapshot.percentage == nil
-                    ? "Started, but iOS did not provide a battery percentage."
-                    : "Live Activity started with the latest public iOS battery reading."
+                    ? String(
+                        localized: "Started, but iOS did not provide a battery percentage."
+                    )
+                    : String(
+                        localized: "Live Activity started with the latest public iOS battery reading."
+                    )
             } catch let error as ChargingActivityError {
                 show(error)
             } catch {
@@ -146,15 +173,19 @@ final class ChargeGlowViewModel: ObservableObject {
                 snapshot: snapshot,
                 activeActivityCount: activeActivityCount
             )
-            let result = await ChargingActivityManager.shared.endAll(
+            let result = await activityManager.endAll(
                 snapshot: snapshot,
                 correlationID: correlationID
             )
             switch result {
             case .ended(let count):
-                statusMessage = "Ended \(count) ChargeGlow Live Activity."
+                statusMessage = String(
+                    format: String(localized: "Ended %lld ChargeGlow Live Activity."),
+                    locale: Locale.current,
+                    count
+                )
             case .nothingToEnd:
-                statusMessage = "ChargeGlow was already stopped."
+                statusMessage = String(localized: "ChargeGlow was already stopped.")
             }
             await refreshStatus()
             isWorking = false
@@ -165,15 +196,17 @@ final class ChargeGlowViewModel: ObservableObject {
         Task {
             diagnosticsURL = await DiagnosticsRecorder.shared.exportURL()
             if diagnosticsURL == nil {
-                statusMessage = "Diagnostics export could not be prepared."
+                statusMessage = String(
+                    localized: "Diagnostics export could not be prepared."
+                )
             }
         }
     }
 
     private func refreshStatus() async {
         liveActivitiesEnabled = ActivityAuthorizationInfo().areActivitiesEnabled
-        _ = await ChargingActivityManager.shared.recover()
-        activeActivityCount = await ChargingActivityManager.shared.activeActivityCount()
+        _ = await activityManager.recover(correlationID: nil)
+        activeActivityCount = await activityManager.activeActivityCount()
     }
 
     private func show(_ error: ChargingActivityError) {

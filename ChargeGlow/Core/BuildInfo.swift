@@ -17,7 +17,12 @@ struct BuildInfo: Equatable, Sendable {
     }
 
     var versionText: String {
-        "Version \(version) (\(build))"
+        String(
+            format: String(localized: "Version %@ (%@)"),
+            locale: Locale.current,
+            version,
+            build
+        )
     }
 
     var buildText: String {

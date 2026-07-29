@@ -59,9 +59,22 @@ struct NeonOrbitThemeView: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(
-            percentage.map { "Approximately \($0) percent, \(state.displayName)" }
-                ?? "Battery percentage unavailable, \(state.displayName)"
+        .accessibilityLabel(accessibilityDescription)
+    }
+
+    private var accessibilityDescription: String {
+        if let percentage {
+            return String(
+                format: String(localized: "Approximately %lld percent, %@"),
+                locale: Locale.current,
+                percentage,
+                state.displayName
+            )
+        }
+        return String(
+            format: String(localized: "Battery percentage unavailable, %@"),
+            locale: Locale.current,
+            state.displayName
         )
     }
 }
