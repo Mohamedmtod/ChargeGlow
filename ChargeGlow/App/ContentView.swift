@@ -4,9 +4,14 @@ struct ContentView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = ChargeGlowViewModel()
+    @State private var ambientDrift = false
     @Binding var appLanguage: AppLanguage
 
     private let cardColor = Color.white.opacity(0.07)
+
+    private var ambientMotionEnabled: Bool {
+        !reduceMotion && scenePhase == .active
+    }
 
     var body: some View {
         NavigationStack {
@@ -34,13 +39,29 @@ struct ContentView: View {
                         .fill(themeAccent.opacity(0.16))
                         .frame(width: 280, height: 280)
                         .blur(radius: 80)
-                        .offset(x: 145, y: -250)
+                        .scaleEffect(
+                            ambientMotionEnabled
+                                ? (ambientDrift ? 1.08 : 0.92)
+                                : 1
+                        )
+                        .offset(
+                            x: ambientDrift ? 158 : 135,
+                            y: ambientDrift ? -268 : -238
+                        )
 
                     Circle()
                         .fill(themeSecondaryAccent.opacity(0.1))
                         .frame(width: 240, height: 240)
                         .blur(radius: 90)
-                        .offset(x: -150, y: 330)
+                        .scaleEffect(
+                            ambientMotionEnabled
+                                ? (ambientDrift ? 0.92 : 1.08)
+                                : 1
+                        )
+                        .offset(
+                            x: ambientDrift ? -132 : -158,
+                            y: ambientDrift ? 305 : 345
+                        )
                 }
                 .ignoresSafeArea()
                 .animation(
@@ -64,6 +85,19 @@ struct ContentView: View {
             }
             .onChange(of: scenePhase) { _, newPhase in
                 viewModel.setApplicationActive(newPhase == .active)
+            }
+            .task(id: ambientMotionEnabled) { @MainActor in
+                ambientDrift = false
+                guard ambientMotionEnabled else {
+                    return
+                }
+                await Task.yield()
+                withAnimation(
+                    .easeInOut(duration: 7.5)
+                        .repeatForever(autoreverses: true)
+                ) {
+                    ambientDrift = true
+                }
             }
         }
         .tint(themeAccent)
@@ -174,7 +208,7 @@ struct ContentView: View {
                 themeID: viewModel.selectedThemeID,
                 percentage: viewModel.snapshot.percentage,
                 state: viewModel.snapshot.state,
-                animated: true
+                animated: scenePhase == .active
             )
             .frame(width: 150, height: 150)
             .padding(10)

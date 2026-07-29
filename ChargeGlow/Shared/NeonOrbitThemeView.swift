@@ -268,6 +268,16 @@ struct NeonOrbitThemeView: View {
                                 color: accent,
                                 radius: compact ? 2 : 7
                             )
+                            .scaleEffect(
+                                motionEnabled
+                                    ? (haloPulse ? 1.35 : 0.78)
+                                    : 1
+                            )
+                            .opacity(
+                                motionEnabled
+                                    ? (haloPulse ? 1 : 0.58)
+                                    : 1
+                            )
                             .offset(y: -radius)
                             .rotationEffect(
                                 .degrees(
@@ -283,24 +293,13 @@ struct NeonOrbitThemeView: View {
                 .allowsHitTesting(false)
             }
 
-            VStack(spacing: compact ? 0 : 3) {
-                Image(systemName: state.symbolName)
-                    .font(compact ? .caption2 : .caption)
-                    .foregroundStyle(accent)
-
-                Text(percentage.map { "≈\($0)" } ?? "—")
-                    .font(compact ? .caption2.bold() : .title2.bold())
-                    .monospacedDigit()
-                    .foregroundStyle(.white)
-                    .contentTransition(.numericText())
-                    .animation(.snappy, value: percentage)
-
-                if !compact {
-                    Text("%")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-            }
+            ThemeBatteryReadout(
+                percentage: percentage,
+                state: state,
+                compact: compact,
+                accent: accent,
+                animated: motionEnabled
+            )
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(
@@ -338,6 +337,7 @@ private struct AuroraPulseThemeView: View {
     @Environment(\.locale) private var locale
     @State private var auroraShift = false
     @State private var pulse = false
+    @State private var auroraRotation = 0.0
 
     let percentage: Int?
     let state: ChargingState
@@ -446,6 +446,7 @@ private struct AuroraPulseThemeView: View {
                         ? (pulse ? 0.2 : 0.72)
                         : 0.44
                 )
+                .rotationEffect(.degrees(auroraRotation))
 
             Circle()
                 .stroke(Color.white.opacity(0.1), lineWidth: compact ? 2 : 5)
@@ -495,7 +496,8 @@ private struct AuroraPulseThemeView: View {
                 percentage: percentage,
                 state: state,
                 compact: compact,
-                accent: state.themeAccent
+                accent: state.themeAccent,
+                animated: motionEnabled
             )
         }
         .accessibilityElement(children: .ignore)
@@ -509,6 +511,7 @@ private struct AuroraPulseThemeView: View {
         .task(id: motionEnabled) { @MainActor in
             auroraShift = false
             pulse = false
+            auroraRotation = 0
             guard motionEnabled else {
                 return
             }
@@ -524,6 +527,12 @@ private struct AuroraPulseThemeView: View {
                     .repeatForever(autoreverses: true)
             ) {
                 pulse = true
+            }
+            withAnimation(
+                .linear(duration: 13)
+                    .repeatForever(autoreverses: false)
+            ) {
+                auroraRotation = 360
             }
         }
     }
@@ -570,6 +579,24 @@ private struct EmberCircuitThemeView: View {
                         lineWidth: compact ? 1 : 2
                     )
                     .padding(CGFloat(index) * (compact ? 3 : 9) + 3)
+                    .scaleEffect(
+                        motionEnabled
+                            ? (
+                                circuitPulse
+                                    ? 1 - Double(index) * 0.008
+                                    : 0.94 + Double(index) * 0.012
+                            )
+                            : 1
+                    )
+                    .opacity(
+                        motionEnabled
+                            ? (
+                                circuitPulse
+                                    ? 0.9 - Double(index) * 0.12
+                                    : 0.42 + Double(index) * 0.08
+                            )
+                            : 1
+                    )
                     .shadow(
                         color: Color.orange.opacity(
                             circuitPulse ? 0.55 : 0.12
@@ -650,7 +677,8 @@ private struct EmberCircuitThemeView: View {
                 percentage: percentage,
                 state: state,
                 compact: compact,
-                accent: state == .charging ? .orange : state.themeAccent
+                accent: state == .charging ? .orange : state.themeAccent,
+                animated: motionEnabled
             )
         }
         .accessibilityElement(children: .ignore)
@@ -696,6 +724,7 @@ private struct AquaFluxThemeView: View {
     @Environment(\.locale) private var locale
     @State private var wavePhase: CGFloat = 0
     @State private var bubbleDrift = false
+    @State private var surfaceShimmer = false
 
     let percentage: Int?
     let state: ChargingState
@@ -754,6 +783,41 @@ private struct AquaFluxThemeView: View {
             .fill(Color.white.opacity(0.16))
             .padding(compact ? 3 : 8)
             .clipShape(Circle())
+
+            GeometryReader { proxy in
+                ZStack {
+                    Capsule()
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color.clear,
+                                    Color.white.opacity(0.65),
+                                    Color.clear
+                                ],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                        .frame(
+                            width: compact ? 4 : 18,
+                            height: compact ? 32 : 118
+                        )
+                        .rotationEffect(.degrees(24))
+                        .offset(
+                            x: surfaceShimmer
+                                ? proxy.size.width * 0.48
+                                : -proxy.size.width * 0.48
+                        )
+                        .blur(radius: compact ? 1 : 5)
+                        .opacity(motionEnabled ? 0.24 : 0)
+                }
+                .frame(
+                    width: proxy.size.width,
+                    height: proxy.size.height
+                )
+            }
+            .clipShape(Circle())
+            .allowsHitTesting(false)
 
             GeometryReader { proxy in
                 let diameter = min(
@@ -835,7 +899,8 @@ private struct AquaFluxThemeView: View {
                 percentage: percentage,
                 state: state,
                 compact: compact,
-                accent: state == .charging ? .cyan : state.themeAccent
+                accent: state == .charging ? .cyan : state.themeAccent,
+                animated: motionEnabled
             )
         }
         .accessibilityElement(children: .ignore)
@@ -849,6 +914,7 @@ private struct AquaFluxThemeView: View {
         .task(id: motionEnabled) { @MainActor in
             wavePhase = 0
             bubbleDrift = false
+            surfaceShimmer = false
             guard motionEnabled else {
                 return
             }
@@ -864,6 +930,12 @@ private struct AquaFluxThemeView: View {
                     .repeatForever(autoreverses: true)
             ) {
                 bubbleDrift = true
+            }
+            withAnimation(
+                .easeInOut(duration: 3.8)
+                    .repeatForever(autoreverses: true)
+            ) {
+                surfaceShimmer = true
             }
         }
     }
@@ -968,6 +1040,13 @@ private struct PlasmaCoreThemeView: View {
                         ? (corePulse ? 0.95 : 0.56)
                         : 0.7
                 )
+                .hueRotation(
+                    .degrees(
+                        motionEnabled
+                            ? (corePulse ? 16 : -12)
+                            : 0
+                    )
+                )
                 .blur(radius: compact ? 1 : 3)
                 .shadow(
                     color: Color.pink.opacity(0.9),
@@ -1002,7 +1081,8 @@ private struct PlasmaCoreThemeView: View {
                 percentage: percentage,
                 state: state,
                 compact: compact,
-                accent: state == .charging ? .pink : state.themeAccent
+                accent: state == .charging ? .pink : state.themeAccent,
+                animated: motionEnabled
             )
         }
         .accessibilityElement(children: .ignore)
@@ -1090,6 +1170,23 @@ private struct LumenBloomThemeView: View {
                             width: compact ? 6 : 18,
                             height: compact ? 18 : 58
                         )
+                        .scaleEffect(
+                            motionEnabled
+                                ? (
+                                    bloomPulse
+                                        ? (
+                                            index.isMultiple(of: 2)
+                                                ? 1.08
+                                                : 0.92
+                                        )
+                                        : (
+                                            index.isMultiple(of: 2)
+                                                ? 0.92
+                                                : 1.08
+                                        )
+                                )
+                                : 1
+                        )
                         .offset(y: compact ? -11 : -38)
                         .rotationEffect(
                             .degrees(
@@ -1166,7 +1263,8 @@ private struct LumenBloomThemeView: View {
                 percentage: percentage,
                 state: state,
                 compact: compact,
-                accent: state == .charging ? .mint : state.themeAccent
+                accent: state == .charging ? .mint : state.themeAccent,
+                animated: motionEnabled
             )
         }
         .accessibilityElement(children: .ignore)
@@ -1241,13 +1339,40 @@ private struct LiquidWaveShape: Shape {
 }
 
 private struct ThemeBatteryReadout: View {
+    @State private var energyPulse = false
+
     let percentage: Int?
     let state: ChargingState
     let compact: Bool
     let accent: Color
+    let animated: Bool
+
+    private var energyActive: Bool {
+        animated && state == .charging
+    }
 
     var body: some View {
         ZStack {
+            Circle()
+                .stroke(
+                    accent.opacity(
+                        energyActive
+                            ? (energyPulse ? 0.52 : 0.12)
+                            : 0
+                    ),
+                    lineWidth: compact ? 1 : 2
+                )
+                .blur(radius: compact ? 1 : 4)
+                .scaleEffect(
+                    energyActive
+                        ? (energyPulse ? 1.12 : 0.94)
+                        : 1
+                )
+                .frame(
+                    width: compact ? 31 : 71,
+                    height: compact ? 31 : 71
+                )
+
             Circle()
                 .fill(
                     Color.black.opacity(
@@ -1282,6 +1407,19 @@ private struct ThemeBatteryReadout: View {
                 Image(systemName: state.symbolName)
                     .font(compact ? .system(size: 8) : .caption)
                     .foregroundStyle(accent)
+                    .scaleEffect(
+                        energyActive
+                            ? (energyPulse ? 1.16 : 0.9)
+                            : 1
+                    )
+                    .shadow(
+                        color: accent.opacity(
+                            energyActive
+                                ? (energyPulse ? 0.82 : 0.18)
+                                : 0
+                        ),
+                        radius: compact ? 1 : 4
+                    )
 
                 Text(percentage.map { "≈\($0)" } ?? "—")
                     .font(
@@ -1307,6 +1445,19 @@ private struct ThemeBatteryReadout: View {
             }
         }
         .accessibilityHidden(true)
+        .task(id: energyActive) { @MainActor in
+            energyPulse = false
+            guard energyActive else {
+                return
+            }
+            await Task.yield()
+            withAnimation(
+                .easeInOut(duration: 1.15)
+                    .repeatForever(autoreverses: true)
+            ) {
+                energyPulse = true
+            }
+        }
     }
 }
 

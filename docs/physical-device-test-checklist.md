@@ -128,6 +128,9 @@ reading and becomes visibly outdated.
 - [ ] Gallery previews stay inside their cards and do not overlap theme names
       in English or Arabic.
 - [ ] App theme motion is smooth and does not obscure the percentage.
+- [ ] Each theme has a distinct motion signature with no sudden jump when the
+      screen appears or the selected theme changes.
+- [ ] Background drift and theme motion pause when ChargeGlow is inactive.
 - [ ] Reduce Motion disables ambient theme movement and selection scaling.
 - [ ] On iOS 26, cards and controls use native Liquid Glass and react cleanly
       to touch without reducing text contrast.

@@ -9,7 +9,8 @@ The current engineering beta contains:
 
 - six local themes: Neon Orbit, Aurora Pulse, Ember Circuit, Aqua Flux,
   Plasma Core, and Lumen Bloom;
-- app-only ambient theme motion with Reduce Motion support;
+- six distinct app-only motion signatures plus an ambient background, all with
+  Reduce Motion and inactive-scene suspension;
 - native interactive Liquid Glass surfaces on iOS 26 with a material fallback
   on iOS 17 through iOS 25;
 - persistent local theme and language preferences;
