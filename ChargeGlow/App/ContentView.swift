@@ -51,6 +51,14 @@ struct ContentView: View {
             Text("Physical-device feasibility build")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+
+            VStack(spacing: 3) {
+                Text(BuildInfo.current.versionText)
+                Text(BuildInfo.current.buildText)
+            }
+            .font(.caption.monospaced())
+            .foregroundStyle(.cyan.opacity(0.85))
+            .textSelection(.enabled)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)

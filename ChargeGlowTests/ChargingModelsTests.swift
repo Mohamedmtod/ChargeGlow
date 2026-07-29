@@ -69,6 +69,7 @@ final class ChargingModelsTests: XCTestCase {
         XCTAssertEqual(events.count, 1)
         XCTAssertNil(events[0].sequence)
         XCTAssertNil(events[0].correlationID)
+        XCTAssertNil(events[0].appVersion)
         XCTAssertEqual(events[0].message, "ChargeGlow launched.")
     }
 }

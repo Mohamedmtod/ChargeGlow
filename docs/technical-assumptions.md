@@ -13,6 +13,7 @@
 | Network | None |
 | Distribution | Unsigned Codemagic IPA, locally re-signed by iLoader |
 | Theme | Fixed `neon-orbit` |
+| Instrumented release | `1.1.0`; build number stamped from Codemagic |
 
 ## API assumptions to verify
 
@@ -49,6 +50,8 @@ unverified until physical evidence exists.
   personal content.
 - The ordered timeline correlates UI and Intent operations with ActivityKit
   actions and real battery snapshots.
+- Every event carries the app version, bundle build, Git commit, and Codemagic
+  build ID so evidence cannot be confused between installed IPAs.
 - There is no background heartbeat; a timeline gap while suspended is expected
   evidence that iOS did not provide execution time.
 - iLoader and SideStore are external test tools and are not part of ChargeGlow.

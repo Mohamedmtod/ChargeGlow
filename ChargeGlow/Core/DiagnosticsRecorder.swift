@@ -21,6 +21,10 @@ struct DiagnosticEvent: Codable, Identifiable, Sendable {
     let batteryPercentage: Int?
     let chargingState: String?
     let activeActivityCount: Int?
+    let appVersion: String?
+    let appBuild: String?
+    let gitCommit: String?
+    let codemagicBuildID: String?
 }
 
 actor DiagnosticsRecorder {
@@ -42,6 +46,7 @@ actor DiagnosticsRecorder {
         activeActivityCount: Int? = nil
     ) {
         loadEventsIfNeeded()
+        let buildInfo = BuildInfo.current
 
         let logger = Logger(subsystem: subsystem, category: category)
         switch level {
@@ -68,7 +73,11 @@ actor DiagnosticsRecorder {
                 correlationID: correlationID,
                 batteryPercentage: snapshot?.percentage,
                 chargingState: snapshot?.state.rawValue,
-                activeActivityCount: activeActivityCount
+                activeActivityCount: activeActivityCount,
+                appVersion: buildInfo.version,
+                appBuild: buildInfo.build,
+                gitCommit: buildInfo.gitCommit,
+                codemagicBuildID: buildInfo.codemagicBuildID
             )
         )
         nextSequence += 1

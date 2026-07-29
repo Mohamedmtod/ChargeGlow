@@ -24,6 +24,24 @@ workflows:
           xcodebuild -list \
             -project "$CM_BUILD_DIR/$XCODE_PROJECT"
 
+      - name: Stamp visible build identity
+        script: |
+          set -euo pipefail
+          APP_PLIST="$CM_BUILD_DIR/ChargeGlow/Resources/Info.plist"
+          WIDGET_PLIST="$CM_BUILD_DIR/ChargeGlowWidgets/Info.plist"
+          GIT_COMMIT="$(git rev-parse --short=8 HEAD)"
+          CI_BUILD_ID="${CM_BUILD_ID:-unknown}"
+          CI_BUILD_NUMBER="${BUILD_NUMBER:-2}"
+
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $CI_BUILD_NUMBER" "$APP_PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $CI_BUILD_NUMBER" "$WIDGET_PLIST"
+          /usr/libexec/PlistBuddy -c "Set :ChargeGlowGitCommit $GIT_COMMIT" "$APP_PLIST"
+          /usr/libexec/PlistBuddy -c "Set :ChargeGlowCIBuildID $CI_BUILD_ID" "$APP_PLIST"
+
+          echo "ChargeGlow 1.1.0 ($CI_BUILD_NUMBER)"
+          echo "Git commit: $GIT_COMMIT"
+          echo "Codemagic build ID: $CI_BUILD_ID"
+
       - name: Run unit tests without signing
         script: |
           set -euo pipefail
@@ -71,13 +89,21 @@ workflows:
           APP_BUNDLE_ID="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP_PATH/Info.plist")"
           WIDGET_BUNDLE_ID="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$WIDGET_PATH/Info.plist")"
           SUPPORTS_LIVE_ACTIVITIES="$(/usr/libexec/PlistBuddy -c 'Print :NSSupportsLiveActivities' "$APP_PATH/Info.plist")"
+          APP_VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP_PATH/Info.plist")"
+          APP_BUILD="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP_PATH/Info.plist")"
+          APP_COMMIT="$(/usr/libexec/PlistBuddy -c 'Print :ChargeGlowGitCommit' "$APP_PATH/Info.plist")"
+          APP_CI_BUILD_ID="$(/usr/libexec/PlistBuddy -c 'Print :ChargeGlowCIBuildID' "$APP_PATH/Info.plist")"
 
           test "$APP_BUNDLE_ID" = "com.mohamedalaa.chargeglow.spike"
           test "$WIDGET_BUNDLE_ID" = "com.mohamedalaa.chargeglow.spike.widgets"
           test "$SUPPORTS_LIVE_ACTIVITIES" = "true"
+          test "$APP_VERSION" = "1.1.0"
+          test "$APP_COMMIT" = "$(git rev-parse --short=8 HEAD)"
+          test "$APP_CI_BUILD_ID" = "${CM_BUILD_ID:-unknown}"
 
           echo "Verified app bundle: $APP_BUNDLE_ID"
           echo "Verified widget bundle: $WIDGET_BUNDLE_ID"
+          echo "Verified build identity: $APP_VERSION ($APP_BUILD) • $APP_COMMIT • CI $APP_CI_BUILD_ID"
           echo "App Intents metadata discovered at:"
           find "$APP_PATH" -iname '*appintents*' -print || true
 

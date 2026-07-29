@@ -134,3 +134,14 @@ snapshot, charging state, and active-activity count where applicable. iOS can
 suspend the process while the phone is locked, so the absence of events during
 that interval means the app had no execution time; ChargeGlow does not run a
 continuous heartbeat or claim otherwise.
+
+## Identifying the installed build
+
+The app displays its version, bundle build number, Git commit, and Codemagic
+build ID directly below the Neon Orbit heading. Codemagic stamps these values
+before compilation and verifies the packaged app contains them. Every new
+diagnostic event also includes the same identity fields.
+
+The first instrumented timeline release is `1.1.0`. Its bundle build number is
+the Codemagic workflow build number, allowing screenshots and exported logs to
+identify the exact installed IPA.
