@@ -1274,7 +1274,7 @@ private struct ChargingTrendChart: View {
     }
 }
 
-private enum ChargingTrendGeometry {
+enum ChargingTrendGeometry {
     static func points(
         for samples: [ChargingSessionSample],
         in rect: CGRect
@@ -1286,13 +1286,23 @@ private enum ChargingTrendGeometry {
             return []
         }
 
+        if samples.count == 1 {
+            return [
+                CGPoint(
+                    x: rect.midX,
+                    y: rect.midY
+                )
+            ]
+        }
+
         let percentages = samples.map(\.percentage)
         let minimum = percentages.min() ?? first.percentage
         let maximum = percentages.max() ?? first.percentage
-        let range = max(maximum - minimum, 1)
-        let lowerBound = max(minimum - range * 0.18, 0)
-        let upperBound = min(maximum + range * 0.18, 100)
-        let verticalRange = max(upperBound - lowerBound, 1)
+        let observedRange = maximum - minimum
+        let padding = max(observedRange * 0.18, 0.5)
+        let lowerBound = max(minimum - padding, 0)
+        let upperBound = min(maximum + padding, 100)
+        let verticalRange = max(upperBound - lowerBound, 0.001)
         let duration = max(
             last.observedAt.timeIntervalSince(first.observedAt),
             1

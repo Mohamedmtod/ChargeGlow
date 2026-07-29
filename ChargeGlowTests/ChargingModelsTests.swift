@@ -102,6 +102,67 @@ final class ChargingModelsTests: XCTestCase {
         )
     }
 
+    func testSingleChargingTrendSampleIsCentered() {
+        let rect = CGRect(x: 10, y: 20, width: 200, height: 100)
+        let samples = [
+            ChargingSessionSample(
+                percentage: 50,
+                observedAt: Date(timeIntervalSince1970: 1_000)
+            )
+        ]
+
+        XCTAssertEqual(
+            ChargingTrendGeometry.points(
+                for: samples,
+                in: rect
+            ),
+            [CGPoint(x: rect.midX, y: rect.midY)]
+        )
+    }
+
+    func testFlatChargingTrendStaysInsideChartAndMovesForward() {
+        let rect = CGRect(x: 0, y: 0, width: 240, height: 120)
+        let startDate = Date(timeIntervalSince1970: 2_000)
+        let samples = (0..<4).map { index in
+            ChargingSessionSample(
+                percentage: 55,
+                observedAt: startDate.addingTimeInterval(
+                    TimeInterval(index * 30)
+                )
+            )
+        }
+
+        let points = ChargingTrendGeometry.points(
+            for: samples,
+            in: rect
+        )
+
+        XCTAssertEqual(points.count, samples.count)
+        XCTAssertTrue(
+            points.allSatisfy { rect.contains($0) }
+        )
+        XCTAssertEqual(
+            points.first?.y ?? -1,
+            rect.midY,
+            accuracy: 0.001
+        )
+        XCTAssertEqual(
+            points.last?.y ?? -1,
+            rect.midY,
+            accuracy: 0.001
+        )
+        XCTAssertEqual(
+            points.first?.x ?? -1,
+            rect.minX,
+            accuracy: 0.001
+        )
+        XCTAssertEqual(
+            points.last?.x ?? -1,
+            rect.maxX,
+            accuracy: 0.001
+        )
+    }
+
     func testLegacyDiagnosticsRemainDecodable() throws {
         let legacyJSON = """
         [
