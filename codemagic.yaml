@@ -38,7 +38,7 @@ workflows:
           /usr/libexec/PlistBuddy -c "Set :ChargeGlowGitCommit $GIT_COMMIT" "$APP_PLIST"
           /usr/libexec/PlistBuddy -c "Set :ChargeGlowCIBuildID $CI_BUILD_ID" "$APP_PLIST"
 
-          echo "ChargeGlow 1.1.0 ($CI_BUILD_NUMBER)"
+          echo "ChargeGlow 1.1.1 ($CI_BUILD_NUMBER)"
           echo "Git commit: $GIT_COMMIT"
           echo "Codemagic build ID: $CI_BUILD_ID"
 
@@ -97,7 +97,7 @@ workflows:
           test "$APP_BUNDLE_ID" = "com.mohamedalaa.chargeglow.spike"
           test "$WIDGET_BUNDLE_ID" = "com.mohamedalaa.chargeglow.spike.widgets"
           test "$SUPPORTS_LIVE_ACTIVITIES" = "true"
-          test "$APP_VERSION" = "1.1.0"
+          test "$APP_VERSION" = "1.1.1"
           test "$APP_COMMIT" = "$(git rev-parse --short=8 HEAD)"
           test "$APP_CI_BUILD_ID" = "${CM_BUILD_ID:-unknown}"
 

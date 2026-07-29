@@ -71,4 +71,25 @@ final class ActivityLifecyclePlannerTests: XCTestCase {
             ["active"]
         )
     }
+
+    func testDisconnectFallbackRequiresAnActiveActivity() {
+        XCTAssertTrue(
+            ActivityLifecyclePlanner.shouldEndForBatteryState(
+                .disconnected,
+                activeActivityCount: 1
+            )
+        )
+        XCTAssertFalse(
+            ActivityLifecyclePlanner.shouldEndForBatteryState(
+                .disconnected,
+                activeActivityCount: 0
+            )
+        )
+        XCTAssertFalse(
+            ActivityLifecyclePlanner.shouldEndForBatteryState(
+                .charging,
+                activeActivityCount: 1
+            )
+        )
+    }
 }

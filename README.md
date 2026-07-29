@@ -142,6 +142,9 @@ build ID directly below the Neon Orbit heading. Codemagic stamps these values
 before compilation and verifies the packaged app contains them. Every new
 diagnostic event also includes the same identity fields.
 
-The first instrumented timeline release is `1.1.0`. Its bundle build number is
-the Codemagic workflow build number, allowing screenshots and exported logs to
-identify the exact installed IPA.
+The first instrumented timeline release was `1.1.0`. Release `1.1.1` adds an
+opportunistic disconnect fallback: when iOS delivers a real disconnected
+battery event while the app still has execution time, ChargeGlow immediately
+ends any active charging activity. Its bundle build number is the Codemagic
+workflow build number, allowing screenshots and exported logs to identify the
+exact installed IPA.

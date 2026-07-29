@@ -36,7 +36,35 @@ final class ChargeGlowViewModel: ObservableObject {
             }
             self.snapshot = snapshot
             Task {
-                try? await ChargingActivityManager.shared.update(snapshot: snapshot)
+                let activityCount =
+                    await ChargingActivityManager.shared.activeActivityCount()
+
+                if ActivityLifecyclePlanner.shouldEndForBatteryState(
+                    snapshot.state,
+                    activeActivityCount: activityCount
+                ) {
+                    let correlationID = UUID().uuidString
+                    await DiagnosticsRecorder.shared.record(
+                        category: "fallback",
+                        message: "Observed charger disconnection; ending the active activity.",
+                        correlationID: correlationID,
+                        snapshot: snapshot,
+                        activeActivityCount: activityCount
+                    )
+                    let result = await ChargingActivityManager.shared.endAll(
+                        snapshot: snapshot,
+                        correlationID: correlationID
+                    )
+                    await DiagnosticsRecorder.shared.record(
+                        category: "fallback",
+                        message: result.diagnosticMessage,
+                        correlationID: correlationID,
+                        snapshot: snapshot,
+                        activeActivityCount: 0
+                    )
+                } else {
+                    try? await ChargingActivityManager.shared.update(snapshot: snapshot)
+                }
                 await self.refreshStatus()
             }
         }
@@ -145,5 +173,16 @@ final class ChargeGlowViewModel: ObservableObject {
     private func show(_ error: ChargingActivityError) {
         statusMessage = "\(error.localizedDescription) \(error.recoverySuggestion)"
         diagnosticCode = error.diagnosticCode
+    }
+}
+
+private extension ActivityEndResult {
+    var diagnosticMessage: String {
+        switch self {
+        case .ended(let count):
+            return "Disconnect fallback ended \(count) activities."
+        case .nothingToEnd:
+            return "Disconnect fallback found nothing to end."
+        }
     }
 }

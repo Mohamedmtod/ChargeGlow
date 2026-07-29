@@ -13,7 +13,7 @@
 | Network | None |
 | Distribution | Unsigned Codemagic IPA, locally re-signed by iLoader |
 | Theme | Fixed `neon-orbit` |
-| Instrumented release | `1.1.0`; build number stamped from Codemagic |
+| Instrumented release | `1.1.1`; build number stamped from Codemagic |
 
 ## API assumptions to verify
 

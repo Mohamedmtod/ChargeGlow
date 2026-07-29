@@ -45,4 +45,11 @@ enum ActivityLifecyclePlanner {
     ) -> [String] {
         activities.map(\.id)
     }
+
+    static func shouldEndForBatteryState(
+        _ state: ChargingState,
+        activeActivityCount: Int
+    ) -> Bool {
+        state == .disconnected && activeActivityCount > 0
+    }
 }

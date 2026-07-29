@@ -13,6 +13,8 @@
 | Commit SHA | `034a6c8` |
 | Codemagic build ID / index | `6a6990de1b3c5bfe2f350249` / `2` |
 | Xcode version reported by CI | 26.4.1; exact-version guard passed |
+| Latest installed test build | `1.1.0 (4)`, commit `0653b955`, CI `6a6998ec30fa0c89d6227d3a` |
+| Disconnect-fallback candidate | `1.1.1`; pending CI and device verification |
 | iPhone model | TBD |
 | iOS version and build | TBD |
 | Dynamic Island | TBD |
@@ -57,10 +59,10 @@ test state.
 | F-07 | Lock Screen layout | Neon Orbit card is readable and unclipped | Neon Orbit rendered below the clock with percentage, state, and update time readable | PASS | Lock Screen screenshot at 08:45 |
 | F-08 | Dynamic Island layouts | Compact, minimal, and expanded render | TBD | NOT RUN | TBD |
 | F-09 | Real battery snapshot | Matches device value or displays unavailable | App captured 25% Charging at 08:45:08; activity started at 08:45:28 and displayed 25% with the matching update time | PASS | App screenshots, Lock Screen screenshot, diagnostics JSON |
-| F-10 | Disconnected automation, locked | Activity ends without unlocking | A real disconnected snapshot arrived in background, but no Stop intent event appeared and the activity remained active | FAIL | Timeline sequences 12–19 |
+| F-10 | Disconnected automation, locked | Activity ends without unlocking | Identity-stamped build received repeated background disconnects, but no Stop intent event appeared and the activity remained active | FAIL | Build 4 timeline sequences 65–76 and 97–112 |
 | F-11 | Duplicate Start | Second call does not create a duplicate | Second Start was rejected with `CG-ACT-002` while activity `ED29FE58-64D3-43E7-9654-A1C068A7858B` remained active | PASS | Diagnostics event at `2026-07-29T05:49:27Z` |
 | F-12 | Idempotent Stop | Second call reports already stopped | TBD | NOT RUN | TBD |
-| F-13 | Background/suspended process | Automatic flow behavior recorded | Background battery callbacks updated the activity from charging to disconnected and back, but neither Shortcuts intent was invoked | FAIL | Timeline sequences 12–22 |
+| F-13 | Background/suspended process | Automatic flow behavior recorded | Build 4 continued receiving and applying real battery-state changes in background, but neither Shortcuts intent was invoked | FAIL | Build 4 timeline sequences 63–82 and 95–114 |
 | F-14 | Removed from app switcher | Automatic flow behavior recorded | TBD | NOT RUN | TBD |
 | F-15 | After iPhone restart | Automatic flow behavior recorded | TBD | NOT RUN | TBD |
 | F-16 | Live Activities disabled | Clear authorization error returned | TBD | NOT RUN | TBD |
@@ -114,6 +116,23 @@ that run, not ActivityKit start, update, end, battery observation, or recovery.
 The timeline also lacks the build-identity fields introduced in commit
 `cc6b9e4`, proving that the latest IPA was not installed for this run.
 
+A subsequent identity-stamped run verified installation of `1.1.0 (4)`, commit
+`0653b955`, Codemagic build `6a6998ec30fa0c89d6227d3a`. In that run:
+
+- manual Start created an activity at sequences 59–61;
+- the app entered background at sequences 63–64;
+- disconnect/reconnect callbacks arrived at sequences 65, 69, and 73 while the
+  activity remained active;
+- a second manual activity received additional disconnect/reconnect callbacks
+  at sequences 97, 101, 105, and 109;
+- the exported file contained no `intents` category in 65 new-build events;
+- manual Stop remained reliable at sequences 88–89 and 115–116.
+
+This independently confirms that build identity works and that the remaining
+automatic-stop failure is outside the implemented App Intent handler. Release
+`1.1.1` adds an opportunistic public-API fallback that ends an active activity
+when one of these real disconnected callbacks reaches the running app process.
+
 ### Battery freshness
 
 Record the start snapshot, the system battery value, the last update before
@@ -132,7 +151,7 @@ timestamp communicates its age.
 | Continuous battery execution is not guaranteed | Suspended/background | Percentage may remain at last real value | Display last-updated time; never estimate |
 | Free signing is temporary | Installation | Build eventually expires | Re-sign for testing; paid distribution later |
 | Automation configuration cannot be read by the app | Setup | App cannot prove setup is correct | User checklist plus test action |
-| Supplied background run did not invoke either App Intent | Disconnection automation | Activity changed to disconnected but did not end | Install the identity-stamped build, reselect the ChargeGlow actions in both automations, and enable immediate execution |
+| Supplied background runs did not invoke either App Intent | Charger automations | Activity state changed, but automatic start/stop was not proven | Reselect both ChargeGlow actions and enable immediate execution; `1.1.1` also ends on a delivered disconnect callback |
 | Additional findings | TBD | TBD | TBD |
 
 ## Decision
@@ -156,7 +175,8 @@ timestamp communicates its age.
 
 ### Current recommendation
 
-**Do not begin the full MVP.** Install a current `main` build containing commit
-`cc6b9e4` or later, recreate or reselect both ChargeGlow automation actions, and
-rerun the locked connected/disconnected test. Update this section only after the
-exported timeline contains correlated `intents` events for both operations.
+**Do not begin the full MVP.** Build and install release `1.1.1`, recreate or
+reselect both ChargeGlow automation actions, and rerun the locked
+connected/disconnected test. The fallback is accepted only if its correlated
+`fallback` events end the activity. The primary automation gate still requires
+correlated `intents` events for both operations.
