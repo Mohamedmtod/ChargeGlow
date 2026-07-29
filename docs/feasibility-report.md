@@ -4,9 +4,10 @@
 >
 > The Codemagic build, direct iLoader installation, public battery capture,
 > Lock Screen presentation, and locked automatic Start/Stop path passed. Exact
-> status-bar equality is an accepted public-API limitation. Dynamic Island,
-> stale presentation, and resilience evidence remain pending. The full MVP
-> remains gated until those remaining checks classify the result.
+> status-bar equality is an accepted public-API limitation. Dynamic Island and
+> repeated Stop passed. Stale presentation and resilience evidence remain
+> pending. The full MVP remains gated until those remaining checks classify the
+> result.
 
 ## Build and device
 
@@ -18,9 +19,9 @@
 | Latest installed test build | `1.2.0 (7)`, commit `c31c2409`, CI `6a6a1163c5b6cb2224bd54ff` |
 | Disconnect fallback | Verified on device; ended the activity before the Stop intent completed |
 | Battery-freshness candidate | Approximate marker verified in `1.2.0`; two-minute stale presentation pending |
-| iPhone model | TBD |
-| iOS version and build | TBD |
-| Dynamic Island | TBD |
+| iPhone model | iPhone 14 Pro |
+| iOS version and build | iOS 26.5.2; OS build number not supplied |
+| Dynamic Island | Available; compact, minimal, and expanded presentations verified |
 | Always-On Display | TBD |
 | iLoader version | TBD |
 | SideStore version | TBD |
@@ -44,7 +45,7 @@ relative links or artifact names here.
 | Disconnected automation screenshot | TBD |
 | Locked flow screen recording | TBD |
 | Lock Screen screenshot | User-supplied screenshot, 2026-07-29 08:45 Africa/Cairo |
-| Dynamic Island screenshots | TBD |
+| Dynamic Island screenshots | User-supplied compact, minimal, and expanded screenshots from build 7 |
 
 ## Procedure and results
 
@@ -60,11 +61,11 @@ test state.
 | F-05 | Manual Start intent | Starts without presenting app UI | Start intent invoked at sequence 137 and completed with activity `32DB9B72-6098-45AF-BFCA-F2CCD9CB9D63` at sequence 142 without a foreground transition | PASS | Build 7 sequences 137–142 |
 | F-06 | Connected automation, locked | Exactly one activity appears | User observed the activity appear while locked; automatic Start completed with activity `274EC9C2-321C-4D5E-B5E4-4FE1B93F6B36` | PASS | User observation and build 7 sequence 197 |
 | F-07 | Lock Screen layout | Neon Orbit card is readable and unclipped | Neon Orbit rendered below the clock with percentage, state, and update time readable | PASS | Lock Screen screenshot at 08:45 |
-| F-08 | Dynamic Island layouts | Compact, minimal, and expanded render | TBD | NOT RUN | TBD |
+| F-08 | Dynamic Island layouts | Compact, minimal, and expanded render | All three presentations rendered legibly with the approximate percentage and charging state | PASS | User-supplied build 7 screenshots |
 | F-09 | Battery API snapshot | Public value and freshness are represented honestly | Build 7 displays the public value with `≈`; the two-minute outdated presentation still needs a Lock Screen observation | NOT RUN | Build 7 app screenshot; stale evidence pending |
 | F-10 | Disconnected automation, locked | Activity ends without unlocking | Disconnect fallback ended the activity at sequences 199–201; Stop automation then invoked its intent at 203 and completed idempotently at 206, all before foreground sequence 207 | PASS | Build 7 sequences 198–207 and user locked-device observation |
 | F-11 | Duplicate Start | Second call does not create a duplicate | Second Start was rejected with `CG-ACT-002` while activity `ED29FE58-64D3-43E7-9654-A1C068A7858B` remained active | PASS | Diagnostics event at `2026-07-29T05:49:27Z` |
-| F-12 | Idempotent Stop | Second call reports already stopped | Stop intent ran after fallback had already ended the activity and completed with `nothing to end` without failure | PASS | Build 7 sequences 203–206 |
+| F-12 | Idempotent Stop | Second call reports already stopped | Stop intent completed with `nothing to end` after fallback, and the user separately confirmed that running Stop twice succeeds | PASS | Build 7 sequences 203–206 and direct user observation |
 | F-13 | Background/suspended process | Automatic flow behavior recorded | The short background cycle passed; a deliberate multi-minute suspension cycle has not been separately recorded | NOT RUN | Build 7 sequences 197–207; suspension wait pending |
 | F-14 | Removed from app switcher | Automatic flow behavior recorded | TBD | NOT RUN | TBD |
 | F-15 | After iPhone restart | Automatic flow behavior recorded | TBD | NOT RUN | TBD |
@@ -189,8 +190,8 @@ confirm both the approximate marker and the visible outdated state.
 
 ### Classification
 
-**PENDING — the critical locked automation path passed.** Dynamic Island,
-two-minute stale presentation, device/OS identity, and force-quit/reboot
+**PENDING — the critical locked automation path and all Dynamic Island
+presentations passed.** The two-minute stale presentation and force-quit/reboot
 resilience still need to be recorded before assigning the final classification.
 
 ### Decision rules
@@ -210,8 +211,8 @@ resilience still need to be recorded before assigning the final classification.
 
 **Do not begin the full MVP yet.** The primary uncertainty is resolved: build 7
 proved correlated background Start and Stop intent execution while the locked
-automatic flow created and removed exactly one activity. Record Dynamic Island,
-the two-minute outdated presentation, exact device/iOS identity, and the
-force-quit/reboot outcomes. Those final observations determine `GO` versus
-`CONDITIONAL GO`; no additional core automation implementation is currently
-required.
+automatic flow created and removed exactly one activity. Dynamic Island,
+iPhone model, iOS version, and repeated Stop are now recorded. Verify the
+two-minute outdated presentation and record force-quit/reboot outcomes. Those
+final observations determine `GO` versus `CONDITIONAL GO`; no additional core
+automation implementation is currently required.
