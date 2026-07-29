@@ -84,10 +84,7 @@ struct ContentView: View {
                 .labelStyle(.iconOnly)
                 .font(.body.bold())
                 .frame(width: 36, height: 36)
-                .background(
-                    .ultraThinMaterial,
-                    in: Circle()
-                )
+                .chargeGlowGlassCircle()
                 .overlay {
                     Circle()
                         .stroke(themeAccent.opacity(0.35))
@@ -186,29 +183,9 @@ struct ContentView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(20)
-        .background(
-            .ultraThinMaterial,
-            in: RoundedRectangle(cornerRadius: 28)
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 28)
-                .stroke(
-                    LinearGradient(
-                        colors: [
-                            themeAccent.opacity(0.65),
-                            Color.white.opacity(0.08),
-                            themeSecondaryAccent.opacity(0.38)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 1.2
-                )
-        }
-        .shadow(
-            color: themeAccent.opacity(0.2),
-            radius: 24,
-            y: 10
+        .chargeGlowHeroGlass(
+            accent: themeAccent,
+            secondaryAccent: themeSecondaryAccent
         )
     }
 
@@ -222,17 +199,19 @@ struct ContentView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
-            LazyVGrid(
-                columns: [
-                    GridItem(
-                        .adaptive(minimum: 130),
-                        spacing: 10
-                    )
-                ],
-                spacing: 10
-            ) {
-                ForEach(ThemeCatalog.all) { descriptor in
-                    themeCard(descriptor)
+            ChargeGlowGlassContainer(spacing: 10) {
+                LazyVGrid(
+                    columns: [
+                        GridItem(
+                            .adaptive(minimum: 130),
+                            spacing: 10
+                        )
+                    ],
+                    spacing: 10
+                ) {
+                    ForEach(ThemeCatalog.all) { descriptor in
+                        themeCard(descriptor)
+                    }
                 }
             }
         }
@@ -293,21 +272,10 @@ struct ContentView: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
             .padding(.horizontal, 8)
-            .background(
-                isSelected
-                    ? themeAccent.opacity(0.14)
-                    : Color.white.opacity(0.04),
-                in: RoundedRectangle(cornerRadius: 16)
+            .chargeGlowThemeTile(
+                accent: themeAccent,
+                isSelected: isSelected
             )
-            .overlay {
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(
-                        isSelected
-                            ? themeAccent.opacity(0.7)
-                            : Color.white.opacity(0.08),
-                        lineWidth: isSelected ? 1.5 : 1
-                    )
-            }
         }
         .buttonStyle(.plain)
         .scaleEffect(isSelected ? 1.025 : 0.985)
@@ -436,50 +404,58 @@ struct ContentView: View {
     }
 
     private var controls: some View {
-        VStack(spacing: 10) {
-            Button {
-                viewModel.startActivity()
-            } label: {
-                Label("Start Live Activity", systemImage: "bolt.fill")
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(
-                ChargeGlowPrimaryButtonStyle(
-                    accent: themeAccent,
-                    secondaryAccent: themeSecondaryAccent,
-                    reduceMotion: reduceMotion
-                )
-            )
-            .disabled(viewModel.isWorking)
-
-            HStack {
+        ChargeGlowGlassContainer(spacing: 10) {
+            VStack(spacing: 10) {
                 Button {
-                    viewModel.stopActivity()
+                    viewModel.startActivity()
                 } label: {
-                    Label("Stop", systemImage: "stop.fill")
+                    Label(
+                        "Start Live Activity",
+                        systemImage: "bolt.fill"
+                    )
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(
-                    ChargeGlowSecondaryButtonStyle(
+                    ChargeGlowPrimaryButtonStyle(
                         accent: themeAccent,
+                        secondaryAccent: themeSecondaryAccent,
                         reduceMotion: reduceMotion
                     )
                 )
+                .disabled(viewModel.isWorking)
 
-                Button {
-                    viewModel.refresh()
-                } label: {
-                    Label("Refresh", systemImage: "arrow.clockwise")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(
-                    ChargeGlowSecondaryButtonStyle(
-                        accent: themeAccent,
-                        reduceMotion: reduceMotion
+                HStack {
+                    Button {
+                        viewModel.stopActivity()
+                    } label: {
+                        Label("Stop", systemImage: "stop.fill")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(
+                        ChargeGlowSecondaryButtonStyle(
+                            accent: themeAccent,
+                            reduceMotion: reduceMotion
+                        )
                     )
-                )
+
+                    Button {
+                        viewModel.refresh()
+                    } label: {
+                        Label(
+                            "Refresh",
+                            systemImage: "arrow.clockwise"
+                        )
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(
+                        ChargeGlowSecondaryButtonStyle(
+                            accent: themeAccent,
+                            reduceMotion: reduceMotion
+                        )
+                    )
+                }
+                .disabled(viewModel.isWorking)
             }
-            .disabled(viewModel.isWorking)
         }
     }
 
@@ -638,14 +614,214 @@ struct ContentView: View {
         .accessibilityElement(children: .combine)
     }
 }
+
+private struct ChargeGlowGlassContainer<Content: View>: View {
+    let spacing: CGFloat?
+    let content: Content
+
+    init(
+        spacing: CGFloat? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.spacing = spacing
+        self.content = content()
+    }
+
+    @ViewBuilder
+    var body: some View {
+        if #available(iOS 26.0, *) {
+            GlassEffectContainer(spacing: spacing) {
+                content
+            }
+        } else {
+            content
+        }
+    }
+}
+
 private extension View {
+    @ViewBuilder
+    func chargeGlowGlassCircle() -> some View {
+        if #available(iOS 26.0, *) {
+            self
+        } else {
+            background(
+                .ultraThinMaterial,
+                in: Circle()
+            )
+        }
+    }
+
+    @ViewBuilder
+    func chargeGlowHeroGlass(
+        accent: Color,
+        secondaryAccent: Color
+    ) -> some View {
+        if #available(iOS 26.0, *) {
+            glassEffect(
+                .regular.tint(accent.opacity(0.12)),
+                in: RoundedRectangle(
+                    cornerRadius: 28,
+                    style: .continuous
+                )
+            )
+            .overlay {
+                RoundedRectangle(
+                    cornerRadius: 28,
+                    style: .continuous
+                )
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            accent.opacity(0.6),
+                            Color.white.opacity(0.12),
+                            secondaryAccent.opacity(0.35)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+            }
+            .shadow(
+                color: accent.opacity(0.18),
+                radius: 24,
+                y: 10
+            )
+        } else {
+            background(
+                .ultraThinMaterial,
+                in: RoundedRectangle(
+                    cornerRadius: 28,
+                    style: .continuous
+                )
+            )
+            .overlay {
+                RoundedRectangle(
+                    cornerRadius: 28,
+                    style: .continuous
+                )
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            accent.opacity(0.65),
+                            Color.white.opacity(0.08),
+                            secondaryAccent.opacity(0.38)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1.2
+                )
+            }
+            .shadow(
+                color: accent.opacity(0.2),
+                radius: 24,
+                y: 10
+            )
+        }
+    }
+
+    @ViewBuilder
+    func chargeGlowThemeTile(
+        accent: Color,
+        isSelected: Bool
+    ) -> some View {
+        if #available(iOS 26.0, *) {
+            glassEffect(
+                .regular
+                    .tint(
+                        accent.opacity(
+                            isSelected ? 0.22 : 0.07
+                        )
+                    )
+                    .interactive(),
+                in: RoundedRectangle(
+                    cornerRadius: 16,
+                    style: .continuous
+                )
+            )
+            .overlay {
+                RoundedRectangle(
+                    cornerRadius: 16,
+                    style: .continuous
+                )
+                .stroke(
+                    isSelected
+                        ? accent.opacity(0.72)
+                        : Color.white.opacity(0.1),
+                    lineWidth: isSelected ? 1.4 : 0.8
+                )
+            }
+        } else {
+            background(
+                isSelected
+                    ? accent.opacity(0.14)
+                    : Color.white.opacity(0.04),
+                in: RoundedRectangle(
+                    cornerRadius: 16,
+                    style: .continuous
+                )
+            )
+            .overlay {
+                RoundedRectangle(
+                    cornerRadius: 16,
+                    style: .continuous
+                )
+                .stroke(
+                    isSelected
+                        ? accent.opacity(0.7)
+                        : Color.white.opacity(0.08),
+                    lineWidth: isSelected ? 1.5 : 1
+                )
+            }
+        }
+    }
+
     func chargeGlowCard(
         color: Color,
         accent: Color
     ) -> some View {
         padding(16)
-            .background {
-                RoundedRectangle(cornerRadius: 22)
+            .modifier(
+                ChargeGlowCardGlassModifier(
+                    color: color,
+                    accent: accent
+                )
+            )
+    }
+}
+
+private struct ChargeGlowCardGlassModifier: ViewModifier {
+    let color: Color
+    let accent: Color
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content
+                .glassEffect(
+                    .regular.tint(accent.opacity(0.08)),
+                    in: RoundedRectangle(
+                        cornerRadius: 22,
+                        style: .continuous
+                    )
+                )
+                .overlay {
+                    cardBorder
+                }
+                .shadow(
+                    color: Color.black.opacity(0.22),
+                    radius: 16,
+                    y: 8
+                )
+        } else {
+            content
+                .background {
+                    RoundedRectangle(
+                        cornerRadius: 22,
+                        style: .continuous
+                    )
                     .fill(color)
                     .overlay {
                         LinearGradient(
@@ -658,29 +834,41 @@ private extension View {
                             endPoint: .bottomTrailing
                         )
                         .clipShape(
-                            RoundedRectangle(cornerRadius: 22)
+                            RoundedRectangle(
+                                cornerRadius: 22,
+                                style: .continuous
+                            )
                         )
                     }
-            }
-            .overlay {
-                RoundedRectangle(cornerRadius: 22)
-                    .stroke(
-                        LinearGradient(
-                            colors: [
-                                accent.opacity(0.26),
-                                Color.white.opacity(0.08),
-                                Color.clear
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-            }
-            .shadow(
-                color: Color.black.opacity(0.26),
-                radius: 16,
-                y: 8
-            )
+                }
+                .overlay {
+                    cardBorder
+                }
+                .shadow(
+                    color: Color.black.opacity(0.26),
+                    radius: 16,
+                    y: 8
+                )
+        }
+    }
+
+    private var cardBorder: some View {
+        RoundedRectangle(
+            cornerRadius: 22,
+            style: .continuous
+        )
+        .stroke(
+            LinearGradient(
+                colors: [
+                    accent.opacity(0.26),
+                    Color.white.opacity(0.08),
+                    Color.clear
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            ),
+            lineWidth: 1
+        )
     }
 }
 
@@ -691,60 +879,87 @@ private struct ChargeGlowPrimaryButtonStyle: ButtonStyle {
     let secondaryAccent: Color
     let reduceMotion: Bool
 
+    @ViewBuilder
     func makeBody(configuration: Configuration) -> some View {
+        if #available(iOS 26.0, *) {
+            baseLabel(configuration)
+                .glassEffect(
+                    .regular
+                        .tint(accent.opacity(0.42))
+                        .interactive(),
+                    in: Capsule()
+                )
+                .overlay {
+                    Capsule()
+                        .stroke(Color.white.opacity(0.22))
+                }
+                .shadow(
+                    color: accent.opacity(
+                        configuration.isPressed ? 0.18 : 0.35
+                    ),
+                    radius: configuration.isPressed ? 7 : 14,
+                    y: configuration.isPressed ? 3 : 7
+                )
+                .chargeGlowButtonMotion(
+                    isPressed: configuration.isPressed,
+                    isEnabled: isEnabled,
+                    reduceMotion: reduceMotion
+                )
+        } else {
+            baseLabel(configuration)
+                .background {
+                    Capsule()
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    accent,
+                                    secondaryAccent
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .overlay {
+                            Capsule()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [
+                                            Color.white.opacity(0.3),
+                                            Color.clear
+                                        ],
+                                        startPoint: .top,
+                                        endPoint: .center
+                                    )
+                                )
+                        }
+                }
+                .overlay {
+                    Capsule()
+                        .stroke(Color.white.opacity(0.24))
+                }
+                .shadow(
+                    color: accent.opacity(
+                        configuration.isPressed ? 0.18 : 0.42
+                    ),
+                    radius: configuration.isPressed ? 7 : 16,
+                    y: configuration.isPressed ? 3 : 8
+                )
+                .chargeGlowButtonMotion(
+                    isPressed: configuration.isPressed,
+                    isEnabled: isEnabled,
+                    reduceMotion: reduceMotion
+                )
+        }
+    }
+
+    private func baseLabel(
+        _ configuration: Configuration
+    ) -> some View {
         configuration.label
             .font(.headline)
             .foregroundStyle(.white)
             .padding(.vertical, 15)
             .padding(.horizontal, 18)
-            .background {
-                Capsule()
-                    .fill(
-                        LinearGradient(
-                            colors: [
-                                accent,
-                                secondaryAccent
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .overlay {
-                        Capsule()
-                            .fill(
-                                LinearGradient(
-                                    colors: [
-                                        Color.white.opacity(0.3),
-                                        Color.clear
-                                    ],
-                                    startPoint: .top,
-                                    endPoint: .center
-                                )
-                            )
-                    }
-            }
-            .overlay {
-                Capsule()
-                    .stroke(Color.white.opacity(0.24))
-            }
-            .shadow(
-                color: accent.opacity(
-                    configuration.isPressed ? 0.18 : 0.42
-                ),
-                radius: configuration.isPressed ? 7 : 16,
-                y: configuration.isPressed ? 3 : 8
-            )
-            .scaleEffect(configuration.isPressed ? 0.97 : 1)
-            .opacity(isEnabled ? 1 : 0.5)
-            .animation(
-                reduceMotion
-                    ? nil
-                    : .spring(
-                        response: 0.28,
-                        dampingFraction: 0.72
-                    ),
-                value: configuration.isPressed
-            )
     }
 }
 
@@ -754,40 +969,86 @@ private struct ChargeGlowSecondaryButtonStyle: ButtonStyle {
     let accent: Color
     let reduceMotion: Bool
 
+    @ViewBuilder
     func makeBody(configuration: Configuration) -> some View {
+        if #available(iOS 26.0, *) {
+            baseLabel(configuration)
+                .glassEffect(
+                    .regular
+                        .tint(
+                            accent.opacity(
+                                configuration.isPressed
+                                    ? 0.2
+                                    : 0.1
+                            )
+                        )
+                        .interactive(),
+                    in: Capsule()
+                )
+                .overlay {
+                    Capsule()
+                        .stroke(accent.opacity(0.28))
+                }
+                .chargeGlowButtonMotion(
+                    isPressed: configuration.isPressed,
+                    isEnabled: isEnabled,
+                    reduceMotion: reduceMotion
+                )
+        } else {
+            baseLabel(configuration)
+                .background {
+                    Capsule()
+                        .fill(.ultraThinMaterial)
+                        .overlay {
+                            Capsule()
+                                .fill(
+                                    accent.opacity(
+                                        configuration.isPressed
+                                            ? 0.16
+                                            : 0.08
+                                    )
+                                )
+                        }
+                }
+                .overlay {
+                    Capsule()
+                        .stroke(accent.opacity(0.3))
+                }
+                .chargeGlowButtonMotion(
+                    isPressed: configuration.isPressed,
+                    isEnabled: isEnabled,
+                    reduceMotion: reduceMotion
+                )
+        }
+    }
+
+    private func baseLabel(
+        _ configuration: Configuration
+    ) -> some View {
         configuration.label
             .font(.subheadline.bold())
             .foregroundStyle(accent)
             .padding(.vertical, 13)
             .padding(.horizontal, 14)
-            .background {
-                Capsule()
-                    .fill(.ultraThinMaterial)
-                    .overlay {
-                        Capsule()
-                            .fill(
-                                accent.opacity(
-                                    configuration.isPressed
-                                        ? 0.16
-                                        : 0.08
-                                )
-                            )
-                    }
-            }
-            .overlay {
-                Capsule()
-                    .stroke(accent.opacity(0.3))
-            }
-            .scaleEffect(configuration.isPressed ? 0.97 : 1)
-            .opacity(isEnabled ? 1 : 0.82)
+    }
+}
+
+private extension View {
+    func chargeGlowButtonMotion(
+        isPressed: Bool,
+        isEnabled: Bool,
+        reduceMotion: Bool
+    ) -> some View {
+        scaleEffect(isPressed ? 0.97 : 1)
+            .opacity(isEnabled ? 1 : 0.5)
             .animation(
                 reduceMotion
                     ? nil
                     : .spring(
                         response: 0.28,
-                        dampingFraction: 0.75
+                        dampingFraction: 0.74
                     ),
-                value: configuration.isPressed
+                value: isPressed
             )
     }
 }

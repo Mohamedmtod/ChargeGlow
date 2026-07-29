@@ -122,6 +122,10 @@ reading and becomes visibly outdated.
       presentations.
 - [ ] App theme motion is smooth and does not obscure the percentage.
 - [ ] Reduce Motion disables ambient theme movement and selection scaling.
+- [ ] On iOS 26, cards and controls use native Liquid Glass and react cleanly
+      to touch without reducing text contrast.
+- [ ] On iOS 17 through iOS 25, the material fallback remains legible and all
+      controls remain usable.
 - [ ] Lock Screen and Dynamic Island remain legible without depending on
       continuous animation.
 - [ ] English selection updates the app, Lock Screen, and Dynamic Island.

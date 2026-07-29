@@ -9,6 +9,8 @@ The current engineering beta contains:
 
 - Neon Orbit, Aurora Pulse, and Ember Circuit themes;
 - app-only ambient theme motion with Reduce Motion support;
+- native interactive Liquid Glass surfaces on iOS 26 with a material fallback
+  on iOS 17 through iOS 25;
 - persistent local theme and language preferences;
 - English and Arabic with runtime RTL/LTR switching;
 - Lock Screen and Dynamic Island layouts for each theme;

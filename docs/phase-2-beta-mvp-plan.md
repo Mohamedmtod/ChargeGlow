@@ -20,7 +20,9 @@ catalog, persistent selection, unknown-theme fallback, Home gallery previews,
 distinct app-only ambient motion with Reduce Motion support, and selected-theme
 propagation into the next Live Activity without changing an already-running
 activity. Lock Screen and Dynamic Island render deterministic theme states
-without relying on continuous animation.
+without relying on continuous animation. The app uses native interactive
+Liquid Glass for custom surfaces and controls on iOS 26, with an
+`ultraThinMaterial`-based fallback that preserves the iOS 17 deployment target.
 
 Phase 2 can proceed through the existing Codemagic + iLoader engineering path
 without Apple Developer Program enrollment. It prepares a separate TestFlight
