@@ -156,7 +156,7 @@ timestamp communicates its age.
 
 ### Current recommendation
 
-**Do not begin the full MVP.** Install the identity-stamped build from commit
-`cc6b9e4`, recreate or reselect both ChargeGlow automation actions, and rerun the
-locked connected/disconnected test. Update this section only after the exported
-timeline contains correlated `intents` events for both operations.
+**Do not begin the full MVP.** Install a current `main` build containing commit
+`cc6b9e4` or later, recreate or reselect both ChargeGlow automation actions, and
+rerun the locked connected/disconnected test. Update this section only after the
+exported timeline contains correlated `intents` events for both operations.
