@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel = ChargeGlowViewModel()
 
     private let cardColor = Color.white.opacity(0.07)
@@ -32,6 +33,9 @@ struct ContentView: View {
             }
             .onDisappear {
                 viewModel.stopMonitoring()
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                viewModel.setApplicationActive(newPhase == .active)
             }
         }
         .tint(.cyan)
@@ -91,7 +95,7 @@ struct ContentView: View {
 
     private var batteryCard: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Real battery snapshot")
+            Text("iOS battery API snapshot")
                 .font(.headline)
 
             HStack(alignment: .firstTextBaseline) {
@@ -116,6 +120,13 @@ struct ContentView: View {
                 Label(
                     "iOS did not provide a value. ChargeGlow will not estimate it.",
                     systemImage: "exclamationmark.triangle"
+                )
+                .font(.caption)
+                .foregroundStyle(.orange)
+            } else {
+                Label(
+                    "Approximate public API value; it can differ from the status bar.",
+                    systemImage: "equal.circle"
                 )
                 .font(.caption)
                 .foregroundStyle(.orange)
@@ -188,7 +199,7 @@ struct ContentView: View {
 
     private var limitationNotice: some View {
         Label(
-            "Battery updates are real only while iOS gives the app execution time. The last known value remains visible after suspension.",
+            "ChargeGlow refreshes once per minute while foregrounded. After suspension, the Live Activity marks its last public API reading as outdated.",
             systemImage: "info.circle"
         )
         .font(.footnote)

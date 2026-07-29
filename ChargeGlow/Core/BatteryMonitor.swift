@@ -51,6 +51,8 @@ enum BatteryReader {
 
 @MainActor
 final class BatteryMonitor: ObservableObject {
+    private static let foregroundPollInterval: Duration = .seconds(60)
+
     @Published private(set) var snapshot = BatterySnapshot(
         percentage: nil,
         state: .unknown,
@@ -60,6 +62,7 @@ final class BatteryMonitor: ObservableObject {
     var onSnapshot: ((BatterySnapshot) -> Void)?
 
     private var observerTasks: [Task<Void, Never>] = []
+    private var foregroundPollingTask: Task<Void, Never>?
 
     func start() {
         guard observerTasks.isEmpty else {
@@ -67,7 +70,7 @@ final class BatteryMonitor: ObservableObject {
         }
 
         UIDevice.current.isBatteryMonitoringEnabled = true
-        publishCurrent()
+        publishCurrent(trigger: "monitor start")
 
         let notifications = [
             UIDevice.batteryLevelDidChangeNotification,
@@ -80,23 +83,67 @@ final class BatteryMonitor: ObservableObject {
                     guard !Task.isCancelled else {
                         return
                     }
-                    self?.publishCurrent()
+                    let trigger = name == UIDevice.batteryLevelDidChangeNotification
+                        ? "battery-level notification"
+                        : "battery-state notification"
+                    self?.publishCurrent(trigger: trigger)
                 }
             }
         }
+        startForegroundPolling()
     }
 
     func refresh() {
-        publishCurrent()
+        publishCurrent(trigger: "manual refresh")
+    }
+
+    func setApplicationActive(_ isActive: Bool) {
+        guard !observerTasks.isEmpty else {
+            return
+        }
+
+        if isActive {
+            publishCurrent(trigger: "foreground activation")
+            startForegroundPolling()
+        } else {
+            stopForegroundPolling()
+        }
     }
 
     func stop() {
         observerTasks.forEach { $0.cancel() }
         observerTasks.removeAll()
+        stopForegroundPolling()
         UIDevice.current.isBatteryMonitoringEnabled = false
     }
 
-    private func publishCurrent() {
+    private func startForegroundPolling() {
+        guard foregroundPollingTask == nil else {
+            return
+        }
+
+        foregroundPollingTask = Task { @MainActor [weak self] in
+            while !Task.isCancelled {
+                do {
+                    try await Task.sleep(for: Self.foregroundPollInterval)
+                } catch {
+                    return
+                }
+
+                guard !Task.isCancelled else {
+                    return
+                }
+                self?.publishCurrent(trigger: "foreground poll")
+            }
+        }
+    }
+
+    private func stopForegroundPolling() {
+        foregroundPollingTask?.cancel()
+        foregroundPollingTask = nil
+    }
+
+    private func publishCurrent(trigger: String) {
         snapshot = BatterySnapshot(
             percentage: BatteryReader.normalize(level: UIDevice.current.batteryLevel),
             state: BatteryReader.map(state: UIDevice.current.batteryState),
@@ -107,7 +154,7 @@ final class BatteryMonitor: ObservableObject {
             await DiagnosticsRecorder.shared.record(
                 category: "battery",
                 level: .debug,
-                message: "Battery snapshot observed while the app had execution time.",
+                message: "Public iOS battery snapshot observed via \(trigger).",
                 snapshot: observedSnapshot
             )
         }

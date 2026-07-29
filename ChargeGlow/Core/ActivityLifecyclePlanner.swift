@@ -11,6 +11,8 @@ struct ActivityRecoveryPlan: Equatable, Sendable {
 }
 
 enum ActivityLifecyclePlanner {
+    static let minimumSameValueRefreshInterval: TimeInterval = 5
+
     static func recoveryPlan(
         for activities: [ActivityDescriptor]
     ) -> ActivityRecoveryPlan {
@@ -51,5 +53,17 @@ enum ActivityLifecyclePlanner {
         activeActivityCount: Int
     ) -> Bool {
         state == .disconnected && activeActivityCount > 0
+    }
+
+    static func shouldUpdateActivity(
+        currentPercentage: Int?,
+        currentState: ChargingState,
+        lastUpdatedAt: Date,
+        with snapshot: BatterySnapshot
+    ) -> Bool {
+        currentPercentage != snapshot.percentage
+            || currentState != snapshot.state
+            || snapshot.observedAt.timeIntervalSince(lastUpdatedAt)
+                >= minimumSameValueRefreshInterval
     }
 }

@@ -4,7 +4,7 @@ import Foundation
 struct StartChargingThemeIntent: LiveActivityIntent {
     static let title: LocalizedStringResource = "Start Charging Theme"
     static let description = IntentDescription(
-        "Starts the selected ChargeGlow Live Activity using the current real battery reading."
+        "Starts the selected ChargeGlow Live Activity using the current public iOS battery reading."
     )
 
     func perform() async -> some IntentResult & ProvidesDialog {
@@ -53,7 +53,7 @@ struct StartChargingThemeIntent: LiveActivityIntent {
                     dialog: "ChargeGlow started, but iOS did not provide a battery percentage."
                 )
             }
-            return .result(dialog: "ChargeGlow started with the current battery reading.")
+            return .result(dialog: "ChargeGlow started with the current iOS battery reading.")
         } catch let error as ChargingActivityError {
             let countAfterFailure = await ChargingActivityManager.shared.activeActivityCount()
             await DiagnosticsRecorder.shared.record(

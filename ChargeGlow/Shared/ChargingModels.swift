@@ -34,12 +34,18 @@ enum ChargingState: String, Codable, CaseIterable, Hashable, Sendable {
     }
 }
 struct BatterySnapshot: Codable, Equatable, Sendable {
+    static let liveActivityFreshnessInterval: TimeInterval = 120
+
     let percentage: Int?
     let state: ChargingState
     let observedAt: Date
 
     var displayPercentage: String {
-        percentage.map { "\($0)%" } ?? "—"
+        percentage.map { "≈\($0)%" } ?? "—"
+    }
+
+    var liveActivityStaleDate: Date {
+        observedAt.addingTimeInterval(Self.liveActivityFreshnessInterval)
     }
 }
 

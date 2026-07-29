@@ -13,7 +13,7 @@
 | Network | None |
 | Distribution | Unsigned Codemagic IPA, locally re-signed by iLoader |
 | Theme | Fixed `neon-orbit` |
-| Instrumented release | `1.1.1`; build number stamped from Codemagic |
+| Instrumented release | `1.2.0`; build number stamped from Codemagic |
 
 ## API assumptions to verify
 
@@ -34,8 +34,13 @@ unverified until physical evidence exists.
 
 ## Honest update behavior
 
-- Start captures a real battery snapshot.
-- Foreground battery notifications can update an active activity.
+- Start captures the latest value exposed by the public `UIDevice` API.
+- The public value may be coarser than and differ from the status-bar value, so
+  ChargeGlow labels available percentages as approximate.
+- Foreground battery notifications and a one-minute foreground poll can update
+  an active activity.
+- A Live Activity snapshot becomes visibly stale after two minutes without an
+  update.
 - Suspension can stop those updates at any time.
 - No wattage, charging speed, battery health, temperature, or time-to-full is
   inferred.
@@ -49,7 +54,7 @@ unverified until physical evidence exists.
 - Diagnostics contain operation state and error codes, not Apple credentials or
   personal content.
 - The ordered timeline correlates UI and Intent operations with ActivityKit
-  actions and real battery snapshots.
+  actions and public iOS battery snapshots.
 - Every event carries the app version, bundle build, Git commit, and Codemagic
   build ID so evidence cannot be confused between installed IPAs.
 - There is no background heartbeat; a timeline gap while suspended is expected

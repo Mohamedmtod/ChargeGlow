@@ -83,6 +83,10 @@ final class ChargeGlowViewModel: ObservableObject {
         batteryMonitor.stop()
     }
 
+    func setApplicationActive(_ isActive: Bool) {
+        batteryMonitor.setApplicationActive(isActive)
+    }
+
     func refresh() {
         batteryMonitor.refresh()
         Task {
@@ -98,22 +102,24 @@ final class ChargeGlowViewModel: ObservableObject {
         diagnosticCode = nil
 
         Task {
+            let freshSnapshot = await BatteryReader.capture()
+            snapshot = freshSnapshot
             let correlationID = UUID().uuidString
             await DiagnosticsRecorder.shared.record(
                 category: "ui",
                 message: "Manual Start button tapped.",
                 correlationID: correlationID,
-                snapshot: snapshot,
+                snapshot: freshSnapshot,
                 activeActivityCount: activeActivityCount
             )
             do {
                 _ = try await ChargingActivityManager.shared.start(
-                    snapshot: snapshot,
+                    snapshot: freshSnapshot,
                     correlationID: correlationID
                 )
-                statusMessage = snapshot.percentage == nil
+                statusMessage = freshSnapshot.percentage == nil
                     ? "Started, but iOS did not provide a battery percentage."
-                    : "Live Activity started with a real battery snapshot."
+                    : "Live Activity started with the latest public iOS battery reading."
             } catch let error as ChargingActivityError {
                 show(error)
             } catch {

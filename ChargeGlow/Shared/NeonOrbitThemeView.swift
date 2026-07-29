@@ -46,7 +46,7 @@ struct NeonOrbitThemeView: View {
                     .font(compact ? .caption2 : .caption)
                     .foregroundStyle(accent)
 
-                Text(percentage.map { String($0) } ?? "—")
+                Text(percentage.map { "≈\($0)" } ?? "—")
                     .font(compact ? .caption2.bold() : .title2.bold())
                     .monospacedDigit()
                     .foregroundStyle(.white)
@@ -60,7 +60,7 @@ struct NeonOrbitThemeView: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(
-            percentage.map { "\($0) percent, \(state.displayName)" }
+            percentage.map { "Approximately \($0) percent, \(state.displayName)" }
                 ?? "Battery percentage unavailable, \(state.displayName)"
         )
     }

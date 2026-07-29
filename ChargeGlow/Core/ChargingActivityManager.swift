@@ -96,7 +96,7 @@ actor ChargingActivityManager {
         )
         let content = ActivityContent(
             state: ChargingActivityAttributes.ContentState(snapshot: snapshot),
-            staleDate: nil
+            staleDate: snapshot.liveActivityStaleDate
         )
 
         do {
@@ -137,8 +137,12 @@ actor ChargingActivityManager {
 
         let current = activity.content.state
         guard
-            current.batteryPercentage != snapshot.percentage
-                || current.chargingState != snapshot.state
+            ActivityLifecyclePlanner.shouldUpdateActivity(
+                currentPercentage: current.batteryPercentage,
+                currentState: current.chargingState,
+                lastUpdatedAt: current.lastUpdatedAt,
+                with: snapshot
+            )
         else {
             await DiagnosticsRecorder.shared.record(
                 category: "activity",
@@ -153,13 +157,13 @@ actor ChargingActivityManager {
 
         let content = ActivityContent(
             state: ChargingActivityAttributes.ContentState(snapshot: snapshot),
-            staleDate: nil
+            staleDate: snapshot.liveActivityStaleDate
         )
         await activity.update(content)
         await DiagnosticsRecorder.shared.record(
             category: "activity",
             level: .debug,
-            message: "Updated Live Activity \(activity.id) with a real battery snapshot.",
+            message: "Updated Live Activity \(activity.id) with a public iOS battery snapshot.",
             correlationID: correlationID,
             snapshot: snapshot,
             activeActivityCount: 1

@@ -10,7 +10,7 @@ This repository intentionally contains only:
 - one Neon Orbit Live Activity;
 - Lock Screen and basic Dynamic Island layouts;
 - Start and Stop App Intents;
-- real point-in-time battery readings;
+- approximate point-in-time readings from the public iOS battery API;
 - duplicate recovery, diagnostics, and unit tests.
 
 The full theme gallery, onboarding, purchases, backend, analytics, and production
@@ -113,10 +113,13 @@ and enter actual results in
 
 ## Known technical limitation
 
-ChargeGlow reads the battery using public `UIDevice` APIs. It updates the Live
-Activity only while iOS gives the app execution time. Once the process is
-suspended, the last real reading and timestamp remain visible; the percentage is
-never estimated.
+ChargeGlow reads the battery using public `UIDevice` APIs. The value exposed to
+third-party apps can be coarser than the percentage shown in the status bar, so
+the UI labels it with `≈` instead of claiming exact equality. ChargeGlow refreshes
+on foreground activation, on system battery notifications, on manual refresh,
+and once per minute while foregrounded. When iOS suspends the process, the Live
+Activity marks its last value as outdated after two minutes; it never invents
+intermediate percentages.
 
 ## Diagnostic timeline
 
@@ -124,7 +127,7 @@ The exported `diagnostics.json` records an ordered, bounded timeline of every
 meaningful event that iOS delivers to ChargeGlow:
 
 - App Intent invocation, battery capture, completion, and error.
-- Activity recovery, start, skipped update, real update, and end.
+- Activity recovery, start, skipped update, public API update, and end.
 - Manual Start and Stop actions.
 - Battery callbacks while the app has execution time.
 - Foreground, inactive, and background scene transitions.
@@ -145,6 +148,7 @@ diagnostic event also includes the same identity fields.
 The first instrumented timeline release was `1.1.0`. Release `1.1.1` adds an
 opportunistic disconnect fallback: when iOS delivers a real disconnected
 battery event while the app still has execution time, ChargeGlow immediately
-ends any active charging activity. Its bundle build number is the Codemagic
-workflow build number, allowing screenshots and exported logs to identify the
-exact installed IPA.
+ends any active charging activity. Release `1.2.0` makes the public battery
+API's granularity and data freshness explicit and adds foreground polling. Its
+bundle build number is the Codemagic workflow build number, allowing screenshots
+and exported logs to identify the exact installed IPA.

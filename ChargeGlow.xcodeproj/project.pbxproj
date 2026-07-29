@@ -445,7 +445,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ChargeGlow/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", );
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedalaa.chargeglow.spike;
 				PRODUCT_MODULE_NAME = ChargeGlow;
 				PRODUCT_NAME = ChargeGlow;
@@ -467,7 +467,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ChargeGlow/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", );
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedalaa.chargeglow.spike;
 				PRODUCT_MODULE_NAME = ChargeGlow;
 				PRODUCT_NAME = ChargeGlow;
@@ -489,7 +489,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ChargeGlowWidgets/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks", );
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedalaa.chargeglow.spike.widgets;
 				PRODUCT_NAME = ChargeGlowWidgets;
 				SKIP_INSTALL = YES;
@@ -511,7 +511,7 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ChargeGlowWidgets/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks", );
-				MARKETING_VERSION = 1.1.1;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.mohamedalaa.chargeglow.spike.widgets;
 				PRODUCT_NAME = ChargeGlowWidgets;
 				SKIP_INSTALL = YES;

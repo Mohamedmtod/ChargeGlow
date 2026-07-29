@@ -37,8 +37,7 @@ struct ChargingLiveActivity: Widget {
                             systemImage: context.state.chargingState.symbolName
                         )
                         Spacer()
-                        Text("Updated \(context.state.lastUpdatedAt, style: .time)")
-                            .foregroundStyle(.secondary)
+                        freshnessText(context: context)
                     }
                     .font(.caption)
                     .padding(.top, 4)
@@ -88,9 +87,13 @@ struct ChargingLiveActivity: Widget {
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
-                Text("Updated \(context.state.lastUpdatedAt, style: .time)")
+                Text(
+                    context.isStale
+                        ? "Outdated · Updated \(context.state.lastUpdatedAt.formatted(date: .omitted, time: .shortened))"
+                        : "Updated \(context.state.lastUpdatedAt.formatted(date: .omitted, time: .shortened))"
+                )
                     .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(context.isStale ? Color.orange : Color.secondary)
             }
 
             Spacer(minLength: 0)
@@ -102,12 +105,25 @@ struct ChargingLiveActivity: Widget {
     @ViewBuilder
     private func percentageText(_ percentage: Int?) -> some View {
         if let percentage {
-            Text("\(percentage)%")
+            Text("≈\(percentage)%")
                 .monospacedDigit()
         } else {
             Text("—")
                 .foregroundStyle(.secondary)
                 .accessibilityLabel("Battery percentage unavailable")
+        }
+    }
+
+    @ViewBuilder
+    private func freshnessText(
+        context: ActivityViewContext<ChargingActivityAttributes>
+    ) -> some View {
+        if context.isStale {
+            Label("Reading outdated", systemImage: "clock.badge.exclamationmark")
+                .foregroundStyle(.orange)
+        } else {
+            Text("Updated \(context.state.lastUpdatedAt, style: .time)")
+                .foregroundStyle(.secondary)
         }
     }
 }

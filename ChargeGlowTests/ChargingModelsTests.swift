@@ -32,6 +32,21 @@ final class ChargingModelsTests: XCTestCase {
         XCTAssertEqual(snapshot.displayPercentage, "—")
     }
 
+    func testAvailablePercentageIsMarkedApproximateAndBecomesStale() {
+        let observedAt = Date(timeIntervalSince1970: 1_000)
+        let snapshot = BatterySnapshot(
+            percentage: 15,
+            state: .charging,
+            observedAt: observedAt
+        )
+
+        XCTAssertEqual(snapshot.displayPercentage, "≈15%")
+        XCTAssertEqual(
+            snapshot.liveActivityStaleDate,
+            observedAt.addingTimeInterval(120)
+        )
+    }
+
     func testTypedErrorsHaveStableDiagnosticCodes() {
         XCTAssertEqual(
             ChargingActivityError.liveActivitiesNotAuthorized.diagnosticCode,

@@ -2,9 +2,11 @@
 
 > **Status: Pending physical-device verification**
 >
-> The Codemagic build, direct iLoader installation, real battery snapshot, and
-> Lock Screen presentation passed. Automatic locked start/stop and Dynamic
-> Island evidence remain pending. The full MVP remains gated.
+> The Codemagic build, direct iLoader installation, public battery capture, and
+> Lock Screen presentation passed. Exact status-bar equality failed, and the
+> honest approximate/stale presentation awaits verification. Automatic locked
+> start/stop and Dynamic Island evidence remain pending. The full MVP remains
+> gated.
 
 ## Build and device
 
@@ -15,6 +17,7 @@
 | Xcode version reported by CI | 26.4.1; exact-version guard passed |
 | Latest installed test build | `1.1.0 (4)`, commit `0653b955`, CI `6a6998ec30fa0c89d6227d3a` |
 | Disconnect-fallback candidate | `1.1.1`; pending CI and device verification |
+| Battery-freshness candidate | `1.2.0`; pending CI and device verification |
 | iPhone model | TBD |
 | iOS version and build | TBD |
 | Dynamic Island | TBD |
@@ -58,7 +61,7 @@ test state.
 | F-06 | Connected automation, locked | Exactly one activity appears | TBD | NOT RUN | TBD |
 | F-07 | Lock Screen layout | Neon Orbit card is readable and unclipped | Neon Orbit rendered below the clock with percentage, state, and update time readable | PASS | Lock Screen screenshot at 08:45 |
 | F-08 | Dynamic Island layouts | Compact, minimal, and expanded render | TBD | NOT RUN | TBD |
-| F-09 | Real battery snapshot | Matches device value or displays unavailable | App captured 25% Charging at 08:45:08; activity started at 08:45:28 and displayed 25% with the matching update time | PASS | App screenshots, Lock Screen screenshot, diagnostics JSON |
+| F-09 | Battery API snapshot | Public value and freshness are represented honestly | Build 4 API readings jumped from 10% to 15% while the status bar showed intermediate 13% and 17%; the activity also retained 10% during suspension | FAIL | Screenshots at 16:43 and 16:49; build 4 sequences 1–38 |
 | F-10 | Disconnected automation, locked | Activity ends without unlocking | Identity-stamped build received repeated background disconnects, but no Stop intent event appeared and the activity remained active | FAIL | Build 4 timeline sequences 65–76 and 97–112 |
 | F-11 | Duplicate Start | Second call does not create a duplicate | Second Start was rejected with `CG-ACT-002` while activity `ED29FE58-64D3-43E7-9654-A1C068A7858B` remained active | PASS | Diagnostics event at `2026-07-29T05:49:27Z` |
 | F-12 | Idempotent Stop | Second call reports already stopped | TBD | NOT RUN | TBD |
@@ -138,17 +141,26 @@ when one of these real disconnected callbacks reaches the running app process.
 Record the start snapshot, the system battery value, the last update before
 suspension, and whether the timestamp made staleness clear.
 
-The app and Live Activity displayed the real 25% charging snapshot with an
-08:45 update time. The later Lock Screen status bar showed 24% while the Live
-Activity intentionally retained 25%. This confirms that the activity preserves
-the last real value rather than estimating background progress, and that the
-timestamp communicates its age.
+The identity-stamped build recorded a public `UIDevice` reading of 10% at
+13:36:05 and created the activity with 10% at 13:36:13. After the app entered
+background, no percentage callback arrived for almost seven minutes. On
+foreground activation at 13:43:05, the public API jumped directly to 15% and
+the activity update completed. Device screenshots during this period showed
+13% and later 17% in the status bar, confirming that the third-party public API
+value is coarser than and not identical to Apple's status-bar value on this
+device.
+
+Release `1.2.0` therefore labels public API percentages with `≈`, refreshes on
+foreground activation and once per foreground minute, captures again at manual
+Start, and sets a two-minute ActivityKit stale date. Physical verification must
+confirm both the approximate marker and the visible outdated state.
 
 ## Limitations discovered
 
 | Limitation | State affected | User impact | Honest fallback |
 | --- | --- | --- | --- |
-| Continuous battery execution is not guaranteed | Suspended/background | Percentage may remain at last real value | Display last-updated time; never estimate |
+| Continuous battery execution is not guaranteed | Suspended/background | Percentage may remain at last public API value | Display last-updated time and stale state; never estimate |
+| Public `UIDevice` percentage differs from status bar | All battery displays | A rounded/coarse value can appear numerically inconsistent | Mark it approximate, show freshness, and never claim status-bar equality |
 | Free signing is temporary | Installation | Build eventually expires | Re-sign for testing; paid distribution later |
 | Automation configuration cannot be read by the app | Setup | App cannot prove setup is correct | User checklist plus test action |
 | Supplied background runs did not invoke either App Intent | Charger automations | Activity state changed, but automatic start/stop was not proven | Reselect both ChargeGlow actions and enable immediate execution; `1.1.1` also ends on a delivered disconnect callback |
@@ -164,8 +176,8 @@ timestamp communicates its age.
 
 - **GO:** direct USB installation works; both intents are discoverable; connected
   and disconnected automations start and stop exactly one activity while locked;
-  Lock Screen and Dynamic Island render; battery data is real or explicitly
-  unavailable.
+  Lock Screen and Dynamic Island render; battery data is labeled as an
+  approximate public API value or explicitly unavailable.
 - **CONDITIONAL GO:** the primary path passes, but force-quit, reboot, or
   SideStore has a documented limitation that can be handled by honest copy and a
   manual fallback.
@@ -175,8 +187,9 @@ timestamp communicates its age.
 
 ### Current recommendation
 
-**Do not begin the full MVP.** Build and install release `1.1.1`, recreate or
-reselect both ChargeGlow automation actions, and rerun the locked
-connected/disconnected test. The fallback is accepted only if its correlated
-`fallback` events end the activity. The primary automation gate still requires
-correlated `intents` events for both operations.
+**Do not begin the full MVP.** Build and install release `1.2.0`, verify the
+approximate marker, foreground polling, and two-minute outdated presentation,
+then recreate or reselect both ChargeGlow automation actions and rerun the
+locked connected/disconnected test. The fallback is accepted only if its
+correlated `fallback` events end the activity. The primary automation gate
+still requires correlated `intents` events for both operations.

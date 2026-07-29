@@ -73,8 +73,14 @@ connection through activity presentation where possible.
 
 ## Data accuracy and presentation
 
-- [ ] Lock Screen percentage equals the current system battery percentage at
-      intent execution, allowing only an observed rounding difference.
+- [ ] App and Live Activity prefix every available public API percentage with
+      `≈`; record its difference from the status-bar percentage.
+- [ ] Manual Start captures a new public API snapshot rather than reusing the
+      previous on-screen timestamp.
+- [ ] While foregrounded, diagnostics contain a `foreground poll` observation
+      approximately once per minute.
+- [ ] After two minutes without an ActivityKit update, the Lock Screen card
+      clearly labels its reading as outdated.
 - [ ] Charging state is `Charging` while connected.
 - [ ] Full state appears only after a real 100%/full observation.
 - [ ] Unavailable percentage displays `—`, never a fabricated number.
@@ -85,8 +91,9 @@ connection through activity presentation where possible.
 - [ ] Dynamic Island expanded layout fits.
 - [ ] Apple's normal charging indication remains unchanged.
 
-Do not fail the spike merely because the percentage stops updating after process
-suspension; confirm that the displayed value remains the last real reading.
+Do not claim exact equality with Apple's status-bar percentage. When the process
+is suspended, confirm that the displayed value remains the last public API
+reading and becomes visibly outdated.
 
 ## Lifecycle and error cases
 

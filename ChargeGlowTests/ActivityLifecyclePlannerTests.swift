@@ -92,4 +92,45 @@ final class ActivityLifecyclePlannerTests: XCTestCase {
             )
         )
     }
+
+    func testActivityUpdatesForChangedOrAgedBatterySnapshots() {
+        let lastUpdatedAt = Date(timeIntervalSince1970: 100)
+
+        XCTAssertTrue(
+            ActivityLifecyclePlanner.shouldUpdateActivity(
+                currentPercentage: 45,
+                currentState: .charging,
+                lastUpdatedAt: lastUpdatedAt,
+                with: BatterySnapshot(
+                    percentage: 50,
+                    state: .charging,
+                    observedAt: lastUpdatedAt.addingTimeInterval(1)
+                )
+            )
+        )
+        XCTAssertTrue(
+            ActivityLifecyclePlanner.shouldUpdateActivity(
+                currentPercentage: 45,
+                currentState: .charging,
+                lastUpdatedAt: lastUpdatedAt,
+                with: BatterySnapshot(
+                    percentage: 45,
+                    state: .charging,
+                    observedAt: lastUpdatedAt.addingTimeInterval(60)
+                )
+            )
+        )
+        XCTAssertFalse(
+            ActivityLifecyclePlanner.shouldUpdateActivity(
+                currentPercentage: 45,
+                currentState: .charging,
+                lastUpdatedAt: lastUpdatedAt,
+                with: BatterySnapshot(
+                    percentage: 45,
+                    state: .charging,
+                    observedAt: lastUpdatedAt.addingTimeInterval(1)
+                )
+            )
+        )
+    }
 }
