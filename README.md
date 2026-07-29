@@ -18,11 +18,17 @@ polish are out of scope until the physical-device gate passes.
 
 ## Current status
 
-**Pending physical-device verification. Do not start the full MVP yet.**
+**CONDITIONAL GO — Phase 0/1 physical-device feasibility is complete.**
 
-The source and CI workflow have been prepared on Windows, where Xcode is not
-available. A successful Codemagic build and physical iPhone evidence are still
-required before any Go/No-Go conclusion.
+Codemagic build/tests, direct iLoader installation, locked automatic Start/Stop,
+Lock Screen, all Dynamic Island layouts, duplicate prevention, Outdated
+presentation, and force-quit recovery passed on an iPhone 14 Pro running iOS
+26.5.2. Start and Stop did not run in the tested after-reboot state before
+ChargeGlow was opened; whether first unlock alone is sufficient remains
+unisolated. Proceed to next-phase planning only with that documented limitation
+and manual fallback accepted. See
+[the feasibility report](docs/feasibility-report.md) for the evidence and final
+decision.
 
 ## Requirements
 
@@ -120,6 +126,13 @@ on foreground activation, on system battery notifications, on manual refresh,
 and once per minute while foregrounded. When iOS suspends the process, the Live
 Activity marks its last value as outdated after two minutes; it never invents
 intermediate percentages.
+
+The tested charger automations also did not invoke ChargeGlow after an iPhone
+reboot when the app had not been opened. The test did not isolate whether first
+unlock alone is sufficient. Users must unlock once and may need to launch
+ChargeGlow once, then reconnect the charger or use the manual action. The exact
+iOS subsystem responsible cannot be diagnosed from app logs when the app
+receives no execution time.
 
 ## Diagnostic timeline
 

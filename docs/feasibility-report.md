@@ -1,13 +1,14 @@
 # ChargeGlow Feasibility Report
 
-> **Status: Pending physical-device verification**
+> **Status: CONDITIONAL GO — physical-device feasibility gate completed**
 >
 > The Codemagic build, direct iLoader installation, public battery capture,
-> Lock Screen presentation, and locked automatic Start/Stop path passed. Exact
-> status-bar equality is an accepted public-API limitation. Dynamic Island and
-> repeated Stop passed. Stale presentation and resilience evidence remain
-> pending. The full MVP remains gated until those remaining checks classify the
-> result.
+> Lock Screen and Dynamic Island presentation, locked automatic Start/Stop,
+> duplicate prevention, repeated Stop, Outdated presentation, and force-quit
+> recovery passed. Start and Stop did not run after a reboot before ChargeGlow
+> was opened; whether first unlock alone is sufficient remains unisolated. The
+> primary concept is feasible, with that reboot
+> limitation and the public battery API's approximate value explicitly accepted.
 
 ## Build and device
 
@@ -18,7 +19,7 @@
 | Xcode version reported by CI | 26.4.1; exact-version guard passed |
 | Latest installed test build | `1.2.0 (7)`, commit `c31c2409`, CI `6a6a1163c5b6cb2224bd54ff` |
 | Disconnect fallback | Verified on device; ended the activity before the Stop intent completed |
-| Battery-freshness candidate | Approximate marker verified in `1.2.0`; two-minute stale presentation pending |
+| Battery freshness | Approximate marker and two-minute Outdated presentation verified in `1.2.0` |
 | iPhone model | iPhone 14 Pro |
 | iOS version and build | iOS 26.5.2; OS build number not supplied |
 | Dynamic Island | Available; compact, minimal, and expanded presentations verified |
@@ -41,11 +42,13 @@ relative links or artifact names here.
 | SideStore log | TBD |
 | `diagnostics.json` normal flow | User-supplied locked automatic Start/Stop timeline, build 7, sequences 197–211 |
 | `diagnostics.json` failure flow | User-supplied duplicate-start and earlier background-disconnect timelines |
+| `diagnostics.json` resilience flow | User-supplied build 7 timeline through sequence 329; force-quit flow passed, with no post-reboot intent invocation recorded for the failed run |
 | Connected automation screenshot | TBD |
 | Disconnected automation screenshot | TBD |
 | Locked flow screen recording | TBD |
 | Lock Screen screenshot | User-supplied screenshot, 2026-07-29 08:45 Africa/Cairo |
 | Dynamic Island screenshots | User-supplied compact, minimal, and expanded screenshots from build 7 |
+| Outdated screenshot | User-supplied Lock Screen screenshot showing `≈55%`, `Disconnected`, and `Outdated · Updated 6:30 PM` |
 
 ## Procedure and results
 
@@ -62,13 +65,13 @@ test state.
 | F-06 | Connected automation, locked | Exactly one activity appears | User observed the activity appear while locked; automatic Start completed with activity `274EC9C2-321C-4D5E-B5E4-4FE1B93F6B36` | PASS | User observation and build 7 sequence 197 |
 | F-07 | Lock Screen layout | Neon Orbit card is readable and unclipped | Neon Orbit rendered below the clock with percentage, state, and update time readable | PASS | Lock Screen screenshot at 08:45 |
 | F-08 | Dynamic Island layouts | Compact, minimal, and expanded render | All three presentations rendered legibly with the approximate percentage and charging state | PASS | User-supplied build 7 screenshots |
-| F-09 | Battery API snapshot | Public value and freshness are represented honestly | Build 7 displays the public value with `≈`; the two-minute outdated presentation still needs a Lock Screen observation | NOT RUN | Build 7 app screenshot; stale evidence pending |
+| F-09 | Battery API snapshot | Public value and freshness are represented honestly | Build 7 displays the public value with `≈`; after updates ceased, the Lock Screen card visibly showed `Outdated` and retained its last-updated time | PASS | Build 7 app and Outdated Lock Screen screenshots |
 | F-10 | Disconnected automation, locked | Activity ends without unlocking | Disconnect fallback ended the activity at sequences 199–201; Stop automation then invoked its intent at 203 and completed idempotently at 206, all before foreground sequence 207 | PASS | Build 7 sequences 198–207 and user locked-device observation |
 | F-11 | Duplicate Start | Second call does not create a duplicate | Second Start was rejected with `CG-ACT-002` while activity `ED29FE58-64D3-43E7-9654-A1C068A7858B` remained active | PASS | Diagnostics event at `2026-07-29T05:49:27Z` |
 | F-12 | Idempotent Stop | Second call reports already stopped | Stop intent completed with `nothing to end` after fallback, and the user separately confirmed that running Stop twice succeeds | PASS | Build 7 sequences 203–206 and direct user observation |
-| F-13 | Background/suspended process | Automatic flow behavior recorded | The short background cycle passed; a deliberate multi-minute suspension cycle has not been separately recorded | NOT RUN | Build 7 sequences 197–207; suspension wait pending |
-| F-14 | Removed from app switcher | Automatic flow behavior recorded | TBD | NOT RUN | TBD |
-| F-15 | After iPhone restart | Automatic flow behavior recorded | TBD | NOT RUN | TBD |
+| F-13 | Background/suspended process | Automatic flow behavior recorded | Locked Start/Stop passed, and a suspended activity retained its last real value with a visible Outdated label | PASS | Build 7 sequences 197–207 and Outdated screenshot |
+| F-14 | Removed from app switcher | Automatic flow behavior recorded | Start and Stop both passed after force quit/removal from the app switcher | PASS | Direct device observation and build 7 resilience diagnostics |
+| F-15 | After iPhone restart | Automatic flow behavior recorded | Without opening ChargeGlow after reboot, Start and Stop both failed. The exported timeline contains no corresponding intent execution; first unlock versus first app launch was not isolated | FAIL | Direct device observation and build 7 resilience diagnostics |
 | F-16 | Live Activities disabled | Clear authorization error returned | TBD | NOT RUN | TBD |
 | F-17 | Rapid reconnect | No duplicate remains | TBD | NOT RUN | TBD |
 | F-18 | Low Power Mode | Outcome recorded without fabricated data | TBD | NOT RUN | TBD |
@@ -172,8 +175,32 @@ device.
 
 Release `1.2.0` therefore labels public API percentages with `≈`, refreshes on
 foreground activation and once per foreground minute, captures again at manual
-Start, and sets a two-minute ActivityKit stale date. Physical verification must
-confirm both the approximate marker and the visible outdated state.
+Start, and sets a two-minute ActivityKit stale date. Physical verification
+confirmed both the approximate marker and the visible Outdated state while
+preserving the last real reading and timestamp.
+
+### Force-quit and reboot resilience
+
+The user confirmed that both automatic Start and automatic Stop pass after
+ChargeGlow is force-quit. The supplied build 7 timeline also contains subsequent
+background intent invocations, activity creation, and idempotent end behavior
+without requiring a foreground scene transition.
+
+After an iPhone reboot, with ChargeGlow not opened, both Start and Stop failed.
+No matching post-reboot intent invocation exists in the exported diagnostics.
+This proves the tested reboot scenario fails, but the run did not isolate
+whether the first device unlock alone would restore execution or whether
+ChargeGlow must be launched once. The log also cannot prove which iOS subsystem
+withheld execution because ChargeGlow received no execution time to instrument
+it.
+
+The most plausible explanation is iOS's Before First Unlock state: protected
+app files and credentials are unavailable until the user unlocks once after a
+restart. This is recorded as an inference from the observed reboot-only failure,
+not as a documented guarantee that Shortcuts charger automations always behave
+this way. The product fallback is to tell the user to unlock once after reboot
+and, if needed, launch ChargeGlow once, then reconnect the charger or run Start
+manually.
 
 ## Limitations discovered
 
@@ -184,15 +211,16 @@ confirm both the approximate marker and the visible outdated state.
 | Free signing is temporary | Installation | Build eventually expires | Re-sign for testing; paid distribution later |
 | Automation configuration cannot be read by the app | Setup | App cannot prove setup is correct | User checklist plus test action |
 | Automations can retain stale actions after reinstall | Charger automations | Earlier runs delivered battery callbacks but no App Intent | Recreate the automations or run the newly selected shortcuts; build 7 verified both intents after recreation |
-| Additional findings | TBD | TBD | TBD |
+| Post-reboot path failed on the tested device | After reboot without opening ChargeGlow | Charger automation did not invoke Start or Stop; first unlock versus first app launch is not yet isolated | Unlock once, open ChargeGlow if needed, then reconnect the charger or use the manual action |
 
 ## Decision
 
 ### Classification
 
-**PENDING — the critical locked automation path and all Dynamic Island
-presentations passed.** The two-minute stale presentation and force-quit/reboot
-resilience still need to be recorded before assigning the final classification.
+**CONDITIONAL GO.** The primary USB-installed, locked-device automation path is
+feasible and all critical UI, duplicate, freshness, and force-quit checks
+passed. The tested post-reboot, before-first-app-launch path failed and requires
+an explicit user-facing fallback.
 
 ### Decision rules
 
@@ -209,10 +237,18 @@ resilience still need to be recorded before assigning the final classification.
 
 ### Current recommendation
 
-**Do not begin the full MVP yet.** The primary uncertainty is resolved: build 7
-proved correlated background Start and Stop intent execution while the locked
-automatic flow created and removed exactly one activity. Dynamic Island,
-iPhone model, iOS version, and repeated Stop are now recorded. Verify the
-two-minute outdated presentation and record force-quit/reboot outcomes. Those
-final observations determine `GO` versus `CONDITIONAL GO`; no additional core
-automation implementation is currently required.
+**Phase 0/1 is complete with a CONDITIONAL GO.** Planning for the next phase may
+begin if the product accepts these constraints:
+
+- after a reboot, the user must unlock once and may need to launch ChargeGlow
+  before relying on the charger automations;
+- the public battery percentage is approximate and can become stale while iOS
+  suspends execution;
+- free signing and iLoader are test-only installation mechanisms;
+- SideStore remains an optional compatibility path and was not required for the
+  primary USB decision.
+
+The remaining unrun authorization, rapid-reconnect, Low Power Mode, and 100%
+rows are follow-up hardening tests. They do not reverse the demonstrated
+feasibility of the primary flow, but should be completed before calling a later
+MVP production-ready.
