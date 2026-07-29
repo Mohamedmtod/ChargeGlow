@@ -1,6 +1,286 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%lld points" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld نقطة مئوية"
+          }
+        }
+      }
+    },
+    "Battery gain" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "زيادة البطارية"
+          }
+        }
+      }
+    },
+    "Latest level" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أحدث مستوى"
+          }
+        }
+      }
+    },
+    "Start level" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مستوى البداية"
+          }
+        }
+      }
+    },
+    "Charging Session Test" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اختبار جلسة الشحن"
+          }
+        }
+      }
+    },
+    "Connect a charger and wait for iOS to report Charging." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "صِل شاحنًا وانتظر حتى يعرض iOS حالة الشحن."
+          }
+        }
+      }
+    },
+    "Elapsed" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المدة"
+          }
+        }
+      }
+    },
+    "Indicative" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استرشادية"
+          }
+        }
+      }
+    },
+    "Insufficient" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غير كافية"
+          }
+        }
+      }
+    },
+    "Keep ChargeGlow open on screen for at least 15–20 minutes for a more useful comparison." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أبقِ ChargeGlow مفتوحًا على الشاشة لمدة 15–20 دقيقة على الأقل للحصول على مقارنة أكثر فائدة."
+          }
+        }
+      }
+    },
+    "Measurement confidence" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "موثوقية القياس"
+          }
+        }
+      }
+    },
+    "Measures the observed battery gain while ChargeGlow remains open." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يقيس الزيادة الملحوظة في البطارية أثناء بقاء ChargeGlow مفتوحًا."
+          }
+        }
+      }
+    },
+    "Observed rate" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المعدل الملحوظ"
+          }
+        }
+      }
+    },
+    "points/hour" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نقطة مئوية/ساعة"
+          }
+        }
+      }
+    },
+    "Ready. Keep the same cable, charger, screen use, and temperature during the test." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جاهز. حافظ على نفس الكابل والشاحن واستخدام الشاشة ودرجة الحرارة أثناء الاختبار."
+          }
+        }
+      }
+    },
+    "Reset Test" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إعادة ضبط الاختبار"
+          }
+        }
+      }
+    },
+    "Samples" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "العينات"
+          }
+        }
+      }
+    },
+    "Start Charging Test" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بدء اختبار الشحن"
+          }
+        }
+      }
+    },
+    "Stop Charging Test" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إيقاف اختبار الشحن"
+          }
+        }
+      }
+    },
+    "Strong" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قوية"
+          }
+        }
+      }
+    },
+    "Test completed." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اكتمل الاختبار."
+          }
+        }
+      }
+    },
+    "Test ended when the battery became full." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "انتهى الاختبار عند اكتمال شحن البطارية."
+          }
+        }
+      }
+    },
+    "Test ended when ChargeGlow left the foreground." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "انتهى الاختبار عندما غادر ChargeGlow الواجهة."
+          }
+        }
+      }
+    },
+    "Test ended when the charger disconnected." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "انتهى الاختبار عند فصل الشاحن."
+          }
+        }
+      }
+    },
+    "Test stopped manually." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تم إيقاف الاختبار يدويًا."
+          }
+        }
+      }
+    },
+    "This is not a wattage, safety, authenticity, or hardware-quality test. Compare chargers only under similar conditions." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هذا ليس اختبارًا للقدرة بالواط أو السلامة أو الأصالة أو جودة المكونات. قارن الشواحن فقط في ظروف متشابهة."
+          }
+        }
+      }
+    },
+    "Unavailable" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غير متاح"
+          }
+        }
+      }
+    },
+    "Waiting for enough change" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "في انتظار تغير كافٍ"
+          }
+        }
+      }
+    },
     "%lld activities (recovery required)" : {
       "localizations" : {
         "ar" : {

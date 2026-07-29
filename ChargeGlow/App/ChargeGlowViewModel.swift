@@ -26,6 +26,7 @@ final class ChargeGlowViewModel: ObservableObject {
     @Published private(set) var diagnosticCode: String?
     @Published private(set) var diagnosticsURL: URL?
     @Published private(set) var isWorking = false
+    @Published private(set) var chargingSessionTest = ChargingSessionTest()
 
     let batteryMonitor: BatteryMonitor
     private let batterySnapshotProvider: any BatterySnapshotProviding
@@ -50,6 +51,7 @@ final class ChargeGlowViewModel: ObservableObject {
                 return
             }
             self.snapshot = snapshot
+            self.observeChargingSessionTest(snapshot)
             Task {
                 let activityCount =
                     await self.activityManager.activeActivityCount()
@@ -104,6 +106,22 @@ final class ChargeGlowViewModel: ObservableObject {
     }
 
     func setApplicationActive(_ isActive: Bool) {
+        if
+            !isActive,
+            chargingSessionTest.phase == .running
+        {
+            var test = chargingSessionTest
+            test.stop(at: Date(), reason: .appInactive)
+            chargingSessionTest = test
+            let endingSnapshot = snapshot
+            Task {
+                await DiagnosticsRecorder.shared.record(
+                    category: "charger-test",
+                    message: "Charging session test ended because the app left the foreground. \(test.diagnosticSummary)",
+                    snapshot: endingSnapshot
+                )
+            }
+        }
         batteryMonitor.setApplicationActive(isActive)
     }
 
@@ -112,6 +130,48 @@ final class ChargeGlowViewModel: ObservableObject {
         Task {
             await refreshStatus()
         }
+    }
+
+    @discardableResult
+    func startChargingSessionTest() -> Bool {
+        batteryMonitor.refresh()
+        var test = ChargingSessionTest()
+        let startingSnapshot = snapshot
+        guard test.start(with: startingSnapshot) else {
+            return false
+        }
+        chargingSessionTest = test
+        Task {
+            await DiagnosticsRecorder.shared.record(
+                category: "charger-test",
+                message: "Started foreground charging session test.",
+                snapshot: startingSnapshot
+            )
+        }
+        return true
+    }
+
+    func stopChargingSessionTest() {
+        var test = chargingSessionTest
+        test.stop(at: Date())
+        guard test != chargingSessionTest else {
+            return
+        }
+        chargingSessionTest = test
+        let endingSnapshot = snapshot
+        Task {
+                await DiagnosticsRecorder.shared.record(
+                    category: "charger-test",
+                    message: "Stopped foreground charging session test manually. \(test.diagnosticSummary)",
+                    snapshot: endingSnapshot
+                )
+        }
+    }
+
+    func resetChargingSessionTest() {
+        var test = chargingSessionTest
+        test.reset()
+        chargingSessionTest = test
     }
 
     func selectTheme(_ themeID: ThemeID) {
@@ -211,6 +271,32 @@ final class ChargeGlowViewModel: ObservableObject {
         activeActivityCount = await activityManager.activeActivityCount()
     }
 
+    private func observeChargingSessionTest(
+        _ snapshot: BatterySnapshot
+    ) {
+        let previousPhase = chargingSessionTest.phase
+        var test = chargingSessionTest
+        test.observe(snapshot)
+        guard test != chargingSessionTest else {
+            return
+        }
+        chargingSessionTest = test
+
+        if
+            previousPhase == .running,
+            test.phase == .completed
+        {
+            let reason = test.completionReason?.rawValue ?? "unknown"
+            Task {
+                await DiagnosticsRecorder.shared.record(
+                    category: "charger-test",
+                    message: "Charging session test completed: \(reason). \(test.diagnosticSummary)",
+                    snapshot: snapshot
+                )
+            }
+        }
+    }
+
     private func show(_ error: ChargingActivityError) {
         status = .failure(error)
         diagnosticCode = error.diagnosticCode
@@ -225,5 +311,15 @@ private extension ActivityEndResult {
         case .nothingToEnd:
             return "Disconnect fallback found nothing to end."
         }
+    }
+}
+
+private extension ChargingSessionTest {
+    var diagnosticSummary: String {
+        let gain = gainedPercentagePoints.map { String($0) } ?? "unavailable"
+        let rate = observedPercentagePointsPerHour.map {
+            String(format: "%.2f", $0)
+        } ?? "unavailable"
+        return "durationSeconds=\(Int(measurementDuration)); gainPoints=\(gain); samples=\(sampleCount); ratePointsPerHour=\(rate); confidence=\(confidence.rawValue)."
     }
 }

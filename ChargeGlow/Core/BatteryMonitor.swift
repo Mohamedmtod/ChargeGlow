@@ -59,6 +59,200 @@ enum BatteryReader {
     }
 }
 
+enum ChargingTestPhase: String, Equatable, Sendable {
+    case idle
+    case running
+    case completed
+}
+
+enum ChargingTestCompletionReason: String, Equatable, Sendable {
+    case manual
+    case disconnected
+    case fullyCharged
+    case appInactive
+}
+
+enum ChargingTestConfidence: String, Equatable, Sendable {
+    case insufficient
+    case indicative
+    case strong
+}
+
+struct ChargingSessionSample: Equatable, Sendable {
+    let percentage: Int
+    let observedAt: Date
+}
+
+struct ChargingSessionTest: Equatable, Sendable {
+    private(set) var phase: ChargingTestPhase = .idle
+    private(set) var samples: [ChargingSessionSample] = []
+    private(set) var endedAt: Date?
+    private(set) var completionReason: ChargingTestCompletionReason?
+
+    var startedAt: Date? {
+        samples.first?.observedAt
+    }
+
+    var latestPercentage: Int? {
+        samples.last?.percentage
+    }
+
+    var startPercentage: Int? {
+        samples.first?.percentage
+    }
+
+    var gainedPercentagePoints: Int? {
+        guard
+            let startPercentage,
+            let latestPercentage
+        else {
+            return nil
+        }
+        return max(latestPercentage - startPercentage, 0)
+    }
+
+    var sampleCount: Int {
+        samples.count
+    }
+
+    var measurementDuration: TimeInterval {
+        guard
+            let startedAt,
+            let latestObservation = samples.last?.observedAt
+        else {
+            return 0
+        }
+        let endpoint = endedAt ?? latestObservation
+        return max(endpoint.timeIntervalSince(startedAt), 0)
+    }
+
+    var observedPercentagePointsPerHour: Double? {
+        guard
+            measurementDuration >= 300,
+            let gainedPercentagePoints,
+            gainedPercentagePoints > 0
+        else {
+            return nil
+        }
+        return Double(gainedPercentagePoints)
+            / (measurementDuration / 3_600)
+    }
+
+    var confidence: ChargingTestConfidence {
+        guard let gainedPercentagePoints else {
+            return .insufficient
+        }
+        if
+            measurementDuration >= 1_200,
+            gainedPercentagePoints >= 4,
+            sampleCount >= 10
+        {
+            return .strong
+        }
+        if
+            measurementDuration >= 600,
+            gainedPercentagePoints >= 2,
+            sampleCount >= 5
+        {
+            return .indicative
+        }
+        return .insufficient
+    }
+
+    func elapsed(at date: Date) -> TimeInterval {
+        guard let startedAt else {
+            return 0
+        }
+        return max((endedAt ?? date).timeIntervalSince(startedAt), 0)
+    }
+
+    mutating func start(with snapshot: BatterySnapshot) -> Bool {
+        guard
+            snapshot.state == .charging,
+            let percentage = snapshot.percentage
+        else {
+            return false
+        }
+
+        phase = .running
+        samples = [
+            ChargingSessionSample(
+                percentage: percentage,
+                observedAt: snapshot.observedAt
+            )
+        ]
+        endedAt = nil
+        completionReason = nil
+        return true
+    }
+
+    mutating func observe(_ snapshot: BatterySnapshot) {
+        guard phase == .running else {
+            return
+        }
+
+        if let percentage = snapshot.percentage {
+            appendSample(
+                percentage: percentage,
+                observedAt: snapshot.observedAt
+            )
+        }
+
+        switch snapshot.state {
+        case .disconnected:
+            complete(
+                at: snapshot.observedAt,
+                reason: .disconnected
+            )
+        case .full:
+            complete(
+                at: snapshot.observedAt,
+                reason: .fullyCharged
+            )
+        case .unknown, .charging:
+            break
+        }
+    }
+
+    mutating func stop(
+        at date: Date,
+        reason: ChargingTestCompletionReason = .manual
+    ) {
+        guard phase == .running else {
+            return
+        }
+        complete(at: date, reason: reason)
+    }
+
+    mutating func reset() {
+        self = ChargingSessionTest()
+    }
+
+    private mutating func appendSample(
+        percentage: Int,
+        observedAt: Date
+    ) {
+        guard observedAt >= (samples.last?.observedAt ?? .distantPast) else {
+            return
+        }
+        samples.append(
+            ChargingSessionSample(
+                percentage: percentage,
+                observedAt: observedAt
+            )
+        )
+    }
+
+    private mutating func complete(
+        at date: Date,
+        reason: ChargingTestCompletionReason
+    ) {
+        phase = .completed
+        endedAt = max(date, startedAt ?? date)
+        completionReason = reason
+    }
+}
+
 @MainActor
 final class BatteryMonitor: ObservableObject {
     private static let foregroundPollInterval: Duration = .seconds(60)

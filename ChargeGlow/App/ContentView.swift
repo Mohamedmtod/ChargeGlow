@@ -21,6 +21,7 @@ struct ContentView: View {
                     themeGallery
                     readinessCard
                     batteryCard
+                    chargingSessionTestCard
                     controls
                     diagnosticsCard
                     limitationNotice
@@ -510,6 +511,311 @@ struct ContentView: View {
             color: cardColor,
             accent: themeAccent
         )
+    }
+
+    private var chargingSessionTestCard: some View {
+        let test = viewModel.chargingSessionTest
+
+        return VStack(alignment: .leading, spacing: 12) {
+            Label(
+                "Charging Session Test",
+                systemImage: "gauge.with.dots.needle.67percent"
+            )
+            .font(.headline)
+            .foregroundStyle(themeAccent)
+
+            Text(
+                "Measures the observed battery gain while ChargeGlow remains open."
+            )
+            .font(.caption)
+            .foregroundStyle(.secondary)
+
+            Divider()
+
+            switch test.phase {
+            case .idle:
+                if
+                    viewModel.snapshot.state == .charging,
+                    viewModel.snapshot.percentage != nil
+                {
+                    Label(
+                        "Ready. Keep the same cable, charger, screen use, and temperature during the test.",
+                        systemImage: "checkmark.circle"
+                    )
+                    .foregroundStyle(.green)
+                } else {
+                    Label(
+                        "Connect a charger and wait for iOS to report Charging.",
+                        systemImage: "powerplug"
+                    )
+                    .foregroundStyle(.orange)
+                }
+
+                Button {
+                    viewModel.startChargingSessionTest()
+                } label: {
+                    Label(
+                        "Start Charging Test",
+                        systemImage: "play.fill"
+                    )
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(
+                    ChargeGlowSecondaryButtonStyle(
+                        accent: themeAccent,
+                        reduceMotion: reduceMotion
+                    )
+                )
+                .disabled(
+                    viewModel.snapshot.state != .charging
+                        || viewModel.snapshot.percentage == nil
+                )
+
+            case .running:
+                chargingTestMetrics(test)
+
+                Label(
+                    "Keep ChargeGlow open on screen for at least 15–20 minutes for a more useful comparison.",
+                    systemImage: "timer"
+                )
+                .font(.caption)
+                .foregroundStyle(.orange)
+
+                Button {
+                    viewModel.stopChargingSessionTest()
+                } label: {
+                    Label("Stop Charging Test", systemImage: "stop.fill")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(
+                    ChargeGlowSecondaryButtonStyle(
+                        accent: themeAccent,
+                        reduceMotion: reduceMotion
+                    )
+                )
+
+            case .completed:
+                chargingTestMetrics(test)
+
+                HStack {
+                    Label(
+                        "Measurement confidence",
+                        systemImage: "waveform.path.ecg"
+                    )
+                    Spacer()
+                    chargingTestConfidenceText(test.confidence)
+                        .foregroundStyle(
+                            chargingTestConfidenceColor(test.confidence)
+                        )
+                }
+
+                chargingTestCompletionText(test.completionReason)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Button {
+                    viewModel.resetChargingSessionTest()
+                } label: {
+                    Label("Reset Test", systemImage: "arrow.counterclockwise")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(
+                    ChargeGlowSecondaryButtonStyle(
+                        accent: themeAccent,
+                        reduceMotion: reduceMotion
+                    )
+                )
+            }
+
+            Divider()
+
+            Label(
+                "This is not a wattage, safety, authenticity, or hardware-quality test. Compare chargers only under similar conditions.",
+                systemImage: "exclamationmark.shield"
+            )
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .chargeGlowCard(
+            color: cardColor,
+            accent: themeAccent
+        )
+    }
+
+    @ViewBuilder
+    private func chargingTestMetrics(
+        _ test: ChargingSessionTest
+    ) -> some View {
+        statusRow(
+            title: "Elapsed",
+            symbol: "timer",
+            color: themeAccent
+        ) {
+            if test.phase == .running {
+                TimelineView(
+                    .periodic(
+                        from: .now,
+                        by: 1
+                    )
+                ) { context in
+                    Text(
+                        chargingTestDurationText(
+                            test.elapsed(at: context.date)
+                        )
+                    )
+                    .monospacedDigit()
+                }
+            } else {
+                Text(
+                    chargingTestDurationText(
+                        test.measurementDuration
+                    )
+                )
+                .monospacedDigit()
+            }
+        }
+
+        statusRow(
+            title: "Start level",
+            symbol: "battery.25percent",
+            color: themeAccent
+        ) {
+            chargingTestPercentageText(test.startPercentage)
+        }
+
+        statusRow(
+            title: "Latest level",
+            symbol: "battery.75percent",
+            color: themeAccent
+        ) {
+            chargingTestPercentageText(test.latestPercentage)
+        }
+
+        statusRow(
+            title: "Battery gain",
+            symbol: "battery.100percent",
+            color: themeAccent
+        ) {
+            if let gain = test.gainedPercentagePoints {
+                Text("\(gain) points")
+            } else {
+                Text("Unavailable")
+            }
+        }
+
+        statusRow(
+            title: "Observed rate",
+            symbol: "speedometer",
+            color: themeAccent
+        ) {
+            if let rate = test.observedPercentagePointsPerHour {
+                HStack(spacing: 3) {
+                    Text(
+                        rate,
+                        format: .number.precision(
+                            .fractionLength(1)
+                        )
+                    )
+                    Text("points/hour")
+                }
+            } else {
+                Text("Waiting for enough change")
+            }
+        }
+
+        statusRow(
+            title: "Samples",
+            symbol: "chart.dots.scatter",
+            color: themeAccent
+        ) {
+            Text("\(test.sampleCount)")
+        }
+    }
+
+    @ViewBuilder
+    private func chargingTestPercentageText(
+        _ percentage: Int?
+    ) -> some View {
+        if let percentage {
+            HStack(spacing: 0) {
+                Text("≈")
+                Text(
+                    percentage,
+                    format: .number
+                )
+                Text("%")
+            }
+            .monospacedDigit()
+        } else {
+            Text("Unavailable")
+        }
+    }
+
+    private func chargingTestDurationText(
+        _ duration: TimeInterval
+    ) -> String {
+        let totalSeconds = max(Int(duration.rounded(.down)), 0)
+        let hours = totalSeconds / 3_600
+        let minutes = (totalSeconds % 3_600) / 60
+        let seconds = totalSeconds % 60
+
+        if hours > 0 {
+            return String(
+                format: "%02d:%02d:%02d",
+                hours,
+                minutes,
+                seconds
+            )
+        }
+        return String(
+            format: "%02d:%02d",
+            minutes,
+            seconds
+        )
+    }
+
+    private func chargingTestConfidenceColor(
+        _ confidence: ChargingTestConfidence
+    ) -> Color {
+        switch confidence {
+        case .insufficient:
+            return .orange
+        case .indicative:
+            return .blue
+        case .strong:
+            return .green
+        }
+    }
+
+    private func chargingTestConfidenceText(
+        _ confidence: ChargingTestConfidence
+    ) -> Text {
+        switch confidence {
+        case .insufficient:
+            return Text("Insufficient")
+        case .indicative:
+            return Text("Indicative")
+        case .strong:
+            return Text("Strong")
+        }
+    }
+
+    private func chargingTestCompletionText(
+        _ reason: ChargingTestCompletionReason?
+    ) -> Text {
+        switch reason {
+        case .some(.manual):
+            return Text("Test stopped manually.")
+        case .some(.disconnected):
+            return Text("Test ended when the charger disconnected.")
+        case .some(.fullyCharged):
+            return Text("Test ended when the battery became full.")
+        case .some(.appInactive):
+            return Text("Test ended when ChargeGlow left the foreground.")
+        case .none:
+            return Text("Test completed.")
+        }
     }
 
     private var controls: some View {

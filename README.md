@@ -18,6 +18,8 @@ The current engineering beta contains:
 - Lock Screen and Dynamic Island layouts for each theme;
 - Start and Stop App Intents;
 - approximate point-in-time readings from the public iOS battery API;
+- a foreground charging-session comparison showing elapsed time, percentage
+  gain, observed percentage-points/hour, samples, and measurement confidence;
 - duplicate recovery, diagnostics, and unit tests.
 
 Onboarding, purchases, backend, analytics, and production distribution remain
@@ -136,6 +138,14 @@ on foreground activation, on system battery notifications, on manual refresh,
 and once per minute while foregrounded. When iOS suspends the process, the Live
 Activity marks its last value as outdated after two minutes; it never invents
 intermediate percentages.
+
+The charging-session test is a comparison aid, not an electrical measurement.
+iOS does not expose charger wattage, voltage, current, cable identity, battery
+temperature, or hardware authenticity through the public battery API. Keep the
+app open on screen; leaving the foreground ends the test. Compare chargers only
+with the same cable, starting battery range, screen use, temperature, and power
+settings. The reported rate is derived only from changes in the approximate
+public battery percentage.
 
 The tested charger automations also did not invoke ChargeGlow after an iPhone
 reboot when the app had not been opened. The test did not isolate whether first

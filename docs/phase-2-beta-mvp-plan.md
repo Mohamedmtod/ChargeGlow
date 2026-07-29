@@ -44,7 +44,9 @@ The product must always communicate that:
 - ChargeGlow cannot create or inspect personal automations;
 - after reboot, the user must unlock once and may need to launch ChargeGlow
   before relying on charger automations;
-- no wattage, charging speed, temperature, health, or time-to-full is inferred.
+- no wattage, voltage, current, temperature, health, authenticity, safety, or
+  time-to-full is inferred; an optional foreground test may report only the
+  observed public-percentage trend and its measurement confidence.
 
 ## Confirmed product decisions
 
@@ -81,6 +83,8 @@ build.
   parameter;
 - consistent Lock Screen and Dynamic Island rendering for every theme;
 - honest approximate/unavailable/outdated battery presentation;
+- a foreground-only charging-session comparison using real public percentage
+  samples, with explicit confidence and hardware-quality disclaimers;
 - first-run Shortcuts setup walkthrough and test actions;
 - String Catalog localization with English as the development language;
 - Arabic localization and full RTL verification, with no hard-coded
@@ -95,7 +99,8 @@ build.
 
 - backend, accounts, cloud sync, remote theme downloads, or push updates;
 - continuous background battery polling;
-- wattage, charging speed, temperature, health, or time-to-full estimates;
+- electrical telemetry, hardware-quality ratings, safety/authenticity claims,
+  battery temperature/health, or time-to-full estimates;
 - user-created themes or a full visual editor;
 - subscriptions, paywalls, or paid theme packs;
 - third-party analytics, ads, social features, or notifications;

@@ -146,6 +146,27 @@ reading and becomes visibly outdated.
       correct RTL layout.
 - [ ] System selection follows the iOS app language.
 
+## Foreground charging-session comparison
+
+- [ ] Test cannot start while disconnected or while percentage is unavailable.
+- [ ] Start records the current real public API percentage and starts elapsed
+      time at `00:00`.
+- [ ] Keep ChargeGlow foregrounded for at least 15–20 minutes; sample count,
+      battery gain, and observed points/hour update without fabricated values.
+- [ ] Manual Stop freezes elapsed time and retains the result.
+- [ ] Disconnect automatically completes the test with the disconnected reason.
+- [ ] Reaching Full automatically completes the test with the full reason.
+- [ ] Locking the screen or leaving ChargeGlow automatically completes the test
+      instead of counting unobserved background time.
+- [ ] Reset clears the session without affecting the Live Activity.
+- [ ] Confidence remains Insufficient for short/flat tests, then becomes
+      Indicative or Strong only after the documented duration, gain, and sample
+      thresholds.
+- [ ] English and Arabic explain that the result is not wattage, safety,
+      authenticity, or a hardware-quality verdict.
+- [ ] Compare two chargers only under similar starting percentage, cable,
+      screen use, temperature, Low Power Mode, and background workload.
+
 ## Diagnostics evidence
 
 - [ ] Export `diagnostics.json` after the normal flow.
