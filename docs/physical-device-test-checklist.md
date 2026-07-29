@@ -169,6 +169,14 @@ reading and becomes visibly outdated.
       inside their card and Dynamic Island bounds without clipping text.
 - [ ] Enable Reduce Motion and verify the chart and Plasma Core stop continuous
       motion while all values and graphics remain readable.
+- [ ] On iOS 26 or newer, verify the floating Start/Stop/Refresh dock uses
+      interactive Liquid Glass and remains above the Home indicator.
+- [ ] Verify the Hero status pills, theme tiles, cards, and language control have
+      readable contrast over every theme background in English and Arabic.
+- [ ] Scroll from top to bottom and confirm the floating dock never hides the
+      final diagnostics or limitation content.
+- [ ] On an iOS 17–25 simulator or device, verify material fallbacks retain the
+      same spacing, rounded shapes, button hit areas, and readable contrast.
 - [ ] Manual Stop freezes elapsed time and retains the result.
 - [ ] Disconnect automatically completes the test with the disconnected reason.
 - [ ] Reaching Full automatically completes the test with the full reason.

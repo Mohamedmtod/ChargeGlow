@@ -22,11 +22,11 @@ struct ContentView: View {
                     readinessCard
                     batteryCard
                     chargingSessionTestCard
-                    controls
                     diagnosticsCard
                     limitationNotice
                 }
                 .padding()
+                .padding(.bottom, 10)
             }
             .background {
                 ZStack {
@@ -38,8 +38,8 @@ struct ContentView: View {
 
                     Circle()
                         .fill(themeAccent.opacity(0.16))
-                        .frame(width: 280, height: 280)
-                        .blur(radius: 80)
+                        .frame(width: 340, height: 340)
+                        .blur(radius: 92)
                         .scaleEffect(
                             ambientMotionEnabled
                                 ? (ambientDrift ? 1.08 : 0.92)
@@ -52,8 +52,8 @@ struct ContentView: View {
 
                     Circle()
                         .fill(themeSecondaryAccent.opacity(0.1))
-                        .frame(width: 240, height: 240)
-                        .blur(radius: 90)
+                        .frame(width: 300, height: 300)
+                        .blur(radius: 105)
                         .scaleEffect(
                             ambientMotionEnabled
                                 ? (ambientDrift ? 0.92 : 1.08)
@@ -63,6 +63,36 @@ struct ContentView: View {
                             x: ambientDrift ? -132 : -158,
                             y: ambientDrift ? 305 : 345
                         )
+
+                    RoundedRectangle(
+                        cornerRadius: 140,
+                        style: .continuous
+                    )
+                    .fill(
+                        AngularGradient(
+                            colors: [
+                                themeAccent.opacity(0.11),
+                                Color.clear,
+                                themeSecondaryAccent.opacity(0.13),
+                                Color.clear,
+                                themeAccent.opacity(0.11)
+                            ],
+                            center: .center
+                        )
+                    )
+                    .frame(width: 440, height: 260)
+                    .blur(radius: 42)
+                    .rotationEffect(
+                        .degrees(ambientDrift ? 18 : -12)
+                    )
+                    .offset(y: 70)
+
+                    ChargeGlowAmbientLines(
+                        accent: themeAccent,
+                        secondaryAccent: themeSecondaryAccent,
+                        shifted: ambientDrift
+                    )
+                    .opacity(0.48)
                 }
                 .ignoresSafeArea()
                 .animation(
@@ -71,6 +101,27 @@ struct ContentView: View {
                         : .easeInOut(duration: 0.65),
                     value: viewModel.selectedThemeID
                 )
+            }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                controls
+                    .padding(.horizontal, 14)
+                    .padding(.top, 8)
+                    .padding(.bottom, 4)
+                    .background {
+                        LinearGradient(
+                            colors: [
+                                Color.clear,
+                                (
+                                    themeBackgroundColors.last
+                                        ?? Color.black
+                                )
+                                .opacity(0.76)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                        .ignoresSafeArea()
+                    }
             }
             .navigationTitle("ChargeGlow")
             .toolbar {
@@ -235,23 +286,63 @@ struct ContentView: View {
 
     private var hero: some View {
         VStack(spacing: 14) {
-            ChargingThemeView(
-                themeID: viewModel.selectedThemeID,
-                percentage: viewModel.snapshot.percentage,
-                apiPercentage: viewModel.snapshot.apiPercentage,
-                state: viewModel.snapshot.state,
-                animated: scenePhase == .active
-            )
-            .frame(width: 150, height: 150)
-            .padding(10)
-            .id(viewModel.selectedThemeID)
-            .transition(
-                .scale(scale: 0.86)
-                    .combined(with: .opacity)
-            )
+            ZStack {
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                themeAccent.opacity(0.2),
+                                themeSecondaryAccent.opacity(0.08),
+                                Color.clear
+                            ],
+                            center: .center,
+                            startRadius: 4,
+                            endRadius: 104
+                        )
+                    )
+                    .frame(width: 208, height: 208)
+                    .scaleEffect(ambientDrift ? 1.04 : 0.94)
+
+                Circle()
+                    .stroke(
+                        AngularGradient(
+                            colors: [
+                                Color.clear,
+                                themeAccent.opacity(0.58),
+                                Color.white.opacity(0.24),
+                                themeSecondaryAccent.opacity(0.48),
+                                Color.clear
+                            ],
+                            center: .center
+                        ),
+                        style: StrokeStyle(
+                            lineWidth: 1.2,
+                            dash: [4, 9]
+                        )
+                    )
+                    .frame(width: 188, height: 188)
+                    .rotationEffect(
+                        .degrees(ambientDrift ? 18 : -10)
+                    )
+
+                ChargingThemeView(
+                    themeID: viewModel.selectedThemeID,
+                    percentage: viewModel.snapshot.percentage,
+                    apiPercentage: viewModel.snapshot.apiPercentage,
+                    state: viewModel.snapshot.state,
+                    animated: scenePhase == .active
+                )
+                .frame(width: 150, height: 150)
+                .padding(10)
+                .id(viewModel.selectedThemeID)
+                .transition(
+                    .scale(scale: 0.86)
+                        .combined(with: .opacity)
+                )
+            }
 
             themeNameText(viewModel.selectedThemeID)
-                .font(.title2.bold())
+                .font(.title.bold())
                 .contentTransition(.opacity)
                 .foregroundStyle(
                     LinearGradient(
@@ -268,14 +359,26 @@ struct ContentView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
-            VStack(spacing: 3) {
+            ChargeGlowGlassContainer(spacing: 7) {
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 7) {
+                        heroStatusItems
+                    }
+
+                    VStack(spacing: 7) {
+                        heroStatusItems
+                    }
+                }
+            }
+
+            VStack(spacing: 2) {
                 Text(
                     "Version \(BuildInfo.current.version) (\(BuildInfo.current.build))"
                 )
                 Text(BuildInfo.current.buildText)
             }
             .font(.caption.monospaced())
-            .foregroundStyle(themeAccent.opacity(0.9))
+            .foregroundStyle(.secondary)
             .textSelection(.enabled)
         }
         .frame(maxWidth: .infinity)
@@ -284,6 +387,48 @@ struct ContentView: View {
             accent: themeAccent,
             secondaryAccent: themeSecondaryAccent
         )
+    }
+
+    @ViewBuilder
+    private var heroStatusItems: some View {
+        heroStatusPill(
+            symbol: viewModel.liveActivitiesEnabled
+                ? "checkmark.circle.fill"
+                : "exclamationmark.triangle.fill",
+            color: viewModel.liveActivitiesEnabled
+                ? .green
+                : .orange
+        ) {
+            if viewModel.liveActivitiesEnabled {
+                Text("Enabled")
+            } else {
+                Text("Disabled")
+            }
+        }
+
+        heroStatusPill(
+            symbol: viewModel.snapshot.state.symbolName,
+            color: themeAccent
+        ) {
+            chargingStateText
+        }
+    }
+
+    private func heroStatusPill<Content: View>(
+        symbol: String,
+        color: Color,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        Label {
+            content()
+        } icon: {
+            Image(systemName: symbol)
+        }
+        .font(.caption.bold())
+        .foregroundStyle(color)
+        .padding(.horizontal, 11)
+        .padding(.vertical, 7)
+        .chargeGlowStatusPill(accent: color)
     }
 
     private var themeGallery: some View {
@@ -458,8 +603,12 @@ struct ContentView: View {
 
     private var batteryCard: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("iOS battery API snapshot")
+            Label(
+                "iOS battery API snapshot",
+                systemImage: "battery.100percent"
+            )
                 .font(.headline)
+                .foregroundStyle(themeAccent)
 
             HStack(alignment: .firstTextBaseline) {
                 batteryAPIPercentageText
@@ -870,8 +1019,8 @@ struct ContentView: View {
     }
 
     private var controls: some View {
-        ChargeGlowGlassContainer(spacing: 10) {
-            VStack(spacing: 10) {
+        ChargeGlowGlassContainer(spacing: 8) {
+            HStack(spacing: 8) {
                 Button {
                     viewModel.startActivity()
                 } label: {
@@ -880,6 +1029,8 @@ struct ContentView: View {
                         systemImage: "bolt.fill"
                     )
                         .frame(maxWidth: .infinity)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
                 }
                 .buttonStyle(
                     ChargeGlowPrimaryButtonStyle(
@@ -890,38 +1041,45 @@ struct ContentView: View {
                 )
                 .disabled(viewModel.isWorking)
 
-                HStack {
-                    Button {
-                        viewModel.stopActivity()
-                    } label: {
-                        Label("Stop", systemImage: "stop.fill")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(
-                        ChargeGlowSecondaryButtonStyle(
-                            accent: themeAccent,
-                            reduceMotion: reduceMotion
-                        )
-                    )
-
-                    Button {
-                        viewModel.refresh()
-                    } label: {
-                        Label(
-                            "Refresh",
-                            systemImage: "arrow.clockwise"
-                        )
-                        .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(
-                        ChargeGlowSecondaryButtonStyle(
-                            accent: themeAccent,
-                            reduceMotion: reduceMotion
-                        )
-                    )
+                Button {
+                    viewModel.stopActivity()
+                } label: {
+                    Label("Stop", systemImage: "stop.fill")
+                        .labelStyle(.iconOnly)
+                        .frame(width: 24)
                 }
-                .disabled(viewModel.isWorking)
+                .buttonStyle(
+                    ChargeGlowSecondaryButtonStyle(
+                        accent: themeAccent,
+                        reduceMotion: reduceMotion
+                    )
+                )
+                .accessibilityLabel("Stop")
+
+                Button {
+                    viewModel.refresh()
+                } label: {
+                    Label(
+                        "Refresh",
+                        systemImage: "arrow.clockwise"
+                    )
+                    .labelStyle(.iconOnly)
+                    .frame(width: 24)
+                }
+                .buttonStyle(
+                    ChargeGlowSecondaryButtonStyle(
+                        accent: themeAccent,
+                        reduceMotion: reduceMotion
+                    )
+                )
+                .accessibilityLabel("Refresh")
             }
+            .padding(7)
+            .chargeGlowControlDock(
+                accent: themeAccent,
+                secondaryAccent: themeSecondaryAccent
+            )
+            .disabled(viewModel.isWorking)
         }
     }
 
@@ -929,6 +1087,7 @@ struct ContentView: View {
         VStack(alignment: .leading, spacing: 12) {
             Label("Status", systemImage: "stethoscope")
                 .font(.headline)
+                .foregroundStyle(themeAccent)
 
             statusMessageText
                 .font(.subheadline)
@@ -942,13 +1101,27 @@ struct ContentView: View {
             if let url = viewModel.diagnosticsURL {
                 ShareLink(item: url) {
                     Label("Share diagnostics.json", systemImage: "square.and.arrow.up")
+                        .frame(maxWidth: .infinity)
                 }
+                .buttonStyle(
+                    ChargeGlowSecondaryButtonStyle(
+                        accent: themeAccent,
+                        reduceMotion: reduceMotion
+                    )
+                )
             } else {
                 Button {
                     viewModel.prepareDiagnosticsExport()
                 } label: {
                     Label("Prepare diagnostics export", systemImage: "doc.badge.gearshape")
+                        .frame(maxWidth: .infinity)
                 }
+                .buttonStyle(
+                    ChargeGlowSecondaryButtonStyle(
+                        accent: themeAccent,
+                        reduceMotion: reduceMotion
+                    )
+                )
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -1078,6 +1251,63 @@ struct ContentView: View {
                 .foregroundStyle(.secondary)
         }
         .accessibilityElement(children: .combine)
+    }
+}
+
+private struct ChargeGlowAmbientLines: View {
+    let accent: Color
+    let secondaryAccent: Color
+    let shifted: Bool
+
+    var body: some View {
+        GeometryReader { proxy in
+            ZStack {
+                ForEach(0..<5, id: \.self) { index in
+                    RoundedRectangle(
+                        cornerRadius: 90,
+                        style: .continuous
+                    )
+                    .stroke(
+                        LinearGradient(
+                            colors: [
+                                Color.clear,
+                                index.isMultiple(of: 2)
+                                    ? accent.opacity(0.2)
+                                    : secondaryAccent.opacity(0.17),
+                                Color.white.opacity(0.06),
+                                Color.clear
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        ),
+                        lineWidth: index == 2 ? 1.1 : 0.7
+                    )
+                    .frame(
+                        width: proxy.size.width * 1.28,
+                        height: CGFloat(95 + index * 52)
+                    )
+                    .rotationEffect(
+                        .degrees(
+                            Double(index - 2) * 5
+                                + (shifted ? 4 : -4)
+                        )
+                    )
+                    .offset(
+                        x: shifted
+                            ? CGFloat(index * 7 - 18)
+                            : CGFloat(18 - index * 6),
+                        y: CGFloat(index * 92 - 145)
+                    )
+                }
+            }
+            .frame(
+                maxWidth: .infinity,
+                maxHeight: .infinity
+            )
+        }
+        .blur(radius: 0.45)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }
 
@@ -1465,19 +1695,55 @@ private extension View {
                     lineWidth: 1
                 )
             }
+            .overlay {
+                RoundedRectangle(
+                    cornerRadius: 28,
+                    style: .continuous
+                )
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.14),
+                            Color.clear,
+                            secondaryAccent.opacity(0.045)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .blendMode(.screen)
+                .allowsHitTesting(false)
+            }
             .shadow(
                 color: accent.opacity(0.18),
                 radius: 24,
                 y: 10
             )
         } else {
-            background(
-                .ultraThinMaterial,
-                in: RoundedRectangle(
+            background {
+                RoundedRectangle(
                     cornerRadius: 28,
                     style: .continuous
                 )
-            )
+                .fill(.ultraThinMaterial)
+                .overlay {
+                    RoundedRectangle(
+                        cornerRadius: 28,
+                        style: .continuous
+                    )
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                accent.opacity(0.13),
+                                Color.white.opacity(0.025),
+                                secondaryAccent.opacity(0.08)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                }
+            }
             .overlay {
                 RoundedRectangle(
                     cornerRadius: 28,
@@ -1500,6 +1766,126 @@ private extension View {
                 color: accent.opacity(0.2),
                 radius: 24,
                 y: 10
+            )
+        }
+    }
+
+    @ViewBuilder
+    func chargeGlowStatusPill(
+        accent: Color
+    ) -> some View {
+        if #available(iOS 26.0, *) {
+            glassEffect(
+                .clear.tint(accent.opacity(0.12)),
+                in: Capsule()
+            )
+            .overlay {
+                Capsule()
+                    .stroke(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.2),
+                                accent.opacity(0.22),
+                                Color.clear
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 0.8
+                    )
+                    .allowsHitTesting(false)
+            }
+        } else {
+            background(
+                .ultraThinMaterial,
+                in: Capsule()
+            )
+            .overlay {
+                Capsule()
+                    .fill(accent.opacity(0.08))
+                    .allowsHitTesting(false)
+            }
+            .overlay {
+                Capsule()
+                    .stroke(Color.white.opacity(0.1))
+            }
+        }
+    }
+
+    @ViewBuilder
+    func chargeGlowControlDock(
+        accent: Color,
+        secondaryAccent: Color
+    ) -> some View {
+        if #available(iOS 26.0, *) {
+            glassEffect(
+                .clear.tint(accent.opacity(0.07)),
+                in: RoundedRectangle(
+                    cornerRadius: 29,
+                    style: .continuous
+                )
+            )
+            .overlay {
+                RoundedRectangle(
+                    cornerRadius: 29,
+                    style: .continuous
+                )
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.24),
+                            accent.opacity(0.2),
+                            secondaryAccent.opacity(0.12)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 0.9
+                )
+                .allowsHitTesting(false)
+            }
+            .shadow(
+                color: Color.black.opacity(0.3),
+                radius: 22,
+                y: 10
+            )
+        } else {
+            background {
+                RoundedRectangle(
+                    cornerRadius: 29,
+                    style: .continuous
+                )
+                .fill(.ultraThinMaterial)
+                .overlay {
+                    RoundedRectangle(
+                        cornerRadius: 29,
+                        style: .continuous
+                    )
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                accent.opacity(0.12),
+                                Color.white.opacity(0.025),
+                                secondaryAccent.opacity(0.08)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                }
+            }
+            .overlay {
+                RoundedRectangle(
+                    cornerRadius: 29,
+                    style: .continuous
+                )
+                .stroke(Color.white.opacity(0.14))
+                .allowsHitTesting(false)
+            }
+            .shadow(
+                color: Color.black.opacity(0.34),
+                radius: 20,
+                y: 9
             )
         }
     }
@@ -1535,16 +1921,33 @@ private extension View {
                     lineWidth: isSelected ? 1.4 : 0.8
                 )
             }
+            .overlay(alignment: .top) {
+                Capsule()
+                    .fill(Color.white.opacity(0.16))
+                    .frame(height: 1)
+                    .padding(.horizontal, 18)
+                    .padding(.top, 1)
+                    .allowsHitTesting(false)
+            }
         } else {
-            background(
-                isSelected
-                    ? accent.opacity(0.14)
-                    : Color.white.opacity(0.04),
-                in: RoundedRectangle(
+            background {
+                RoundedRectangle(
                     cornerRadius: 16,
                     style: .continuous
                 )
-            )
+                .fill(.ultraThinMaterial)
+                .overlay {
+                    RoundedRectangle(
+                        cornerRadius: 16,
+                        style: .continuous
+                    )
+                    .fill(
+                        isSelected
+                            ? accent.opacity(0.14)
+                            : Color.white.opacity(0.025)
+                    )
+                }
+            }
             .overlay {
                 RoundedRectangle(
                     cornerRadius: 16,
@@ -1583,41 +1986,50 @@ private struct ChargeGlowCardGlassModifier: ViewModifier {
         if #available(iOS 26.0, *) {
             content
                 .glassEffect(
-                    .regular.tint(accent.opacity(0.08)),
+                    .regular.tint(accent.opacity(0.095)),
                     in: RoundedRectangle(
-                        cornerRadius: 22,
+                        cornerRadius: 24,
                         style: .continuous
                     )
                 )
                 .overlay {
                     cardBorder
                 }
+                .overlay {
+                    cardHighlight
+                }
                 .shadow(
                     color: Color.black.opacity(0.22),
-                    radius: 16,
-                    y: 8
+                    radius: 18,
+                    y: 9
+                )
+                .shadow(
+                    color: accent.opacity(0.045),
+                    radius: 22,
+                    y: 3
                 )
         } else {
             content
                 .background {
                     RoundedRectangle(
-                        cornerRadius: 22,
+                        cornerRadius: 24,
                         style: .continuous
                     )
-                    .fill(color)
+                    .fill(.ultraThinMaterial)
                     .overlay {
                         LinearGradient(
                             colors: [
-                                accent.opacity(0.09),
+                                color,
+                                accent.opacity(0.105),
                                 Color.clear,
-                                Color.white.opacity(0.025)
+                                Color.white.opacity(0.035)
                             ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                         .clipShape(
                             RoundedRectangle(
-                                cornerRadius: 22,
+                                cornerRadius: 24,
                                 style: .continuous
                             )
                         )
@@ -1626,24 +2038,28 @@ private struct ChargeGlowCardGlassModifier: ViewModifier {
                 .overlay {
                     cardBorder
                 }
+                .overlay {
+                    cardHighlight
+                }
                 .shadow(
                     color: Color.black.opacity(0.26),
-                    radius: 16,
-                    y: 8
+                    radius: 18,
+                    y: 9
                 )
         }
     }
 
     private var cardBorder: some View {
         RoundedRectangle(
-            cornerRadius: 22,
+            cornerRadius: 24,
             style: .continuous
         )
         .stroke(
             LinearGradient(
                 colors: [
-                    accent.opacity(0.26),
-                    Color.white.opacity(0.08),
+                    Color.white.opacity(0.18),
+                    accent.opacity(0.24),
+                    Color.white.opacity(0.055),
                     Color.clear
                 ],
                 startPoint: .topLeading,
@@ -1651,6 +2067,27 @@ private struct ChargeGlowCardGlassModifier: ViewModifier {
             ),
             lineWidth: 1
         )
+        .allowsHitTesting(false)
+    }
+
+    private var cardHighlight: some View {
+        RoundedRectangle(
+            cornerRadius: 24,
+            style: .continuous
+        )
+        .fill(
+            LinearGradient(
+                colors: [
+                    Color.white.opacity(0.08),
+                    Color.clear,
+                    accent.opacity(0.025)
+                ],
+                startPoint: .topLeading,
+                endPoint: .center
+            )
+        )
+        .blendMode(.screen)
+        .allowsHitTesting(false)
     }
 }
 

@@ -25,6 +25,8 @@ The current engineering beta contains:
   the Plasma Core Live Activity theme, without interpolating between readings;
 - an animated charging-session graph drawn from accepted real samples, plus
   Plasma Core energy particles and numeric transitions that honor Reduce Motion;
+- a floating Liquid Glass action dock, glass status pills, specular cards, and
+  an adaptive ambient background on iOS 26, with material fallbacks on iOS 17–25;
 - duplicate recovery, diagnostics, and unit tests.
 
 Onboarding, purchases, backend, analytics, and production distribution remain
